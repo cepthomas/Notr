@@ -1,0 +1,203 @@
+%YAML 1.2
+---
+# http://www.sublimetext.com/docs/3/syntax.html
+name: Notr
+scope: text.notr
+
+comment: |-
+  variables seem to use underscore whereas contexts use hyphen - probably convention.
+
+file_extensions:
+  - ntr
+  - notr
+
+
+variables:
+    
+    atx_heading: (?:[ ]{,3}[#]{1,6}(?:[ \t]|$))  # between 0 and 3 spaces, followed 1 to 6 hashes, followed by at least one space or tab or by end of the line
+    atx_heading_space: (?:(?=[ \t]+#+[ \t]*$)|[ \t]+|$) # consume spaces only if heading is not empty to ensure `atx_heading_end` can fully match closing hashes
+    atx_heading_end: (?:[ \t]+(#+))?[ \t]*($\n?) # \n is optional so ## is matched as end punctuation in new document (at eof)
+
+    html_entity: '&([a-zA-Z0-9]+|#\d+|#x\h+);'
+    skip_html_tags: (?:<[^>]+>)
+    escape: '\\[-`*_#+.!(){}\[\]\\>|~<]'
+
+contexts:
+  main:
+    - include: atx-heading
+    - include: autolink-inet
+    - include: apache-conf-stuff
+
+    # - match: \b-\b
+    #   scope: keyword.xyz.ntr
+      # set: notr
+
+
+
+    - match: ^(DocId)(\s+(\d\d\d|permanent|temp|seeother|gone))?\s+(.+?)\s+((.+?)($|\s))?
+      captures:
+        1: keyword.core.markdown
+        2: entity.status.markdown
+        3: string.path.markdown
+        5: string.path.markdown
+
+
+    - match: ^([ ]{0,3})([*+-])( (\[[ xX]\]))?(?=\s)
+      captures:
+        1: markup.list.unnumbered.markdown
+        2: markup.list.unnumbered.bullet.markdown punctuation.definition.list_item.markdown
+        3: markup.list.unnumbered.markdown
+        4: constant.language.checkbox.markdown-gfm
+      push:
+        - meta_content_scope: markup.list.unnumbered.markdown
+        - match: ^(?=\S)
+          pop: true
+        - include: list-paragraph
+
+    - match: ^([ ]{0,3})(\d+([.)]))(?=\s)
+      captures:
+        1: markup.list.numbered.markdown
+        2: markup.list.numbered.bullet.markdown
+        3: punctuation.definition.list_item.markdown
+      push:
+        - meta_content_scope: markup.list.numbered.markdown
+        - match: ^(?=\S)
+          pop: true
+        - include: list-paragraph
+
+
+
+  #################### from markdown syntax ###########################################
+  autolink-inet:
+    - match: (<)((?:https?|ftp)://.*?)(>)
+      scope: meta.link.inet.markdown
+      captures:
+        1: punctuation.definition.link.begin.markdown
+        2: markup.underline.link.markdown
+        3: punctuation.definition.link.end.markdown
+
+    - match: (((https|http|ftp)://)|www\.)[\w-]+(\.[\w-]+)+
+      scope: markup.underline.link.markdown-gfm
+      push: # After a valid domain, zero or more non-space non-< characters may follow
+        - match: (?=[?!.,:*_~]*(?:[\s<]|$)) # Trailing punctuation (specifically, ?, !, ., ,, :, *, _, and ~) will not be considered part of the autolink, though they may be included in the interior of the link
+          pop: true
+        - match: (?={{html_entity}}[?!.,:*_~]*[\s<]) # If an autolink ends in a semicolon (;), we check to see if it appears to resemble an entity reference; if the preceding text is & followed by one or more alphanumeric characters. If so, it is excluded from the autolink
+          pop: true
+        - match: \( # When an autolink ends in ), we scan the entire autolink for the total number of parentheses. If there is a greater number of closing parentheses than opening ones, we don’t consider the last character part of the autolink, in order to facilitate including an autolink inside a parenthesis
+          push:
+            - meta_scope: markup.underline.link.markdown-gfm
+            - match: (?=[?!.,:*_~]*[\s<])
+              pop: true
+            - match: \)
+              pop: true
+        - match: (?=\)[?!.,:*_~]*[\s<])
+          pop: true
+        - match: '[^?!.,:*_~\s<&()]+|\S'
+          scope: markup.underline.link.markdown-gfm
+
+
+  #################### from markdown syntax ###########################################
+  atx-heading:
+    # https://spec.commonmark.org/0.30/#atx-headings
+    # Consume spaces and tabs after opening hashes so entity.name starts with first non-whitespace character.
+    
+    - match: '^(#{1}){{atx_heading_space}}'
+      captures:
+        1: punctuation.definition.heading.begin.markdown
+      push: atx-heading1-content
+
+    - match: '^(#{2}){{atx_heading_space}}'
+      captures:
+        1: punctuation.definition.heading.begin.markdown
+      push: atx-heading2-content
+
+    - match: '^(#{3}){{atx_heading_space}}'
+      captures:
+        1: punctuation.definition.heading.begin.markdown
+      push: atx-heading3-content
+
+    - match: '^(#{4}){{atx_heading_space}}'
+      captures:
+        1: punctuation.definition.heading.begin.markdown
+      push: atx-heading4-content
+
+    - match: '^(#{5}){{atx_heading_space}}'
+      captures:
+        1: punctuation.definition.heading.begin.markdown
+      push: atx-heading5-content
+
+    - match: '^(#{6}){{atx_heading_space}}'
+      captures:
+        1: punctuation.definition.heading.begin.markdown
+      push: atx-heading6-content
+
+  atx-heading1-content:
+    - meta_scope: markup.heading.1.markdown
+    - meta_content_scope: entity.name.section.markdown
+    - include: atx-heading-content
+
+  atx-heading2-content:
+    - meta_scope: markup.heading.2.markdown
+    - meta_content_scope: entity.name.section.markdown
+    - include: atx-heading-content
+
+  atx-heading3-content:
+    - meta_scope: markup.heading.3.markdown
+    - meta_content_scope: entity.name.section.markdown
+    - include: atx-heading-content
+
+  atx-heading4-content:
+    - meta_scope: markup.heading.4.markdown
+    - meta_content_scope: entity.name.section.markdown
+    - include: atx-heading-content
+
+  atx-heading5-content:
+    - meta_scope: markup.heading.5.markdown
+    - meta_content_scope: entity.name.section.markdown
+    - include: atx-heading-content
+
+  atx-heading6-content:
+    - meta_scope: markup.heading.6.markdown
+    - meta_content_scope: entity.name.section.markdown
+    - include: atx-heading-content
+
+  atx-heading-content:
+    - match: '{{atx_heading_end}}'
+      captures:
+        1: punctuation.definition.heading.end.markdown
+        2: meta.whitespace.newline.markdown
+      pop: true
+
+
+  ######################## from apache.conf TODO1 remove #######################################
+  apache-conf-stuff:
+    # Beginning
+    - match: (<)(Directory|VirtualHost)(\s(.+?))?(>)
+      captures:
+        1: punctuation.definition.tag.apacheconf
+        2: entity.tag.apacheconf
+        4: string.value.apacheconf
+        5: punctuation.definition.tag.apacheconf
+
+    # End
+    - match: (</)(Directory|VirtualHost)(>)
+      captures:
+        1: punctuation.definition.tag.apacheconf
+        2: entity.tag.apacheconf
+        3: punctuation.definition.tag.apacheconf
+
+    - match: \b(ServerName|DocumentRoot|Options|AllowOverride|Order)\b
+      captures:
+        1: keyword.core.apacheconf
+
+    - match: (?<=Redirect)(\s+(\d\d\d|permanent|temp|seeother|gone))?\s+(.+?)\s+((.+?)($|\s))?
+      captures:
+        1: keyword.core.apacheconf
+        2: entity.status.apacheconf
+        3: string.path.apacheconf
+        5: string.path.apacheconf
+
+    # - match: ^(\s)*(#).*$\n?
+    #   scope: comment.line.hash.ini
+    #   captures:
+    #     1: punctuation.definition.comment.apacheconf
