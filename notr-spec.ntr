@@ -1,15 +1,15 @@
-DocId 301 /oldlocation http://www.domain2.com/newlocation
-
-
-
+# Sections are atx style
 
 ## Test stuff from Apache conf - remove later
 Listen 80
 
 This is the "main" server running on 172.20.30.40
-ServerName server.example.com
-DocumentRoot "/www/mainserver"
 
+`ServerName server.example.com`
+
+`DocumentRoot "/www/mainserver"`
+
+```
 <Directory "/THDL/thdl-site">
 <VirtualHost 172.20.30.50>
   ServerName www.example.com
@@ -21,71 +21,143 @@ DocumentRoot "/www/mainserver"
   AllowOverride all
   Order allow,deny
 </VirtualHost>
-
-
-# Sections are atx style
-TODO atx could be S1/S2/...
+```
 
 ## Some basics
 
-- Supported characters for a file name are letters, numbers, spaces, and ( ) _ - , .
+- Supported characters for a file name are letters, numbers, spaces, and `( ) _ - , .`
 - File names should be limited to 100 characters.
-- Characters that are NOT supported  @ $ % & \ / : * ? " ' < > | ~ ` # ^ + = { } [ ] ; !
+- Characters that are NOT supported  `@ $ % & \ / : * ? " ' < > | ~ # ^ + = { } [ ] ; !`
 
-*Bold stuff TODO1*
+_Italic stuff_
 
-**Italic stuff TODO1**
+**Bold stuff**
 
-> text block TODO1
-> text block
-> text block
+> This is a very long line that will still be quoted properly when it wraps. Oh boy let's keep writing to make sure this is long enough to actually wrap for everyone. Oh, you can *put* **Markdown** into a blockquote. TODO1 seems to need a minimum of two markers.
+>
+
+
+> Blockquotes are very handy in email to emulate reply text.
+> This line is part of the same quote.
+
+Fancy:
+
+> "You want to make it seem alive and effortless and fun, but that's an
+> art that took me 25 years to really learn. I wanted to do it very much
+> 25 years ago, but I didn't know how."
+
 
 ```
-Verbatim text TODO1
-Verbatim text
-Verbatim text
+Verbatim text 1
+Verbatim text 2
+Verbatim text 3
 ```
 
-## Markers
+A code listing:
+``` C
+/** @brief Initialize the application */
+int aggregator_init(aggregatorStruct* pAggregator)
+{
+    // Initialize state
+    s_systemTimeMicroseconds = 0;
+    s_systickFired = false;
+    debugLog(DBG_LOG_ERR, "Error initializing the GPIO manager module");
+}
+```
+
+Is this a definition list?
+:   Looks like one to me
+Is that right?
+:   Possibly!
+
+!!! Note
+    Hey I'm a note. Don't mind me, I'm just sitting here.
+
+## Lists
+
+1. A
+1. Numbered
+  - list
+  - list
+1. List!
+    1. list numbered
+    1. To put other Markdown blocks in a list; just indent four spaces for each nesting level
+
+
 - list no category
   - list
   - list
 
-X means list done TODO1
-? means list maybe
-L low priority TODO1
-  M med priority
-    H high priority
+1. list numbered
+  a. list numbered
+  a. list numbered
 
-1. list number
-  a. list number
-  b. list number
+## Tables
+??? Add manipulations similar to csvplugin.py
+
+| Maine | Iowa | Colorado |
+|-------|------|----------|
+|   1   |  4   |   10     |
+|  ME   |  IA  |   CO     |
+| Blue  | Red  | Brown    |
+
+With alignment:
+
+| Item | Type | Cost  |
+| ---- |:----:| ----: |
+| Fish |  F   | 1.00  |
+| Axe  |  W   | 3.25  |
+| Gold |  I   |20.50  |
+
+
+# TODO1 everything below needs work + sublime
+
+??? todo lists
+```
+X means done 
+? means maybe
+L low priority
+  M med priority
+  H high priority
+```
 
 ## Links
 
 Start with !.
 
-TODO1 Open links with something like open_context_url.py.
+??? Parse/open file links with something like open_context_url.py.
 
 ### URI
-aaa http://casual-effects.com ccc
-https://casual-effects.com
+gogo http://casual-effects.com
+
+[md link](https://casual-effects.com)
+
 "http://casual-effects.com"
 
 
-### Image or file TODO1
-!C:\Users\cepth\AppData\Roaming\Sublime Text\Packages\SublimeBagOfTricks\felix.jpg
-!"C:\Users\cepth\AppData\Roaming\Sublime Text\Packages\SublimeBagOfTricks\felix.jpg"
+### Image or file >>>> use phantom?
+
+![tux](https://www.markdownguide.org/assets/images/tux.png)
+
+
+![fekix](felix.jpg)
+
+
+### Internal links and sections ???
+
 !"C:/Users/cepth/AppData/Roaming/Sublime%20Text/Packages/SublimeBagOfTricks/temp/file1.ntr.html#basicformatting"
+
 <a href="file:///C:/Users/cepth/AppData/Roaming/Sublime%20Text/Packages/SublimeBagOfTricks/temp/file1.ntr.html#basicformatting">Basic formatting</a>
 
 
-### Section
-!first_word_in_section_name_in_this_doc
+Section:
+
+!Test
+
 !DocId first_word_in_section_name_in_another_doc
 
 
->>> Markdown does this
+Markdown does this:
 - Any section header name followed by "section", "subsection", or "sec." will automatically be linked to that section.
 - To link by number, use one of those key words followed by the section name (without the word section) in brackets.
 - Reference-style links include arbitrary formatted text in brackets followed by a case-insensitive symbolic name that must be defined
@@ -105,26 +177,10 @@ browser. This will bring up a context menu that allows you to copy
 either the internal Markdeep text of the link or the external HTML code link.*
 
 
-## Tables - TODO1 Similar to csvplugin.py
+# Unicode
+UTF-8 encoding.
 
-| Maine | Iowa | Colorado |
-|-------|------|----------|
-|   1   |  4   |   10     |
-|  ME   |  IA  |   CO     |
-| Blue  | Red  | Brown    |
-
-With alignment:
-
-| Item | Type | Cost  |
-| ---- |:----:| ----: |
-| Fish |  F   | 1.00  |
-| Axe  |  W   | 3.25  |
-| Gold |  I   |20.50  |
-
-
-# Unicode (in UTF-8 encoding)
-
-- TODO1 unicode menu/picker to insert, show at caret, ??? probably a new module. see unicode.py.
+??? unicode menu/picker to insert, show at caret, ... probably a new module. see unicode.py.
 
 
 - Matching pairs «»‹›“”‘’〖〗【】「」『』〈〉《》〔〕
@@ -144,8 +200,13 @@ With alignment:
 - Religious and cultural symbols ✝✚✡☥⎈☭☪☮☺☹☯☰☱☲☳☴☵☶☷
 - Dingbats ❦☠☢☣☤♲♳⌬♨♿ ☉☼☾☽ ♀♂ ♔♕♖ ♗♘♙ ♚♛ ♜♝♞♟
 
+## More
+http://xahlee.info/comp/unicode_computing_symbols.html
+⌘ ✲ ⎈ ^ ⌃ ❖ ⎇ ⌥ ⇮ ◆ ◇ ✦ ✧ ⇧ ⇪ 🄰 🅰 ⇪ ⇬ 🔠 🔡 ⇭ 🔢 🔤 ↩ ↵ ⏎ ⌤ ⎆ ▤ ☰ 𝌆 ⎄ ⭾ ↹ ⇄ ⇤ ⇥ ↤ ↦ ⎋ ⌫ ⟵ ⌦ ⎀ ⎚ ⌧ ↖ ↘ ⇤ ⇥ ⤒ ⤓ ⇞ ⇟ △ ▽ ▲ ▼ ⎗ ⎘ ↑ ↓ ← → ◀ ▶ ▲ ▼ ◁ ▷ △ ▽ ⇦ ⇨ ⇧ ⇩ ⬅ ➡ ⮕ ⬆ ⬇ ⎉ ⎊ ⎙ ⍰ ❓ ❔ ℹ 🛈 ☾ ⏏ ✉ 🏠 🏡 ⌂ ✂ ✄ ⎌ ↶ ↷ ⟲ ⟳ ↺ ↻ 🔍 🔎 🔅 🔆 🔇 🔈 🔉 🔊 🕨 🕩 🕪 ◼ ⏯ ⏮ ⏭ ⏪ ⏩ ⏫ ⏬ 🌐
 
-Github unicode: You can use either decimal or hex code point or HTML entity name (if exists) of a unicode character:
+
+## Github unicode
+You can use either decimal or hex code point or HTML entity name (if exists) of a unicode character:
 &#8364; &#x20AC; &euro;
 displays as
 â‚¬ â‚¬ â‚¬

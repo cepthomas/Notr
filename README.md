@@ -1,4 +1,4 @@
 # Notr
-The text editor side of the NotrApp. Very much a work in progress.
+The text editor side of the FileFam. Very much a work in progress.
 
 Run away!
