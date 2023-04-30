@@ -1,0 +1,969 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"s_",
+				"s_led_freq"
+			],
+			[
+				"UT_",
+				"UT_EQUAL_I"
+			],
+			[
+				"pnut",
+				"PNUT_2"
+			],
+			[
+				"Fu",
+				"FullPath"
+			],
+			[
+				"Log",
+				"LogEntry"
+			],
+			[
+				"_log",
+				"_logFileName"
+			],
+			[
+				"Contain",
+				"ContainsKey"
+			],
+			[
+				"_logg",
+				"_loggers"
+			],
+			[
+				"File",
+				"FileName"
+			],
+			[
+				"w",
+				"WriteLine"
+			],
+			[
+				"Writ",
+				"WriteLine"
+			],
+			[
+				"ap",
+				"appDir"
+			],
+			[
+				"repo",
+				"repo_path"
+			],
+			[
+				"CREAT",
+				"CREATE_INST"
+			],
+			[
+				"vi",
+				"Visible"
+			],
+			[
+				"_st",
+				"_stateTypes"
+			],
+			[
+				"tota",
+				"TotalSubBeats"
+			],
+			[
+				"ren",
+				"render_max_file"
+			],
+			[
+				"popu",
+				"show_popup"
+			],
+			[
+				"view",
+				"view_style"
+			],
+			[
+				"for",
+				"foreground"
+			],
+			[
+				"act",
+				"active_view"
+			],
+			[
+				"sig_r",
+				"sig_rows"
+			],
+			[
+				"arr",
+				"array_end_1"
+			],
+			[
+				"st",
+				"start"
+			],
+			[
+				"_get",
+				"_get_style"
+			],
+			[
+				"sty",
+				"style_id"
+			],
+			[
+				"new",
+				"new_style"
+			],
+			[
+				"all",
+				"all_styles"
+			],
+			[
+				"high",
+				"highlight_regions"
+			],
+			[
+				"highli",
+				"highlight_colors"
+			],
+			[
+				"highl",
+				"highlight_scopes"
+			],
+			[
+				"mark_",
+				"mark_scopes"
+			],
+			[
+				"vie",
+				"view_index"
+			],
+			[
+				"filen",
+				"filename"
+			],
+			[
+				"__",
+				"__init__"
+			],
+			[
+				"seg",
+				"segfault_file"
+			],
+			[
+				"job",
+				"job_files"
+			],
+			[
+				"do",
+				"do_detail"
+			],
+			[
+				"NSe",
+				"NSequenceElements"
+			],
+			[
+				"DRUMS",
+				"DRUMS_SIMPLE"
+			],
+			[
+				"tick",
+				"tickOffset"
+			],
+			[
+				"PA",
+				"PART1"
+			],
+			[
+				"Max",
+				"MaxValue"
+			],
+			[
+				"noe",
+				"notenum"
+			],
+			[
+				"_colors",
+				"_colors3"
+			],
+			[
+				"Sus",
+				"SustainLevel"
+			],
+			[
+				"flo",
+				"Floor"
+			],
+			[
+				"note",
+				"notenum"
+			],
+			[
+				"SYNTH",
+				"SYNTH_1"
+			],
+			[
+				"Synt",
+				"SynthUGen"
+			],
+			[
+				"_not",
+				"_noteNum"
+			],
+			[
+				"draw",
+				"drawTargets"
+			],
+			[
+				"stroke",
+				"strokeWeight"
+			],
+			[
+				"mou",
+				"mouseX"
+			],
+			[
+				"_sca",
+				"_scaleNotes"
+			],
+			[
+				"_",
+				"_chordNotes"
+			],
+			[
+				"WHE",
+				"WHEN1"
+			],
+			[
+				"para",
+				"Param"
+			],
+			[
+				"oct",
+				"octDown"
+			],
+			[
+				"ra",
+				"random"
+			],
+			[
+				"fra",
+				"frameRate"
+			],
+			[
+				"frame",
+				"frameCount"
+			],
+			[
+				"it",
+				"item_date"
+			],
+			[
+				"end",
+				"end_month"
+			],
+			[
+				"end_",
+				"end_year"
+			],
+			[
+				"sta",
+				"start_date"
+			],
+			[
+				"scaleN",
+				"scaleNoteWeights"
+			],
+			[
+				"bu",
+				"budget_amount"
+			],
+			[
+				"budge",
+				"budget_category"
+			],
+			[
+				"start",
+				"start_month"
+			],
+			[
+				"she",
+				"sheetname"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "/C/Users/cepth/OneDrive/OneDrive Documents/_notes/shop.txt",
+			"settings":
+			{
+				"buffer_size": 1774,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			},
+			"undo_stack":
+			[
+				[
+					3,
+					1,
+					"insert",
+					{
+						"characters": "\nsnake"
+					},
+					"BgAAABIAAAAAAAAAEwAAAAAAAAAAAAAAEwAAAAAAAAAUAAAAAAAAAAAAAAAUAAAAAAAAABUAAAAAAAAAAAAAABUAAAAAAAAAFgAAAAAAAAAAAAAAFgAAAAAAAAAXAAAAAAAAAAAAAAAXAAAAAAAAABgAAAAAAAAAAAAAAA",
+					"AQAAAAAAAAABAAAAEgAAAAAAAAASAAAAAAAAAAAAAAAAAPC/"
+				],
+				[
+					4,
+					1,
+					"insert",
+					{
+						"characters": "\n"
+					},
+					"AQAAABgAAAAAAAAAGQAAAAAAAAAAAAAA",
+					"AQAAAAAAAAABAAAAGAAAAAAAAAAYAAAAAAAAAAAAAAAAAPC/"
+				]
+			]
+		},
+		{
+			"file": "notr-spec.ntr",
+			"settings":
+			{
+				"buffer_size": 5849,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			},
+			"undo_stack":
+			[
+				[
+					3,
+					1,
+					"cut",
+					null,
+					"AQAAABsAAAAAAAAAGwAAAAAAAAAoAAAAaHR0cHM6Ly9naXRodWIuY29tL2loZGF2aWRzL29yZ2V4dGVuZGVkCg",
+					"AQAAAAAAAAABAAAAGwAAAAAAAABDAAAAAAAAAAAAAAAAAPC/"
+				],
+				[
+					4,
+					1,
+					"right_delete",
+					null,
+					"AQAAABsAAAAAAAAAGwAAAAAAAAABAAAACg",
+					"AQAAAAAAAAABAAAAGwAAAAAAAAAbAAAAAAAAAAAAAAAAAPC/"
+				],
+				[
+					6,
+					1,
+					"insert",
+					{
+						"characters": "\n"
+					},
+					"AQAAAEcAAAAAAAAASAAAAAAAAAAAAAAA",
+					"AQAAAAAAAAABAAAARwAAAAAAAABHAAAAAAAAAAAAAAAAAAAA"
+				],
+				[
+					7,
+					1,
+					"paste",
+					null,
+					"AQAAAEgAAAAAAAAAcAAAAAAAAAAAAAAA",
+					"AQAAAAAAAAABAAAASAAAAAAAAABIAAAAAAAAAAAAAAAAAPC/"
+				]
+			]
+		},
+		{
+			"file": "stuff/orgmode/orgmode.tmLanguage",
+			"settings":
+			{
+				"buffer_size": 3140,
+				"line_ending": "Windows"
+			},
+			"undo_stack":
+			[
+			]
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+		[
+			[
+				[
+					"Packages/SbotBuilder/SbotBuilder.sublime-build",
+					""
+				],
+				[
+					"Packages/SbotBuilder/SbotBuilder.sublime-build",
+					"Build All"
+				],
+				[
+					"Packages/SbotBuilder/SbotBuilder.sublime-build",
+					"Select Build File"
+				],
+				[
+					"Packages/SbotBuilder/SbotBuilder.sublime-build",
+					"Init Build Env"
+				]
+			],
+			[
+				"Packages/SbotBuilder/SbotBuilder.sublime-build",
+				"Select Build File"
+			]
+		],
+		[
+			[
+				[
+					"Packages/User/shm.sublime-build",
+					""
+				],
+				[
+					"Packages/User/shm.sublime-build",
+					"agg"
+				],
+				[
+					"Packages/User/shm.sublime-build",
+					"tld"
+				],
+				[
+					"Packages/User/shm.sublime-build",
+					"im1"
+				],
+				[
+					"Packages/User/shm.sublime-build",
+					"im2"
+				],
+				[
+					"Packages/User/shm.sublime-build",
+					"cld"
+				]
+			],
+			[
+				"Packages/User/shm.sublime-build",
+				"im1"
+			]
+		],
+		[
+			[
+				[
+					"Packages/User/shm.sublime-build",
+					""
+				],
+				[
+					"Packages/User/shm.sublime-build",
+					"ld"
+				],
+				[
+					"Packages/User/shm.sublime-build",
+					"agg"
+				],
+				[
+					"Packages/User/shm.sublime-build",
+					"im1"
+				],
+				[
+					"Packages/User/shm.sublime-build",
+					"im2"
+				]
+			],
+			[
+				"Packages/User/shm.sublime-build",
+				"ld"
+			]
+		]
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 375.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"pack",
+				"Package Control: List Packages"
+			],
+			[
+				"pac",
+				"Package Control: Install Package"
+			],
+			[
+				"raw",
+				"Raw Line Edit: View Line Endings"
+			],
+			[
+				"package\t",
+				"Package Control: List Packages"
+			],
+			[
+				"pa",
+				"Package Control: Install Package"
+			],
+			[
+				"pC",
+				"Package Control: Install Package"
+			],
+			[
+				"packa",
+				"Package Control: Remove Package"
+			],
+			[
+				"Raw",
+				"Raw Line Edit: Toggle Line Edit Mode"
+			],
+			[
+				"Sub",
+				"SublimeCodeIntel: Disable Plugin"
+			],
+			[
+				"scheme",
+				"UI: Select Color Scheme"
+			],
+			[
+				"theme",
+				"UI: Select Theme"
+			],
+			[
+				"Pack",
+				"Package Control: Remove Package"
+			],
+			[
+				"Package Control: ",
+				"Package Control: Install Package"
+			],
+			[
+				"xm",
+				"Indent XML"
+			]
+		],
+		"width": 442.0
+	},
+	"console":
+	{
+		"height": 162.0,
+		"history":
+		[
+			"cmake CmakeLists.txt",
+			"clear()",
+			"os.clear()",
+			"clear()",
+			"import os",
+			"impor os",
+			"os.clear()",
+			"clear()",
+			"cls",
+			"clear",
+			"clr"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/C/Dev/repos/Notr"
+	],
+	"file_history":
+	[
+		"/C/Users/cepth/AppData/Local/Temp/7zO496D477C/Markdown.sublime-syntax",
+		"/C/Dev/repos/Notr/stuff/_sublime/syntax-examples/syntax_test_markdown.md",
+		"/C/Dev/repos/Notr/Notr-new/.gitignore",
+		"/C/Dev/repos/Notr/Notr-new/LICENSE",
+		"/C/Dev/repos/Notr/Notr-new/org.txt",
+		"/C/Dev/repos/Notr/Notr-new/notr-spec.ntr",
+		"/C/Users/cepth/OneDrive/OneDrive Documents/_notes/sport-drink.txt",
+		"/C/Users/cepth/OneDrive/OneDrive Documents/_notes/todo.txt",
+		"/C/Users/cepth/OneDrive/OneDrive Documents/_notes/shop.txt",
+		"/C/Dev/repos/Notr-git/Notr/README.md",
+		"/C/Dev/holding_tank/Notr-git/README.md",
+		"/C/Dev/repos/Notr/_sublime/MarkdownEditing-master/syntaxes/Markdown.sublime-syntax",
+		"/C/Dev/repos/Notr/notr-spec.ntr",
+		"/C/Dev/repos/Notr/render-md/markdeep.js",
+		"/C/Dev/repos/FileFam/stuff/SublimeNotebook-master/README.markdown",
+		"/C/Dev/holding_tank/SDLX/renderer.c.cs",
+		"/C/Dev/Notr/render-md/apidoc.md.html",
+		"/C/Users/cepth/AppData/Roaming/Sublime Text/Packages/SbotRender/md_render.css",
+		"/C/Dev/Notr/notr-spec.ntr",
+		"/C/Dev/repos/Nebulator/README.md",
+		"/C/Dev/Notr/render-md/slate.md.html",
+		"/C/Dev/Notr/notr.sublime-project",
+		"/C/Dev/Notr/render-md/markdeep.js",
+		"/C/Dev/Notr/orgextended-master/pandoc2.css",
+		"/C/Dev/Notr/render-md/slate.css",
+		"/C/Dev/Notr/markdown-cheat-sheet.md",
+		"/C/Users/cepth/Desktop/cap1-rc2.csv",
+		"/C/Users/cepth/AppData/Roaming/Sublime Text/Packages/SbotRender/README.md",
+		"/C/Users/cepth/AppData/Roaming/Sublime Text/Packages/SbotRender/SbotRender.sublime-settings",
+		"/C/Users/cepth/AppData/Roaming/Sublime Text/Packages/SbotRender/sbot_render.py",
+		"/C/Dev/Notr/notr.py",
+		"/C/Dev/Notr/render-md/my.css",
+		"/C/Dev/Notr/render-md/apidoc.css",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/src-tftploader/tftpserver.c",
+		"/C/Dev/AL/lmes/work/lmes-notes.txt",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/firmware-load-procedure-aggregator.md",
+		"/C/Dev/AL/lmes/shm-input-module-firmware/firmware-load-procedure-input-module.md",
+		"/C/Dev/AL/lmes/shm-input-module-firmware/src-canloader/canloader.c",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/src-tftploader/tftploader.c",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/src-application/aggregator.c",
+		"/C/Dev/AL/lmes/shm-input-module-firmware/src-application/input-module.c",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/CMakeLists.txt",
+		"/C/Dev/AL/lmes/shm-input-module-firmware/CMakeLists.txt",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/build.py",
+		"/C/Dev/AL/lmes/shm-input-module-firmware/build.py",
+		"/C/Dev/AL/lmes/shm-input-module-firmware/readme.md",
+		"/C/Dev/AL/lmes/shm-input-module-firmware/src-application/input-module-can/canController.c",
+		"/C/Dev/AL/lmes/shm-input-module-firmware/src-canloader/canController.c",
+		"/C/Dev/AL/lmes/shm-input-module-firmware/src-canloader/canDriver.c",
+		"/C/Dev/AL/lmes/shm-input-module-firmware/src-canloader/canloader.h",
+		"/C/Dev/AL/lmes/shm-input-module-firmware/src-canloader/flash_if.h",
+		"/C/Dev/AL/lmes/shm-input-module-firmware/src-common/can-defs.h",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/src-tftploader/tftploader.h",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/ozone-tldr.jdebug.user",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/readme.md",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/release-notes-aggregator.md",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/src-common/can-defs.h",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/src-tftploader/canDriver.c",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/src-tftploader/flash_if.h",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/src-tftploader/loader.c",
+		"/C/Dev/AL/lmes/shm-input-module-firmware/src-canloader/loader.c",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/vendor/appliedlogix/cli-library/include/debug_log.h",
+		"/C/Dev/AL/lmes/work/done.txt",
+		"/C/Dev/AL/lmes/shm-input-module-firmware/src-application/cli_commands.h",
+		"/C/Dev/AL/lmes/work/debug-stuff.c",
+		"/C/Dev/AL/lmes/work/docs-new/LMES SHM Update Sequence_1.mscgen",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/src-application/managers/network-manager.c",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/src-application/config.c",
+		"/C/Dev/AL/lmes/shm-input-module-firmware/src-common/util.c",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/src-common/util.c",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/tftploader-f745vet/Src/stm32f7xx_hal_msp.c",
+		"/C/Dev/AL/lmes/shm-input-module-firmware/shm-input-module-f373c8t/Src/stm32f3xx_hal_msp.c",
+		"/C/Dev/AL/lmes/lmes.sublime-project",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/aggregator-f745vet/Src/stm32f7xx_hal_msp.c",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/firmware-load-procedure.md",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/vendor/segger/RTT_new/SEGGER_RTT_Conf.h",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/vendor/segger/SEGGER_RTT_Conf.h",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/vendor/segger/RTT_new/SEGGER_RTT.h",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/vendor/segger/SEGGER_RTT.h",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/vendor/segger/SEGGER_RTT.c",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/vendor/segger/RTT_new/SEGGER_RTT.c",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/src-tftploader/canController.c",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/src-application/aggregator-can/canDriver.c",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/src-application/cli_commands.c",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/src-application/interlock.c",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/src-application/modbus-server.c",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/src-application/serial_virtport_lwip.c",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/src-application/transaction-manager.c",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/src-application/wire-break.c",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/src-application/aggregator-can/canController.c",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/src-common/util.h",
+		"/C/Dev/AL/lmes/shm-input-module-firmware/.gitmodules",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/.gitmodules",
+		"/C/Dev/AL/lmes/shm-input-module-firmware/vendor/appliedlogix/cli/platforms/serial_virtport_lwip.c",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/vendor/appliedlogix/cli-library/platforms/serial_virtport_lwip.c.example",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/vendor/appliedlogix/cli-library/platforms/system_defs.h.example",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/vendor/appliedlogix/cli-library/platforms/README.txt",
+		"/C/Dev/AL/lmes/shm-input-module-firmware/src-application/system_defs.h",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/vendor/appliedlogix/cli-library/debug_log/debug_log.c",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/vendor/appliedlogix/cli-library/serial_port/serial_port.c",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/src-application/system_defs.h",
+		"/C/Users/cepth/OneDrive/OneDrive Documents/applogix/lmes/lmes_time.txt",
+		"/C/Dev/AL/lmes/shm-input-module-firmware/src-application/adc-manager.c",
+		"/C/Dev/AL/lmes/shm-input-module-firmware/src-application/cli_commands.c",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/src-common/debug_log_ex.h",
+		"/C/Dev/AL/lmes/work/segger-stuff.c",
+		"/C/Dev/AL/lmes/shm-input-module-firmware/src-common/config.c",
+		"/C/Dev/AL/lmes/shm-input-module-firmware/vendor/appliedlogix/cli/cli/cli_interpreter.c",
+		"/C/Dev/AL/lmes/shm-input-module-firmware/src-application/input-module-can/canDriver.c",
+		"/C/Dev/AL/lmes/shm-input-module-firmware/vendor/appliedlogix/cli/debug_log/debug_log.c",
+		"/C/Dev/AL/lmes/shm-input-module-firmware/src-application/afe.c",
+		"/C/Dev/AL/lmes/shm-input-module-firmware/src-application/moduleId.c",
+		"/C/Dev/AL/lmes/shm-input-module-firmware/src-application/systemState.c",
+		"/C/Dev/AL/lmes/shm-input-module-firmware/src-common/log_simple.c",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/src-tftploader/canController.h",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/src-tftploader/flash_if.c",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/aggregator-f745vet/Middlewares/Third_Party/LwIP/src/netif/ppp/auth.c",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/aggregator-f745vet/STM32F745VETx_FLASH.ld",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/tftploader-f745vet/STM32F745VETx_FLASH.ld",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/cmake-build-tftploader/tftploader_elf.txt",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/cmake-build-aggregator/aggregator_elf.txt",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/src-common/common-defs.h",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/test/main.c",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/src-application/aggregator-can/canController.h",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/src-common/config-common.h",
+		"/C/Dev/AL/lmes/shm-input-module-firmware/src-application/afe.h",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/src-application/managers/adc-manager.h",
+		"/C/Dev/AL/lmes/shm-aggregator-firmware/vendor/appliedlogix/cli-library/include/serial_port.h"
+	],
+	"find":
+	{
+		"height": 22.4
+	},
+	"find_in_files":
+	{
+		"height": 117.6,
+		"where_history":
+		[
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": true,
+		"find_history":
+		[
+			"grams",
+			"  ",
+			".sublime-package",
+			"latex",
+			"Note",
+			"\\\\",
+			"tux",
+			"Tux",
+			"~~~",
+			"C:\\Users\\cepth\\AppData\\Roaming\\Sublime Text\\Packages\\SublimeBagOfTricks",
+			"number",
+			"blockquote",
+			"hljs",
+			"' +",
+			"fancyquote",
+			"blockquote",
+			"quote",
+			".md .backtick",
+			"contents",
+			"*",
+			"Indigo",
+			"black",
+			"html_background",
+			"html_md_font_face",
+			"WhiteSmoke",
+			"color",
+			"Gainsboro",
+			"green",
+			"sublime.",
+			"\\",
+			"TODO1",
+			"```",
+			"        html.append(f\"<meta charset=\\\"utf-8\\\"><style>body {{ background-color:{html_background}; font-family:{html_md_font_face}; font-size:{html_font_size}; }}</style>\")\n",
+			"local_file"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"scrollbar_highlights": true,
+		"show_context": false,
+		"use_buffer2": true,
+		"use_gitignore": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "/C/Users/cepth/OneDrive/OneDrive Documents/_notes/shop.txt",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1774,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								44,
+								44
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "notr-spec.ntr",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5849,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								112,
+								112
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Markdown/Markdown.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "stuff/orgmode/orgmode.tmLanguage",
+					"selected": true,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3140,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2555,
+								2555
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/XML/XML.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1254.4,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"stack_multiselect": false,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 22.4
+	},
+	"input":
+	{
+		"height": 36.8
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.SublimeLinter":
+	{
+		"height": 0.0
+	},
+	"output.exec":
+	{
+		"height": 179.0
+	},
+	"output.find_results":
+	{
+		"height": 102.0
+	},
+	"output.unsaved_changes":
+	{
+		"height": 96.0
+	},
+	"pinned_build_system": "Packages/User/shm.sublime-build",
+	"project": "notr.sublime-project",
+	"replace":
+	{
+		"height": 41.6
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"",
+				"C:\\Dev\\AL\\lmes\\shm-input-module-firmware\\inmod.sublime-project"
+			]
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
+		"height": 288.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 592.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 239.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
