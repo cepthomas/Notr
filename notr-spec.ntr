@@ -1,18 +1,31 @@
 
-# Heading 1
-## Heading 2
-### Heading 3
+# Heading 1 (ORG uses \*)
+
+ORG:
+- All elements before the first heading in a document lie in a special section called the zeroth section. 
+
+https://github.com/danielmagnussons/orgmode
+
+https://github.com/ihdavids/orgextended
+
+
+
+
 
 Tool:
-- move section/heading
+- cut/copy/paste/move section/heading
+- folding
 
-Text:
+## Text (Heading 2)
+
 ORG:
 *Bold*, /italic/ and _underline_ are fairly intuitive, and the ability to use +strikethrough+ is a plus.
 
 MD: _Italic_ **Bold** ~~strickenthru~~
 
-`A one liner static`
+`A one chunk static`
+
+? ligatures <- <-- <--- <---- <-< <--< <---< <----<  https://www.sublimetext.com/docs/ligatures.html
 
 ```
 A block of static
@@ -24,8 +37,8 @@ A block of static
 > This line is part of the same quote.
 
 
+## Links
 
-Links ?:
 MD:
 [Main Documentation](DocFiles/NProcessing.md)
 [Charlotte Schmidt](http://pattedemouche.free.fr/)
@@ -39,10 +52,12 @@ ORG:
 
 Tool:
 - insert link: from section
+- phantoms?
 - paste file/url from clip
 - heading in other document
 
-Lists:
+## Lists
+
 Some of these:
 1. A
 1. Numbered
@@ -60,7 +75,7 @@ Some of these:
   a. list numbered
   a. list numbered
 
-Add:
+New:
 X means done 
 ? means maybe
 L low priority
@@ -72,7 +87,9 @@ Tool:
 - change state
 
 
-Table:
+## Table
+
+MD:
 
 | Maine | Iowa | Colorado |
 |-------|------|----------|
@@ -80,8 +97,18 @@ Table:
 |  ME   |  IA  |   CO     |
 | Blue  | Red  | Brown    |
 
+
+ORG:
+
+| Tool         | Literate programming? | Reproducible Research? | Languages |
+|--------------+-----------------------+------------------------+-----------|
+| Javadoc      | partial               | no                     | Java      |
+| noweb        | yes                   | no                     | any       |
+| Sweave       | partial               | yes                    | R         |
+
+
 Tool:
-? Add manipulations similar to csvplugin.py. Autofit.
+- Add manipulations similar to csvplugin.py. Autofit.
 
 
 # Maybes from MD
@@ -146,7 +173,8 @@ return cssRatios
 
 
 # Unicode???
-UTF-8 encoding.
+- UTF-8 encoding.
+
 
 ??? unicode menu/picker to insert, show at caret, ... probably a new module. see unicode.py.
 
