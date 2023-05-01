@@ -13,24 +13,87 @@ file_extensions:
 
 
 variables:
-    
-    atx_heading: (?:[ ]{,3}[#]{1,6}(?:[ \t]|$))  # between 0 and 3 spaces, followed 1 to 6 hashes, followed by at least one space or tab or by end of the line
-    atx_heading_space: (?:(?=[ \t]+#+[ \t]*$)|[ \t]+|$) # consume spaces only if heading is not empty to ensure `atx_heading_end` can fully match closing hashes
-    atx_heading_end: (?:[ \t]+(#+))?[ \t]*($\n?) # \n is optional so ## is matched as end punctuation in new document (at eof)
+  atx_heading: (?:[ ]{,3}[#]{1,6}(?:[ \t]|$))  # between 0 and 3 spaces, followed 1 to 6 hashes, followed by at least one space or tab or by end of the line
+  atx_heading_space: (?:(?=[ \t]+#+[ \t]*$)|[ \t]+|$) # consume spaces only if heading is not empty to ensure `atx_heading_end` can fully match closing hashes
+  atx_heading_end: (?:[ \t]+(#+))?[ \t]*($\n?) # \n is optional so ## is matched as end punctuation in new document (at eof)
 
-    html_entity: '&([a-zA-Z0-9]+|#\d+|#x\h+);'
-    skip_html_tags: (?:<[^>]+>)
-    escape: '\\[-`*_#+.!(){}\[\]\\>|~<]'
+  html_entity: '&([a-zA-Z0-9]+|#\d+|#x\h+);'
+  skip_html_tags: (?:<[^>]+>)
+  escape: '\\[-`*_#+.!(){}\[\]\\>|~<]'
+
+  backticks: |-
+    (?x:
+      (`{4})(?![\s`])(?:[^`]+(?=`)|(?!`{4})`+(?!`))+(`{4})(?!`)  # 4 backticks, followed by at least one non whitespace, non backtick character, followed by (less than 4 backticks, or at least one non backtick character) at least once, followed by exactly 4 backticks
+    | (`{3})(?![\s`])(?:[^`]+(?=`)|(?!`{3})`+(?!`))+(`{3})(?!`)  # 3 backticks, followed by at least one non whitespace, non backtick character, followed by (less than 3 backticks, or at least one non backtick character) at least once, followed by exactly 3 backticks
+    | (`{2})(?![\s`])(?:[^`]+(?=`)|(?!`{2})`+(?!`))+(`{2})(?!`)  # 2 backticks, followed by at least one non whitespace, non backtick character, followed by (less than 2 backticks, or at least one non backtick character) at least once, followed by exactly 2 backticks
+    | (`{1})(?![\s`])(?:[^`]+(?=`)|(?!`{1})`+(?!`))+(`{1})(?!`)  # 1 backtick,  followed by at least one non whitespace, non backtick character, followed by (                          at least one non backtick character) at least once, followed by exactly 1 backtick
+    )
+
+  block_quote: (?:[ ]{,3}(>)[ ]?)                     # between 0 and 3 spaces, followed by a greater than sign, (followed by any character or the end of the line = "only care about optional space!")
+
+  first_list_item: (?:[ ]{,3}(?:1[.)]|[*+-])\s)       # between 0 and 3 spaces, followed by either: at least one integer and a full stop or a parenthesis, or (a star, plus or dash), followed by whitespace
+  list_item: (?:[ ]{,3}(?:\d{1,9}[.)]|[*+-])\s)       # between 0 and 3 spaces, followed by either: at least one integer and a full stop or a parenthesis, or (a star, plus or dash), followed by whitespace
+
+
+  table_cell: |-
+    (?x:
+      # Pipes inside other inline spans (such as emphasis, code, etc.) will not break a cell,
+      # emphasis in table cells can't span multiple lines
+      (?:
+        {{balance_square_brackets_pipes_and_emphasis}}
+      | {{balanced_emphasis}}
+      )+  # at least one character
+    )
+
+  table_first_row: |-
+    (?x:
+      # at least 2 non-escaped pipe chars on the line
+      (?:{{table_cell}}?\|){2}
+
+      # something other than whitespace followed by a pipe char or hyphen,
+      # followed by something other than whitespace and the end of the line
+    | (?! \s*\-\s+ | \s+\|){{table_cell}}\|(?!\s+$)
+    )
+
+  # https://spec.commonmark.org/0.30/#left-flanking-delimiter-run
+  bold_italic_asterisk_begin: |-
+    (?x:
+         (\*\*)(\*) {{no_space_nor_punct}}
+    | \B (\*\*)(\*) {{no_space_but_punct}}
+    )
+
+  bold_asterisk_begin: |-
+    (?x:
+         \*{2} {{no_space_nor_punct}}
+    | \B \*{2} {{no_space_but_punct}}
+    )
+
+  italic_asterisk_begin: |-
+    (?x:
+         \* {{no_space_nor_punct}}
+    | \B \* {{no_space_but_punct}}
+    )
+
 
 contexts:
   main:
-    - include: atx-heading
-    - include: autolink-inet
-    - include: apache-conf-stuff
+    - include: frontmatter
+    - match: ''
+      set: markdown
 
     # - match: \b-\b
     #   scope: keyword.xyz.ntr
       # set: notr
+
+  markdown:
+    - include: block-quotes
+    - include: list-blocks
+    - include: tables
+    # - include: reference-definitions
+    - include: atx-headings
+
+
+
 
 
 
