@@ -1,3 +1,66 @@
 # Notr
 Pure text mode for ST.
 
+
+# My Scopes
+
+``` json
+// From MINIMAL SCOPE COVERAGE
+{ "scope": "comment", "foreground": "green"},//, "font_style": "italic" },
+{ "scope": "comment.block", "foreground": "green"},//, "font_style": "italic" },
+{ "scope": "comment.block.documentation", "foreground": "green"},//, "font_style": "italic" },
+{ "scope": "constant", "foreground": "purple", "font_style": "bold" },
+// { "scope": "constant.character.escape", "foreground": "red" },
+// { "scope": "constant.language", "foreground": "red" },
+// { "scope": "constant.numeric", "foreground": "red" },
+{ "scope": "entity", "foreground": "mediumorchid", "font_style": "bold" },
+// { "scope": "entity.name", "foreground": "red" },
+{ "scope": "entity.name.section", "foreground": "red" },
+// { "scope": "entity.name.tag", "foreground": "red" },
+// { "scope": "entity.other", "foreground": "red" },
+// { "scope": "entity.other.attribute-name", "foreground": "red" },
+// { "scope": "entity.other.inherited-class", "foreground": "red" },
+{ "scope": "invalid", "background": "pink" },
+// { "scope": "invalid.deprecated", "foreground": "red" },
+// { "scope": "invalid.illegal", "foreground": "red" },
+{ "scope": "keyword", "foreground": "blue", "font_style": "bold" },
+//{ "scope": "keyword.control", "foreground": "red" },
+{ "scope": "keyword.declaration", "foreground": "red" },
+{ "scope": "keyword.operator", "foreground": "black", "font_style": "" },
+// { "scope": "markup", "foreground": "red" },
+{ "scope": "punctuation", "foreground": "black" },
+{ "scope": "source", "foreground": "black" },
+// { "scope": "source", "foreground": "black", "font_style": "bold" },
+{ "scope": "storage", "foreground": "firebrick" },
+// { "scope": "storage.modifier", "foreground": "red" },
+// { "scope": "storage.type", "foreground": "red" },
+{ "scope": "string", "foreground": "crimson" },
+{ "scope": "support", "foreground": "black" },
+{ "scope": "text", "foreground": "black" },
+{ "scope": "text.documentation", "font_style": "italic" },
+{ "scope": "variable", "foreground": "blue" },
+{ "scope": "variable.function", "foreground": "black" },
+// { "scope": "variable.language", "foreground": "black" },
+// { "scope": "variable.parameter", "foreground": "black" }
+{ "scope": "markup.inserted.diff, meta.diff.header.to-file", "background": "color(palegreen alpha(0.5))" },
+{ "scope": "markup.deleted.diff, meta.diff.header.from-file", "background": "pink" },
+{ "scope": "meta.link.reference", "background": "lightgreen" },
+{ "scope": "meta.link.inline", "background": "lightblue" },
+{ "scope": "markup.underline.link", "background": "yellow" },
+{ "scope": "markup.italic", "font_style": "italic" },
+{ "scope": "punctuation.definition.heading.begin.markdown", "foreground": "red", "font_style": "bold" },
+// Others from Visual Studio scheme.
+{ "scope": "meta.xml-processing, declaration.xml-processing", "name": "Markup XML declaration", "foreground": "#68685b" },
+{ "scope": "meta.doctype, declaration.doctype", "name": "Markup DOCTYPE", "foreground": "#a31515" },
+{ "scope": "meta.doctype.DTD, declaration.doctype.DTD", "name": "Markup DTD" },
+{ "scope": "meta.tag, declaration.tag", "name": "Markup tag", "foreground": "#0000ff" },
+{ "scope": "entity.name.tag", "name": "Markup name of tag", "foreground": "#a31515" },
+{ "scope": "entity.other.attribute-name", "name": "Markup tag attribute", "foreground": "#ff0000" },
+{ "scope": "string.quoted.double.xml, string.quoted.double.html", "name": "Markup: Attribute Value", "foreground": "#0000ff" },
+{ "scope": "markup.heading", "name": "Markup: Heading", "foreground": "red", "font_style": "bold" },
+{ "scope": "markup.quote", "name": "Markup: Quote", "foreground": "black" },
+{ "scope": "markup.list", "name": "Markup: List", "foreground": "seagreen" },
+{ "scope": "markup.bold", "font_style": "bold" },
+// Additional
+{ "scope": "meta.table", "background": "lightblue" },
+```

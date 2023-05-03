@@ -10,6 +10,23 @@ import sublime_plugin
 
 NOTR_SETTINGS_FILE = "Notr.sublime-settings"
 
+''' Tool:
+- cut/copy/paste/move section/heading
+- folding by section
+- heading nav pane
+
+- insert link to a heading 9n this or other doc
+- phun with phantoms?
+- paste file/url from clipboard
+
+- change list item state
+
+- table manipulations similar to csvplugin. Autofit.
+
+
+
+
+'''
 
 #-----------------------------------------------------------------------------------
 class NotrToHtmlCommand(sublime_plugin.TextCommand):

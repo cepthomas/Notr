@@ -1,0 +1,36 @@
+// SYNTAX TEST "Packages/Notr/Notr.sublime-syntax"
+
+
+// Once the above conditions are met, running the build command with a syntax test or syntax definition file selected will run all the Syntax Tests, and show the results in an output panel. Next Result (F4) can be used to navigate to the first failing test.
+// Each test in the syntax test file must first start the comment token (established on the first line, it doesn’t actually have to be a comment according to the syntax), and then either a ^ or <- token.
+// The two types of tests are:
+// Caret: ^ this will test the following selector against the scope on the most recent non-test line. It will test it at the same column the ^ is in. Consecutive ^s will test each column against the selector.
+// Arrow: <- this will test the following selector against the scope on the most recent non-test line. It will test it at the same column as the comment character is in.
+
+
+#pragma once
+// <- source.c meta.preprocessor.c++
+// <- keyword.control.import
+
+// foo
+// ^ source.c comment.line
+// <- punctuation.definition.comment
+
+/* foo */
+// ^ source.c comment.block
+// <- punctuation.definition.comment.begin
+//     ^ punctuation.definition.comment.end
+
+int square(int x)
+// <- storage.type
+//  ^ meta.function entity.name.function
+//         ^ storage.type
+{
+    return x * x;
+//  ^^^^^^ keyword.control
+}
+
+"Hello, World! // not a comment";
+// ^ string.quoted.double
+//                  ^ string.quoted.double - comment
+

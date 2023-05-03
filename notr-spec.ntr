@@ -1,43 +1,39 @@
 
-# Heading 1 (ORG uses \*)
+ZZZZ - just a test
+
+ST uses Oniguruma Regular Expressions Version 6.8.0    2018/07/26
+syntax: ONIG_SYNTAX_ONIGURUMA (default)
+
 
 ORG:
-- All elements before the first heading in a document lie in a special section called the zeroth section. 
+? All elements before the first heading in a document lie in a special section called the zeroth section. 
 
-https://github.com/danielmagnussons/orgmode
+# Headings X
 
-https://github.com/ihdavids/orgextended
+TODO need a tag for xref. Maybe numbered too.
 
+## Text !
 
+Text mods: *Bold* , /italic/ , /italic/ , and _underline_ are fairly intuitive, and the ability to use ~strikethrough~ is a plus. TODO trailing comma etc.
 
+font_style: Zero or more of the following, separated by spaces: bold italic glow underline stippled_underline squiggly_underline
 
-
-Tool:
-- cut/copy/paste/move section/heading
-- folding
-
-## Text (Heading 2)
-
-ORG:
-*Bold*, /italic/ and _underline_ are fairly intuitive, and the ability to use +strikethrough+ is a plus.
-
-MD: _Italic_ **Bold** ~~strickenthru~~
+MD uses _Italic_ **Bold** ~~strickenthru~~
 
 `A one chunk static`
 
-? ligatures <- <-- <--- <---- <-< <--< <---< <----<  https://www.sublimetext.com/docs/ligatures.html
 
-```
+``` type/tag?
 A block of static
   ServerName www.example.com
-  DocumentRoot "/www/example1"
+  DocumentRoot "http://www/example1"
 ```
 
 > Blockquotes are very handy in email to emulate reply text.
 > This line is part of the same quote.
 
 
-## Links
+## Links !
 
 MD:
 [Main Documentation](DocFiles/NProcessing.md)
@@ -50,89 +46,21 @@ ORG:
 [[file:style.scss][stylesheet]]
 [[earlier heading][an earlier heading in the document]]
 
-Tool:
-- insert link: from section
-- phantoms?
-- paste file/url from clip
-- heading in other document
+YAML also has a handy feature called 'anchors', which let you easily duplicate
+content across your document.
+Anchors identified by & character which define the value.
+Aliases identified by * character which acts as "see above" command.
+Both of these keys will have the same value:
+anchored_content: &anchor_name This string will appear as the value of two keys.
+other_anchor: *anchor_name
 
-## Lists
+## Refs !
 
-Some of these:
-1. A
-1. Numbered
-  - list
-  - list
-1. List!
-    1. list numbered
-    1. To put other Markdown blocks in a list; just indent four spaces for each nesting level
+https://regexr.com/
 
-- list no category
-  - list
-  - list
+https://www.sublimetext.com/docs/syntax.html
 
-1. list numbered
-  a. list numbered
-  a. list numbered
-
-New:
-X means done 
-? means maybe
-L low priority
-  M med priority
-  H high priority
-
-Tool:
-- renumber
-- change state
-
-
-## Table
-
-MD:
-
-| Maine | Iowa | Colorado |
-|-------|------|----------|
-|   1   |  4   |   10     |
-|  ME   |  IA  |   CO     |
-| Blue  | Red  | Brown    |
-
-
-ORG:
-
-| Tool         | Literate programming? | Reproducible Research? | Languages |
-|--------------+-----------------------+------------------------+-----------|
-| Javadoc      | partial               | no                     | Java      |
-| noweb        | yes                   | no                     | any       |
-| Sweave       | partial               | yes                    | R         |
-
-
-Tool:
-- Add manipulations similar to csvplugin.py. Autofit.
-
-
-# Maybes from MD
-Table alignment
-
-A code listing:
-``` C
-/** @brief Initialize the application */
-int aggregator_init(aggregatorStruct* pAggregator)
-{
-    // Initialize state
-    s_systemTimeMicroseconds = 0;
-    s_systickFired = false;
-    debugLog(DBG_LOG_ERR, "Error initializing the GPIO manager module");
-}
-```
-
-Is this a definition list?
-:   Looks like one to me
-Is that right?
-:   Possibly!
-
-!!! Note
-    Hey I'm a note. Don't mind me, I'm just sitting here.
+heading w/opt file
 
 - Any section header name followed by "section", "subsection", or "sec." will automatically be linked to that section.
 - To link by number, use one of those key words followed by the section name (without the word section) in brackets.
@@ -150,7 +78,72 @@ right-click (or ctrl-click) on that section header in the
 browser. This will bring up a context menu that allows you to copy
 either the internal Markdeep text of the link or the external HTML code link.*
 
-# Maybes from ORG
+## Lists !
+
+- list no category
+  - list
+  - list
+
+New states for items:
+X means done 
+? means maybe
+L low priority
+  M med priority
+  H high priority
+
+
+
+## Table !
+
+MD:
+
+| Maine | Iowa | Colorado |
+|-------|------|----------|
+|   1   |  4   |   10     |
+|  ME   |  IA  |   CO     |
+| Blue  | Red  | Brown    |
+
+
+ORG:
+
+| App          | Literate programming? | Reproducible Research? | Languages |
+|--------------+-----------------------+------------------------+-----------|
+| Javadoc      | partial               | no                     | Java      |
+| noweb        | yes                   | no                     | any       |
+| Sweave       | partial               | yes                    | R         |
+
+
+
+
+# Maybes
+
+## From MD
+Table alignment
+
+A code listing:
+``` C
+/** @brief Initialize the application */
+int aggregator_init(aggregatorStruct* pAggregator)
+{
+    // Initialize state
+    s_systemTimeMicroseconds = 0;
+    s_systickFired = false;
+    debugLog(DBG_LOG_ERR, "Error initializing the GPIO manager module");
+}
+```
+
+Numbered list. Tool renumbers.
+
+Is this a definition list?
+:   Looks like one to me
+Is that right?
+:   Possibly!
+
+!!! Note
+    Hey I'm a note. Don't mind me, I'm just sitting here.
+
+
+## From ORG
 ** TODO Check CSS on main pages (toggle TODO from key)
 - [X] Index page
 - [ ] Quickstart
@@ -172,11 +165,11 @@ return cssRatios
 #
 
 
-# Unicode???
+## Unicode
 - UTF-8 encoding.
 
-
-??? unicode menu/picker to insert, show at caret, ... probably a new module. see unicode.py.
+Tool:
+- unicode menu/picker to insert, show at caret, ... probably a new module. see unicode.py.
 
 
 - Matching pairs «»‹›“”‘’〖〗【】「」『』〈〉《》〔〕
@@ -196,14 +189,23 @@ return cssRatios
 - Religious and cultural symbols ✝✚✡☥⎈☭☪☮☺☹☯☰☱☲☳☴☵☶☷
 - Dingbats ❦☠☢☣☤♲♳⌬♨♿ ☉☼☾☽ ♀♂ ♔♕♖ ♗♘♙ ♚♛ ♜♝♞♟
 
-## More
 http://xahlee.info/comp/unicode_computing_symbols.html
 ⌘ ✲ ⎈ ^ ⌃ ❖ ⎇ ⌥ ⇮ ◆ ◇ ✦ ✧ ⇧ ⇪ 🄰 🅰 ⇪ ⇬ 🔠 🔡 ⇭ 🔢 🔤 ↩ ↵ ⏎ ⌤ ⎆ ▤ ☰ 𝌆 ⎄ ⭾ ↹ ⇄ ⇤ ⇥ ↤ ↦ ⎋ ⌫ ⟵ ⌦ ⎀ ⎚ ⌧ ↖ ↘ ⇤ ⇥ ⤒ ⤓ ⇞ ⇟ △ ▽ ▲ ▼ ⎗ ⎘ ↑ ↓ ← → ◀ ▶ ▲ ▼ ◁ ▷ △ ▽ ⇦ ⇨ ⇧ ⇩ ⬅ ➡ ⮕ ⬆ ⬇ ⎉ ⎊ ⎙ ⍰ ❓ ❔ ℹ 🛈 ☾ ⏏ ✉ 🏠 🏡 ⌂ ✂ ✄ ⎌ ↶ ↷ ⟲ ⟳ ↺ ↻ 🔍 🔎 🔅 🔆 🔇 🔈 🔉 🔊 🕨 🕩 🕪 ◼ ⏯ ⏮ ⏭ ⏪ ⏩ ⏫ ⏬ 🌐
 
 
-## Github unicode
+Github unicode:
 You can use either decimal or hex code point or HTML entity name (if exists) of a unicode character:
 &#8364; &#x20AC; &euro;
 displays as
 â‚¬ â‚¬ â‚¬
 
+## Ligatures
+<- <-- <--- <---- <-< <--< <---< <----<  https://www.sublimetext.com/docs/ligatures.html
+// Cascadia Code, Cascadia Code SemiBold, Consolas, Courier New, 
+// Lucida Console, DejaVu Sans Mono, Source Code Pro Medium, Source Code Pro Semibold, Noto Mono
+/ VS uses Consolas
+"font_face": "Consolas",
+
+## Other
+
+frontmatter: https://daily-dev-tips.com/posts/what-exactly-is-frontmatter/#what-is-frontmatter
