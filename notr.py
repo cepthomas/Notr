@@ -13,17 +13,20 @@ NOTR_SETTINGS_FILE = "Notr.sublime-settings"
 ''' Tool:
 - cut/copy/paste/move section/heading
 - folding by section
-- heading nav pane
+- heading nav pane goto anything?
+- search by heading tags
 
-- insert link to a heading 9n this or other doc
+
+- insert link to a heading in this or other doc
 - phun with phantoms?
 - paste file/url from clipboard
 
 - change list item state
+- auto-indent on return
 
 - table manipulations similar to csvplugin. Autofit.
 
-
+- insert line (type) [setting for length?]
 
 
 '''

@@ -1,24 +1,18 @@
 
-ZZZZ - just a test
 
-ST uses Oniguruma Regular Expressions Version 6.8.0    2018/07/26
-syntax: ONIG_SYNTAX_ONIGURUMA (default)
+ORG All elements before the first section in a document lie in a special section called the zeroth section. 
 
+# section-name tag1 tag2
 
-ORG:
-? All elements before the first heading in a document lie in a special section called the zeroth section. 
+section-name for xref. tag(s) for searching.
 
-# Headings X
+# Text  tag2 tag3
 
-TODO need a tag for xref. Maybe numbered too.
+Text mods: *Bo ld* , /italic/ , /i talic/ , and _under line_ are fairly intuitive, and the ability to use ~strike through~ is a plus.
+TODO trailing/leading comma, period etc.
 
-## Text !
+TODO auto-highlight things like TODO - from user list.
 
-Text mods: *Bold* , /italic/ , /italic/ , and _underline_ are fairly intuitive, and the ability to use ~strikethrough~ is a plus. TODO trailing comma etc.
-
-font_style: Zero or more of the following, separated by spaces: bold italic glow underline stippled_underline squiggly_underline
-
-MD uses _Italic_ **Bold** ~~strickenthru~~
 
 `A one chunk static`
 
@@ -32,70 +26,60 @@ A block of static
 > Blockquotes are very handy in email to emulate reply text.
 > This line is part of the same quote.
 
+lines:
+-----------------------------------------------------------------------------
+=============================================================================
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-## Links !
 
-MD:
-[Main Documentation](DocFiles/NProcessing.md)
+## Links-and-refs tag3 tag4 tag9
+
 [Charlotte Schmidt](http://pattedemouche.free.fr/)
-![image](felix.jpg)
+[A nice cat](file://C:\Dev\repos\Notr\stuff\felix.jpg)
+TODO relative paths?
 
-ORG:
-[[https://orgmode.org][a nice website]]
-[[file:~/Pictures/dank-meme.png]]
-[[file:style.scss][stylesheet]]
-[[earlier heading][an earlier heading in the document]]
+Reference other sections:
+See my (earlier-section-name) page.
+Or (another-file-.section-name) this.
 
-YAML also has a handy feature called 'anchors', which let you easily duplicate
-content across your document.
-Anchors identified by & character which define the value.
-Aliases identified by * character which acts as "see above" command.
-Both of these keys will have the same value:
-anchored_content: &anchor_name This string will appear as the value of two keys.
-other_anchor: *anchor_name
+Example using a symbolic name: [New York Times][nyt]
+Example using the text as its own symbol: [Google][]
+Put the definitions at a convenient location elsewhere in the document (or included doc?):
+- [nyt]: http://nytimes.com
+- [google]: http://google.com
 
-## Refs !
 
-https://regexr.com/
-
-https://www.sublimetext.com/docs/syntax.html
-
-heading w/opt file
-
-- Any section header name followed by "section", "subsection", or "sec." will automatically be linked to that section.
-- To link by number, use one of those key words followed by the section name (without the word section) in brackets.
-- Reference-style links include arbitrary formatted text in brackets followed by a case-insensitive symbolic name that must be defined
-elsewhere in the document:
-  - Example using a symbolic name: [New York Times][nyt]
-  - Example using the text as its own symbol: [Google][]
-- Put the definitions at a convenient location elsewhere in the document:
-  - [nyt]: http://nytimes.com
-  - [google]: http://google.com
-The mangling is URI encoding of the section name with spaces removed, in all lowercase.
-For example, this section can be linked to as `features.md.html#links` or `features.md.html#basicformatting/links`.
-*The easiest way to generate a link to a section is to simply
-right-click (or ctrl-click) on that section header in the
-browser. This will bring up a context menu that allows you to copy
-either the internal Markdeep text of the link or the external HTML code link.*
-
-## Lists !
-
-- list no category
-  - list
-  - list
-
-New states for items:
-X means done 
-? means maybe
-L low priority
-  M med priority
-  H high priority
+TODO or like: YAML anchors:
+  anchored_content: &anchor_name This string will appear as the value of two keys.
+  other_anchor: *anchor_name
+- or like md:
 
 
 
-## Table !
+## Lists tag9 tagZZZ
 
-MD:
+- list category
+  - list item
+  - list item
+    - list item
+  - list item
+    - list item
+- list category
+  - list item
+
+item states (defaults, user overrides)
+- = neutral
+X = done 
+? = maybe
+L = low priority
+M = med priority
+H = high priority
+
+
+
+## Table tag2
+
+Very dumb table. Good enough for me.
 
 | Maine | Iowa | Colorado |
 |-------|------|----------|
@@ -104,18 +88,9 @@ MD:
 | Blue  | Red  | Brown    |
 
 
-ORG:
-
-| App          | Literate programming? | Reproducible Research? | Languages |
-|--------------+-----------------------+------------------------+-----------|
-| Javadoc      | partial               | no                     | Java      |
-| noweb        | yes                   | no                     | any       |
-| Sweave       | partial               | yes                    | R         |
-
-
-
 
 # Maybes
+
 
 ## From MD
 Table alignment
@@ -144,7 +119,7 @@ Is that right?
 
 
 ## From ORG
-** TODO Check CSS on main pages (toggle TODO from key)
+** TO-DO Check CSS on main pages (toggle TO-DO from key)
 - [X] Index page
 - [ ] Quickstart
 - [X] Features

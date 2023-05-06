@@ -1,4 +1,9 @@
 {
+
+
+
+
+    /////////////////// Rendering stuff /////////////////
     // Html cosmetics.
     "html_font_face": "Consolas",
     "html_md_font_face": "Tahoma",
@@ -14,5 +19,5 @@
     "sel_all": true,
 
     // Scopes for rendering text with highlights. These generally should match SbotHighlight.
-    "scopes": [ "string", "constant.language", "comment", "markup.list", "variable", "invalid" ],
+    "highlight_scopes": [ "string", "constant.language", "comment", "markup.list", "variable", "invalid" ],
 }
