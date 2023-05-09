@@ -2,15 +2,12 @@
 Pure text mode for ST.
 
 
-With an HTML file open, use Preferences > Settings - Syntax Specific to open the settings for HTML files. The window will look like regular preferences do, except that the settings that you add on the right hand side will be applied only to HTML files, and the settings there override the defaults. In those settings you can use the color_scheme setting to apply a different color scheme for HTML files.
 
-[Charlotte Schmidt](http://pattedemouche.free.fr/)
+# Scopes
 
-https://www.sublimetext.com/docs/syntax.html
+From MINIMAL SCOPE COVERAGE  https://www.sublimetext.com/docs/scope_naming.html.
 
-https://daringfireball.net/projects/markdown/syntax
-
-# My Scopes
+TODO list required/option/new ones.
 
 ST: Markup scopes are used for content, as opposed to code. This includes syntaxes such as Markdown and Textile.
 Section headings should use:
@@ -35,6 +32,14 @@ Inline and block literal quoting, often used for code, should use:
 Other markup, including constructs such as footnotes and tables, should use:
     markup.other
 
+# TODO temp stuff to remove
+
+[Charlotte Schmidt](http://pattedemouche.free.fr/)
+
+https://www.sublimetext.com/docs/syntax.html
+
+https://daringfireball.net/projects/markdown/syntax
+
 | Maine | Iowa | Colorado |
 |-------|------|----------|
 |   1   |  4   |   10     |
@@ -43,5 +48,12 @@ Other markup, including constructs such as footnotes and tables, should use:
 
 C:\Users\cepth\AppData\Roaming\Sublime Text\Packages\User\CT.sublime-color-scheme
 
-From MINIMAL SCOPE COVERAGE  https://www.sublimetext.com/docs/scope_naming.html.
+- list category
+  - list item
+  - list item Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+    - list item
+  - list item
+    - list item
+- list category
+  - list item
 

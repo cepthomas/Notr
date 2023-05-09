@@ -1,40 +1,36 @@
 
-
-ORG: All elements before the first section in a document lie in a special section called the zeroth section. 
-
 # section-name tag1 tag2
+A section of content. <section-name> can be referenced later as a link.
+Tag(s) are used for searching.
 
+## section-no-tags
+Another section but without tags.
 
-# section-no-tags
+### text-attributes tag2 tag3
+Text: *Bold* , /italic/ , and _under line_ are fairly intuitive, and the ability to use ~strike through~ is a plus.
 
-section-name for xref. tag(s) for searching.
-
-# Text  tag2 tag3
-
-Text mods: *Bold* , /italic/ , /i talic/ , and _under line_ are fairly intuitive, and the ability to use ~strike through~ is a plus.
 TODO handle trailing/leading comma, period etc.
-
+TODO Support attributes in blocks, tables, lists, etc?
 TODO auto-highlight things like TODO - from user list. dynamic/runtime add scopes?
 
+`An inline chunk of raw text` and `another one`.
 
-`A one chunk static` and `another one` and `linebreaking one TODO ST doesn't support`.
-
-
-```A block of static
-  ServerName www.example.com
-  DocumentRoot http://www/example1 TODO support links?
+```A block of raw text
+  - ServerName www.example.com
+  - DocumentRoot http://www/example1
 ```
 and
 ```
-another block
+Here is another block. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
 ```
 
-
-> Blockquotes are very handy in email to emulate reply text.
+> Blockquotes are very handy.
 > This line is part of the same quote.
 
 
-lines:
+## visual-lines tag4 tag5
+Visual delimiters that don't do anything else. Four flavors.
+
 -----------------------------------------------------------------------------
 hello
 =============================================================================
@@ -44,60 +40,47 @@ hello
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 hello
 
+## lists tag9 tagZZZ TODO
 
-## Links-and-refs tag3 tag4 tag9
+TODO indents, folding? https://forum.sublimetext.com/t/markdown-syntax-highlighting-indentation/47470/7
+
+- list category
+  - list item
+  - list item Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+    - list item
+  - list item
+    - list item
+- list category
+  - list item
+  - list item
+    - list item
+
+item states (in settings)
+  - = neutral
+  x = done 
+  ? = maybe
+  ! = priority
+
+## links-and-refs tag3 tag4 tag9 TODO
+
+definitions in file and/or included file?:
+- [nyt]: http://nytimes.com
+- [another-page]: file://C:\Dev\repos\Notr\pag2.ntr TODO relative paths?
 
 [Charlotte Schmidt](http://pattedemouche.free.fr/)
 [A nice cat](file://C:\Dev\repos\Notr\stuff\felix.jpg)
-TODO relative paths?
 
-Reference other sections:
-See my (earlier-section-name) page.
-Or (another-file-.section-name) this.
+[Good section in this file](text-attributes)
+[Good section in another file](another-page.other-section)
 
-From:  C:\Dev\Notr\stuff\ST\MarkdownEditing-master\README.md
-Example using a symbolic name: [New York Times][nyt]
-  text.html.markdown
-  meta.paragraph.markdown
-  meta.link.reference.metadata.markdown
-  markup.underline.link.markdown
-Example using the text as its own symbol: [Google][]
-Put the definitions at a convenient location elsewhere in the document (or included doc?):
-- [nyt]: http://nytimes.com
-- [google]: http://google.com
-
-
-TODO or like: YAML anchors:
+? or like YAML anchors:
   anchored_content: &anchor_name This string will appear as the value of two keys.
   other_anchor: *anchor_name
-- or like md:
 
+## tables tag2
 
-
-## Lists tag9 tagZZZ
-
-- list category
-  - list item
-  - list item
-    - list item
-  - list item
-    - list item
-- list category
-  - list item
-
-item states (defaults, user overrides)
-- = neutral
-X = done 
-? = maybe
-L = low priority
-M = med priority
-H = high priority
-
-
-
-## Table tag2
-
-Very dumb table. Good enough for me. TODO coloring goes to edge but so does ST tables...
+Very dumb table. Good enough for me. 
+Note that coloring *should* stop at the right edge of the table. This is also how ST renders MD tables...
 
 | Maine | Iowa | Colorado |
 |-------|------|----------|
@@ -106,100 +89,30 @@ Very dumb table. Good enough for me. TODO coloring goes to edge but so does ST t
 | Blue  | Red  | Brown    |
 
 
+# Unicode tagTODO
+UTF-8 encoding.
+UI support...
 
-
-# Maybes
-
-
-## From MD
-Table alignment
-
-A code listing:
-``` C
-/** @brief Initialize the application */
-int aggregator_init(aggregatorStruct* pAggregator)
-{
-    // Initialize state
-    s_systemTimeMicroseconds = 0;
-    s_systickFired = false;
-    debugLog(DBG_LOG_ERR, "Error initializing the GPIO manager module");
-}
-```
-
-Numbered list. Tool renumbers.
-
-Is this a definition list?
-:   Looks like one to me
-Is that right?
-:   Possibly!
-
-!!! Note
-    Hey I'm a note. Don't mind me, I'm just sitting here.
-
-
-## From ORG
-** TO-DO Check CSS on main pages (toggle TO-DO from key)
-- [X] Index page
-- [ ] Quickstart
-- [X] Features
-
-#+include: "other/feedback.org*manual" :only-contents t
-#
-#+begin_src python
-from pathlib import Path
-cssRatios = []
-for css_min in Path("resources/style").glob("*.min.css"):
-    css = css_min.with_suffix('').with_suffix('.css')
-    cssRatios.append([css.name,
-    "{:.0f}% minified ({:4.1f} KiB)".format( 100 *
-                      css_min.stat().st_size / css.stat().st_size,
-                      css_min.stat().st_size / 1000)])
-return cssRatios
-#+end_src
-#
-
-
-## Unicode
-- UTF-8 encoding.
-
-Tool:
-- unicode menu/picker to insert, show at caret, ... probably a new module. see unicode.py.
-
-
-- Matching pairs «»‹›“”‘’〖〗【】「」『』〈〉《》〔〕
-- Currency  ¤ $ ¢ € ₠ £ ¥
-- Common symbols © ® ™ ² ³ § ¶ † ‡ ※
 - Bullets •◦ ‣ ✓ ●■◆ ○□◇ ★☆ ♠♣♥♦ ♤♧♡♢
-- Music ♩♪♫♬♭♮♯
-- Punctuation “” ‘’ ¿¡ ¶§ª - ‐ ‑ ‒ – — ― …
-- Accents àáâãäåæç èéêë ìíîï ðñòóôõö øùúûüýþÿ ÀÁÂÃÄÅ Ç ÈÉÊË ÌÍÎÏ ÐÑ ÒÓÔÕÖ ØÙÚÛÜÝÞß 
 - Math ° ⌈⌉ ⌊⌋ ∏ ∑ ∫ ×÷ ⊕ ⊖ ⊗ ⊘ ⊙ ⊚ ⊛ ∙ ∘ ′ ″ ‴ ∼ ∂ √ ≔ × ⁱ ⁰ ¹ ² ³ ₀ ₁ ₂ π ∞ ± ∎
 - Logic & Set Theory ∀¬∧∨∃⊦∵∴∅∈∉⊂⊃⊆⊇⊄⋂⋃
 - Relations ≠≤≥≮≯≫≪≈≡
-- Sets ℕℤℚℝℂ
 - Arrows ←→↑↓ ↔ ↖↗↙↘  ⇐⇒⇑⇓ ⇔⇗  ⇦⇨⇧⇩ ↞↠↟↡ ↺↻  ☞☜☝☟
 - Computing ⌘ ⌥ ‸ ⇧ ⌤ ↑ ↓ → ← ⇞ ⇟ ↖ ↘ ⌫ ⌦ ⎋⏏ ↶↷ ◀▶▲▼ ◁▷△▽ ⇄ ⇤⇥ ↹ ↵↩⏎ ⌧ ⌨ ␣ ⌶ ⎗⎘⎙⎚ ⌚⌛ ✂✄ ✉✍
 - Digits ➀➁➂➃➄➅➆➇➈➉
 - Religious and cultural symbols ✝✚✡☥⎈☭☪☮☺☹☯☰☱☲☳☴☵☶☷
 - Dingbats ❦☠☢☣☤♲♳⌬♨♿ ☉☼☾☽ ♀♂ ♔♕♖ ♗♘♙ ♚♛ ♜♝♞♟
-
-http://xahlee.info/comp/unicode_computing_symbols.html
-⌘ ✲ ⎈ ^ ⌃ ❖ ⎇ ⌥ ⇮ ◆ ◇ ✦ ✧ ⇧ ⇪ 🄰 🅰 ⇪ ⇬ 🔠 🔡 ⇭ 🔢 🔤 ↩ ↵ ⏎ ⌤ ⎆ ▤ ☰ 𝌆 ⎄ ⭾ ↹ ⇄ ⇤ ⇥ ↤ ↦ ⎋ ⌫ ⟵ ⌦ ⎀ ⎚ ⌧ ↖ ↘ ⇤ ⇥ ⤒ ⤓ ⇞ ⇟ △ ▽ ▲ ▼ ⎗ ⎘ ↑ ↓ ← → ◀ ▶ ▲ ▼ ◁ ▷ △ ▽ ⇦ ⇨ ⇧ ⇩ ⬅ ➡ ⮕ ⬆ ⬇ ⎉ ⎊ ⎙ ⍰ ❓ ❔ ℹ 🛈 ☾ ⏏ ✉ 🏠 🏡 ⌂ ✂ ✄ ⎌ ↶ ↷ ⟲ ⟳ ↺ ↻ 🔍 🔎 🔅 🔆 🔇 🔈 🔉 🔊 🕨 🕩 🕪 ◼ ⏯ ⏮ ⏭ ⏪ ⏩ ⏫ ⏬ 🌐
+- http://xahlee.info/comp/unicode_computing_symbols.html: ⌘ ✲ ⎈ ^ ⌃ ❖ ⎇ ⌥ ⇮ ◆ ◇ ✦ ✧ ⇧ ⇪ 🄰 🅰 ⇪ ⇬ 🔠 🔡 ⇭ 🔢 🔤 ↩ ↵ ⏎ ⌤ ⎆ ▤ ☰ 𝌆 ⎄ ⭾ ↹ ⇄ ⇤ ⇥ ↤ ↦ ⎋ ⌫ ⟵ ⌦ ⎀ ⎚ ⌧ ↖ ↘ ⇤ ⇥ ⤒ ⤓ ⇞ ⇟ △ ▽ ▲ ▼ ⎗ ⎘ ↑ ↓ ← → ◀ ▶ ▲ ▼ ◁ ▷ △ ▽ ⇦ ⇨ ⇧ ⇩ ⬅ ➡ ⮕ ⬆ ⬇ ⎉ ⎊ ⎙ ⍰ ❓ ❔ ℹ 🛈 ☾ ⏏ ✉ 🏠 🏡 ⌂ ✂ ✄ ⎌ ↶ ↷ ⟲ ⟳ ↺ ↻ 🔍 🔎 🔅 🔆 🔇 🔈 🔉 🔊 🕨 🕩 🕪 ◼ ⏯ ⏮ ⏭ ⏪ ⏩ ⏫ ⏬ 🌐
 
 
-Github unicode:
+- github-unicode-?
 You can use either decimal or hex code point or HTML entity name (if exists) of a unicode character:
-&#8364; &#x20AC; &euro;
-displays as
-â‚¬ â‚¬ â‚¬
+`&#8364; &#x20AC; &euro; displays as â‚¬ â‚¬ â‚¬`
 
-## Ligatures
-<- <-- <--- <---- <-< <--< <---< <----<  https://www.sublimetext.com/docs/ligatures.html
-// Cascadia Code, Cascadia Code SemiBold, Consolas, Courier New, 
-// Lucida Console, DejaVu Sans Mono, Source Code Pro Medium, Source Code Pro Semibold, Noto Mono
-/ VS uses Consolas
-"font_face": "Consolas",
-
-## Other
-
-frontmatter: https://daily-dev-tips.com/posts/what-exactly-is-frontmatter/#what-is-frontmatter
+- Ligatures-?
+I don't think ligatures are helpful but maybe some variation on them?
+https://www.sublimetext.com/docs/ligatures.html.
+Things like:
+   `<- <-- <--- <---- <-< <--< <---< <----<`
+Supported fonts: Cascadia Code, Cascadia Code SemiBold, Consolas, Courier New, 
+  Lucida Console, DejaVu Sans Mono, Source Code Pro Medium, Source Code Pro Semibold, Noto Mono

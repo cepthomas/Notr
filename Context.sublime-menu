@@ -1,5 +1,5 @@
 [
     // { "caption": "-" },
 
-    // { "caption": "Notr TODO", "command": "notr_to_html", "args" : {"line_numbers" : false} },
+    // { "caption": "Notr HTML", "command": "notr_to_html", "args" : {"line_numbers" : false} },
 ]
