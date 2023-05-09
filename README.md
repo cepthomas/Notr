@@ -12,7 +12,7 @@ https://daringfireball.net/projects/markdown/syntax
 
 # My Scopes
 
-markup. Markup scopes are used for content, as opposed to code. This includes syntaxes such as Markdown and Textile.
+ST: Markup scopes are used for content, as opposed to code. This includes syntaxes such as Markdown and Textile.
 Section headings should use:
     markup.heading
 Lists should use one of:
@@ -35,6 +35,11 @@ Inline and block literal quoting, often used for code, should use:
 Other markup, including constructs such as footnotes and tables, should use:
     markup.other
 
+| Maine | Iowa | Colorado |
+|-------|------|----------|
+|   1   |  4   |   10     |
+|  ME   |  IA  |   CO     |
+| Blue  | Red  | Brown    |
 
 C:\Users\cepth\AppData\Roaming\Sublime Text\Packages\User\CT.sublime-color-scheme
 

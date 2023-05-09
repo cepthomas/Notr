@@ -25,13 +25,13 @@ variables:
   # skip_html_tags: (?:<[^>]+>)
   # escape: '\\[-`*_#+.!(){}\[\]\\>|~<]'
 
-  backticks: |-
-    (?x:
-      (`{4})(?![\s`])(?:[^`]+(?=`)|(?!`{4})`+(?!`))+(`{4})(?!`)  # 4 backticks, followed by at least one non whitespace, non backtick character, followed by (less than 4 backticks, or at least one non backtick character) at least once, followed by exactly 4 backticks
-    | (`{3})(?![\s`])(?:[^`]+(?=`)|(?!`{3})`+(?!`))+(`{3})(?!`)  # 3 backticks, followed by at least one non whitespace, non backtick character, followed by (less than 3 backticks, or at least one non backtick character) at least once, followed by exactly 3 backticks
-    | (`{2})(?![\s`])(?:[^`]+(?=`)|(?!`{2})`+(?!`))+(`{2})(?!`)  # 2 backticks, followed by at least one non whitespace, non backtick character, followed by (less than 2 backticks, or at least one non backtick character) at least once, followed by exactly 2 backticks
-    | (`{1})(?![\s`])(?:[^`]+(?=`)|(?!`{1})`+(?!`))+(`{1})(?!`)  # 1 backtick,  followed by at least one non whitespace, non backtick character, followed by (                          at least one non backtick character) at least once, followed by exactly 1 backtick
-    )
+  # backticks: |-
+  #   (?x:
+  #     (`{4})(?![\s`])(?:[^`]+(?=`)|(?!`{4})`+(?!`))+(`{4})(?!`)  # 4 backticks, followed by at least one non whitespace, non backtick character, followed by (less than 4 backticks, or at least one non backtick character) at least once, followed by exactly 4 backticks
+  #   | (`{3})(?![\s`])(?:[^`]+(?=`)|(?!`{3})`+(?!`))+(`{3})(?!`)  # 3 backticks, followed by at least one non whitespace, non backtick character, followed by (less than 3 backticks, or at least one non backtick character) at least once, followed by exactly 3 backticks
+  #   | (`{2})(?![\s`])(?:[^`]+(?=`)|(?!`{2})`+(?!`))+(`{2})(?!`)  # 2 backticks, followed by at least one non whitespace, non backtick character, followed by (less than 2 backticks, or at least one non backtick character) at least once, followed by exactly 2 backticks
+  #   | (`{1})(?![\s`])(?:[^`]+(?=`)|(?!`{1})`+(?!`))+(`{1})(?!`)  # 1 backtick,  followed by at least one non whitespace, non backtick character, followed by (                          at least one non backtick character) at least once, followed by exactly 1 backtick
+  #   )
 
   block_quote: (?:[ ]{,3}(>)[ ]?)                     # between 0 and 3 spaces, followed by a greater than sign, (followed by any character or the end of the line = "only care about optional space!")
 
@@ -60,10 +60,12 @@ contexts:
   main:
     # - include: block-quotes
     # - include: list-blocks
-    - include: simple-text
-    - include: tables
     - include: atx-heading
-    - include: links
+    - include: simple-text
+    - include: structural
+    - include: table
+    - include: link
+    - include: raw-block
 
 
     # test stuff
@@ -102,58 +104,163 @@ contexts:
     # - match: (^|\s)=[^=]+=(^|\s)
     #   scope: notr.verbatim
 
-    - match: (`{1})(?![\s`])(?:[^`]+(?=`)|(?!`{1})`+(?!`))+(`{1})(?!`)  # 1 backtick,  followed by at least one non whitespace, non backtick character, followed by (                          at least one non backtick character) at least once, followed by exactly 1 backtick    
+    # 1 backtick
+    # followed by at least one non whitespace, non backtick character
+    # followed by (less than 1 backtick, or at least one non backtick character) at least once
+    # followed by exactly 1 backtick
+    # - match: (`{1})(?![\s`])(`{1})
+    - match: (`[^`]+`)
       captures:
-        2: markup.raw.inline.notr
+        0: markup.raw.inline.notr
+    # 1 backtick
+    # followed by at least one non whitespace, non backtick character
+    # followed by (less than 1 backtick, or at least one non backtick character) at least once
+    # followed by exactly 1 backtick
+    # - match: (`{1})(?![\s`])(?:[^`]+(?=`)|(?!`{1})`+(?!`))+(`{1})(?!`)
+    #   captures:
+    #     0: markup.raw.inline.notr
 
-    - match: (`{3})(?![\s`])(?:[^`]+(?=`)|(?!`{3})`+(?!`))+(`{3})(?!`) # 3 backticks, followed by at least one non whitespace, non backtick character, followed by (less than 3 backticks, or at least one non backtick character) at least once, followed by exactly 3 backticks
+    # between 0 and 3 spaces
+    # followed by a greater than sign
+    # followed by any character or the end of the line = "only care about optional space!"
+    # - match: (?:[ ]{,3}>[ ]?)
+    - match: ^( *> +)(.*)
       captures:
-        2: markup.raw.inline.notr
+        0: markup.quote.notr
 
 
-  #   | (`{3})(?![\s`])(?:[^`]+(?=`)|(?!`{3})`+(?!`))+(`{3})(?!`)  # 3 backticks, followed by at least one non whitespace, non backtick character, followed by (less than 3 backticks, or at least one non backtick character) at least once, followed by exactly 3 backticks
-  #   | (`{1})(?![\s`])(?:[^`]+(?=`)|(?!`{1})`+(?!`))+(`{1})(?!`)  # 1 backtick,  followed by at least one non whitespace, non backtick character, followed by (                          at least one non backtick character) at least once, followed by exactly 1 backtick
+    # - match: ^(> +)([ ]+)(.*)
 
-  # block_quote: (?:[ ]{,3}(>)[ ]?)                     # between 0 and 3 spaces, followed by a greater than sign, (followed by any character or the end of the line = "only care about optional space!")
-  # markup.quote.notr
+  # block_quote: (?:[ ]{,3}(>)[ ]?)  # between 0 and 3 spaces, followed by a greater than sign, (followed by any character or the end of the line = "only care about optional space!")
+  # 
+
+
+# - match: |-
+#     (?x:
+#         \s*                        # Leading whitespace
+#         (\[)(\^[^]]*)(\])(:)       # Reference name
+#         [ \t]*                     # Optional whitespace
+#     )
+#   captures:
+#     1: punctuation.definition.constant.begin.markdown
+#     2: entity.name.reference.link.markdown
+#     3: punctuation.definition.constant.end.markdown
+#     4: punctuation.separator.key-value.markdown
+
+#################### structural ###########################################
+
+  structural:
+
+    - match: ^(-{5,})
+      scope: markup.hrule.single
+
+    - match: ^(={5,})
+      scope: markup.hrule.double
+
+    - match: ^(\+{5,})
+      scope: markup.hrule.fill
+
+    - match: ^(x{5,})
+      scope: markup.hrule.hatch
+
+
 
 #################### headings ###########################################
 
   atx-heading:
-    - match: '^# +([^ ]+) *(.*)'
+
+    # no tags
+    - match: ^(#+) +([^ ]+)\n
       scope: markup.heading.notr
       captures:
-        1: markup.heading.content.notr
-        2: markup.heading.tags.notr
+        1: markup.heading.marker.notr
+        2: markup.heading.content.notr
     
-    - match: '^## +([^ ]+) *(.*)'
+
+    # yes tags
+    - match: ^(#+) +([^ ]+) *(.*)
       scope: markup.heading.notr
       captures:
-        1: markup.heading.content.notr
-        2: markup.heading.tags.notr
-
-    - match: '^### +([^ ]+) *(.*)'
-      scope: markup.heading.notr
-      captures:
-        1: markup.heading.content.notr
-        2: markup.heading.tags.notr
-
-    - match: '^#### +([^ ]+) *(.*)'
-      scope: markup.heading.notr
-      captures:
-        1: markup.heading.content.notr
-        2: markup.heading.tags.notr
-
-    - match: '^##### +([^ ]+) *(.*)'
-      scope: markup.heading.notr
-      captures:
-        1: markup.heading.content.notr
-        2: markup.heading.tags.notr
+        1: markup.heading.marker.notr
+        2: markup.heading.content.notr
+        3: markup.heading.tags.notr
+    
 
 
-  #################### tables ###########################################
+    # - match: ^# +([^ ]+) *(.*)
+    #   scope: markup.heading.notr
+    #   captures:
+    #     1: markup.heading.content.notr
+    #     2: markup.heading.tags.notr
+    
+    # - match: ^## +([^ ]+) *(.*)
+    #   scope: markup.heading.notr
+    #   captures:
+    #     1: markup.heading.content.notr
+    #     2: markup.heading.tags.notr
 
-  tables:
+    # - match: ^### +([^ ]+) *(.*)
+    #   scope: markup.heading.notr
+    #   captures:
+    #     1: markup.heading.content.notr
+    #     2: markup.heading.tags.notr
+
+    # - match: ^#### +([^ ]+) *(.*)
+    #   scope: markup.heading.notr
+    #   captures:
+    #     1: markup.heading.content.notr
+    #     2: markup.heading.tags.notr
+
+    # - match: ^##### +([^ ]+) *(.*)
+    #   scope: markup.heading.notr
+    #   captures:
+    #     1: markup.heading.content.notr
+    #     2: markup.heading.tags.notr
+
+
+  #################### raw blocks ###########################################
+
+  raw-block:
+    - match: (```)
+      scope: markup.raw.block.notr
+      push: raw-block-body
+
+  # raw-block-body:
+  #   - match: (.)
+  #   # - meta_content_scope: markup.raw.block.notr
+  #   - include: raw-block-end
+  #     scope: markup.raw.block.notr
+
+
+  raw-block-body:
+    - meta_content_scope: markup.raw.block.notr
+    - include: raw-block-end
+
+
+  raw-block-end:
+    # The block is broken at the first empty line, or beginning of another block-level structure
+    - match: (```)
+      scope: markup.raw.block.notr
+      pop: 1
+
+    # 3 backticks
+    # followed by at least one non whitespace, non backtick character
+    # followed by (less than 3 backticks, or at least one non backtick character) at least once
+    # followed by exactly 3 backticks
+    # - match: (`{3})(?![\s`])(?:[^`]+(?=`)|(?!`{3})`+(?!`))+(`{3})(?!`)
+    # - match: (```[^`]+`)
+    #   captures:
+    #     0: markup.raw.block.notr
+
+
+  #   | (`{3})(?![\s`])(?:[^`]+(?=`)|(?!`{3})`+(?!`))+(`{3})(?!`)  # 3 backticks, followed by at least one non whitespace, non backtick character, followed by (less than 3 backticks, or at least one non backtick character) at least once, followed by exactly 3 backticks
+  #   | (`{1})(?![\s`])(?:[^`]+(?=`)|(?!`{1})`+(?!`))+(`{1})(?!`)  # 1 backtick,  followed by at least one non whitespace, non backtick character, followed by (less than 1 backtick, or at least one non backtick character) at least once, followed by exactly 1 backtick
+
+
+
+  #################### table ###########################################
+
+  table:
     - match: ^\|
       push: table-header
 
@@ -170,16 +277,13 @@ contexts:
     # The table is broken at the first empty line, or beginning of another block-level structure
     - match: |-
           (?x)^
-          (?= \s*$
-          )
+          (?= \s*$)
       pop: 1
-          # |   {{atx_heading}}
-          # |   {{block_quote}}
 
 
   #################### link - from Markdown syntax - TODO? ###########################################
 
-  links:
+  link:
     - match: (Z)
       scope: markup.strikethrough
 

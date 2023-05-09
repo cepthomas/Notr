@@ -1,35 +1,48 @@
 
 
-ORG All elements before the first section in a document lie in a special section called the zeroth section. 
+ORG: All elements before the first section in a document lie in a special section called the zeroth section. 
 
 # section-name tag1 tag2
+
+
+# section-no-tags
 
 section-name for xref. tag(s) for searching.
 
 # Text  tag2 tag3
 
-Text mods: *Bo ld* , /italic/ , /i talic/ , and _under line_ are fairly intuitive, and the ability to use ~strike through~ is a plus.
-TODO trailing/leading comma, period etc.
+Text mods: *Bold* , /italic/ , /i talic/ , and _under line_ are fairly intuitive, and the ability to use ~strike through~ is a plus.
+TODO handle trailing/leading comma, period etc.
 
-TODO auto-highlight things like TODO - from user list.
-
-
-`A one chunk static`
+TODO auto-highlight things like TODO - from user list. dynamic/runtime add scopes?
 
 
-``` type/tag?
-A block of static
+`A one chunk static` and `another one` and `linebreaking one TODO ST doesn't support`.
+
+
+```A block of static
   ServerName www.example.com
-  DocumentRoot "http://www/example1"
+  DocumentRoot http://www/example1 TODO support links?
 ```
+and
+```
+another block
+```
+
 
 > Blockquotes are very handy in email to emulate reply text.
 > This line is part of the same quote.
 
+
 lines:
 -----------------------------------------------------------------------------
+hello
 =============================================================================
+hello
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+hello
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+hello
 
 
 ## Links-and-refs tag3 tag4 tag9
@@ -42,7 +55,12 @@ Reference other sections:
 See my (earlier-section-name) page.
 Or (another-file-.section-name) this.
 
+From:  C:\Dev\Notr\stuff\ST\MarkdownEditing-master\README.md
 Example using a symbolic name: [New York Times][nyt]
+  text.html.markdown
+  meta.paragraph.markdown
+  meta.link.reference.metadata.markdown
+  markup.underline.link.markdown
 Example using the text as its own symbol: [Google][]
 Put the definitions at a convenient location elsewhere in the document (or included doc?):
 - [nyt]: http://nytimes.com
@@ -79,13 +97,14 @@ H = high priority
 
 ## Table tag2
 
-Very dumb table. Good enough for me.
+Very dumb table. Good enough for me. TODO coloring goes to edge but so does ST tables...
 
 | Maine | Iowa | Colorado |
 |-------|------|----------|
 |   1   |  4   |   10     |
 |  ME   |  IA  |   CO     |
 | Blue  | Red  | Brown    |
+
 
 
 

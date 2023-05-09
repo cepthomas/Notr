@@ -6,7 +6,7 @@ import webbrowser
 import html
 import sublime
 import sublime_plugin
-# from .sbot_common import *
+from .sbot_common import *
 
 NOTR_SETTINGS_FILE = "Notr.sublime-settings"
 
@@ -26,7 +26,7 @@ NOTR_SETTINGS_FILE = "Notr.sublime-settings"
 
 - table manipulations similar to csvplugin. Autofit.
 
-- insert line (type) [setting for length?]
+- insert line (type) [setting for length]
 
 
 '''
