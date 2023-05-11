@@ -3,17 +3,17 @@
 A section of content. <section-name> can be referenced later as a link.
 Tag(s) are used for searching.
 
+
 ## section-no-tags
 Another section but without tags.
 
+
 ### text-attributes tag2 tag3
-Text: *Bold* , /italic/ , and _under line_ are fairly intuitive, and the ability to use ~strike through~ is a plus.
+Text: *Bold* , /italic/ , and _under line_ are as expected, ~strike through~ is a compromise. TODO1 handle trailing/leading comma, period etc.
 
-TODO handle trailing/leading comma, period etc.
-TODO Support attributes in blocks, tables, lists, etc?
-TODO auto-highlight things like TODO - from user list. dynamic/runtime add scopes?
+Auto-highlight things like TODO - from user list. dynamic/runtime.
 
-`An inline chunk of raw text` and `another one`.
+`An inline chunk of raw text` and here is `another one` ok?
 
 ```A block of raw text
   - ServerName www.example.com
@@ -40,42 +40,46 @@ hello
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 hello
 
-## lists tag9 tagZZZ TODO
+## lists tag9 tagZZZ
 
-TODO indents, folding? https://forum.sublimetext.com/t/markdown-syntax-highlighting-indentation/47470/7
 
 - list category
   - list item
-  - list item Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+  ! list item Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
     - list item
   - list item
-    - list item
+    X list item
 - list category
-  - list item
+  ? list item
   - list item
     - list item
 
 item states (in settings)
   - = neutral
-  x = done 
+  X = done 
   ? = maybe
   ! = priority
 
-## links-and-refs tag3 tag4 tag9 TODO
 
-definitions in file and/or included file?:
-- [nyt]: http://nytimes.com
-- [another-page]: file://C:\Dev\repos\Notr\pag2.ntr TODO relative paths?
+## links-and-refs tag3 tag4 tag9
 
-[Charlotte Schmidt](http://pattedemouche.free.fr/)
-[A nice cat](file://C:\Dev\repos\Notr\stuff\felix.jpg)
+TODO1 include file of common links?
 
-[Good section in this file](text-attributes)
-[Good section in another file](another-page.other-section)
+Plain URIs:
+[read all about it: http://nytimes.com]
+[Charlotte inline: http://pattedemouche.free.fr/]
 
-? or like YAML anchors:
-  anchored_content: &anchor_name This string will appear as the value of two keys.
-  other_anchor: *anchor_name
+`!` for image TODO1 use phantom?
+![felix-le-chat: ..\..\Dev\Notr\felix.jpg]
+
+`F` for file TODO1 distinguish notr files? py files open as exes, should be in editor. Would need a new flavor of context open.
+F[just a file: C:\Users\cepth\AppData\Roaming\Sublime Text\Packages\Notr\notr.py]
+F[another-ntr-page:C:\Dev\Notr\page2.ntr]
+
+`*` to reference a section in this file or another file.
+*[Ref section in this file: visual-lines]
+*[Ref section in another file: another-ntr-page.other-section]
+
 
 ## tables tag2
 
@@ -89,30 +93,6 @@ Note that coloring *should* stop at the right edge of the table. This is also ho
 | Blue  | Red  | Brown    |
 
 
-# Unicode tagTODO
+# Unicode tagTODO2
 UTF-8 encoding.
 UI support...
-
-- Bullets •◦ ‣ ✓ ●■◆ ○□◇ ★☆ ♠♣♥♦ ♤♧♡♢
-- Math ° ⌈⌉ ⌊⌋ ∏ ∑ ∫ ×÷ ⊕ ⊖ ⊗ ⊘ ⊙ ⊚ ⊛ ∙ ∘ ′ ″ ‴ ∼ ∂ √ ≔ × ⁱ ⁰ ¹ ² ³ ₀ ₁ ₂ π ∞ ± ∎
-- Logic & Set Theory ∀¬∧∨∃⊦∵∴∅∈∉⊂⊃⊆⊇⊄⋂⋃
-- Relations ≠≤≥≮≯≫≪≈≡
-- Arrows ←→↑↓ ↔ ↖↗↙↘  ⇐⇒⇑⇓ ⇔⇗  ⇦⇨⇧⇩ ↞↠↟↡ ↺↻  ☞☜☝☟
-- Computing ⌘ ⌥ ‸ ⇧ ⌤ ↑ ↓ → ← ⇞ ⇟ ↖ ↘ ⌫ ⌦ ⎋⏏ ↶↷ ◀▶▲▼ ◁▷△▽ ⇄ ⇤⇥ ↹ ↵↩⏎ ⌧ ⌨ ␣ ⌶ ⎗⎘⎙⎚ ⌚⌛ ✂✄ ✉✍
-- Digits ➀➁➂➃➄➅➆➇➈➉
-- Religious and cultural symbols ✝✚✡☥⎈☭☪☮☺☹☯☰☱☲☳☴☵☶☷
-- Dingbats ❦☠☢☣☤♲♳⌬♨♿ ☉☼☾☽ ♀♂ ♔♕♖ ♗♘♙ ♚♛ ♜♝♞♟
-- http://xahlee.info/comp/unicode_computing_symbols.html: ⌘ ✲ ⎈ ^ ⌃ ❖ ⎇ ⌥ ⇮ ◆ ◇ ✦ ✧ ⇧ ⇪ 🄰 🅰 ⇪ ⇬ 🔠 🔡 ⇭ 🔢 🔤 ↩ ↵ ⏎ ⌤ ⎆ ▤ ☰ 𝌆 ⎄ ⭾ ↹ ⇄ ⇤ ⇥ ↤ ↦ ⎋ ⌫ ⟵ ⌦ ⎀ ⎚ ⌧ ↖ ↘ ⇤ ⇥ ⤒ ⤓ ⇞ ⇟ △ ▽ ▲ ▼ ⎗ ⎘ ↑ ↓ ← → ◀ ▶ ▲ ▼ ◁ ▷ △ ▽ ⇦ ⇨ ⇧ ⇩ ⬅ ➡ ⮕ ⬆ ⬇ ⎉ ⎊ ⎙ ⍰ ❓ ❔ ℹ 🛈 ☾ ⏏ ✉ 🏠 🏡 ⌂ ✂ ✄ ⎌ ↶ ↷ ⟲ ⟳ ↺ ↻ 🔍 🔎 🔅 🔆 🔇 🔈 🔉 🔊 🕨 🕩 🕪 ◼ ⏯ ⏮ ⏭ ⏪ ⏩ ⏫ ⏬ 🌐
-
-
-- github-unicode-?
-You can use either decimal or hex code point or HTML entity name (if exists) of a unicode character:
-`&#8364; &#x20AC; &euro; displays as â‚¬ â‚¬ â‚¬`
-
-- Ligatures-?
-I don't think ligatures are helpful but maybe some variation on them?
-https://www.sublimetext.com/docs/ligatures.html.
-Things like:
-   `<- <-- <--- <---- <-< <--< <---< <----<`
-Supported fonts: Cascadia Code, Cascadia Code SemiBold, Consolas, Courier New, 
-  Lucida Console, DejaVu Sans Mono, Source Code Pro Medium, Source Code Pro Semibold, Noto Mono

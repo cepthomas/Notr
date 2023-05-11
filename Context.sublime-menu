@@ -2,4 +2,18 @@
     // { "caption": "-" },
 
     // { "caption": "Notr HTML", "command": "notr_to_html", "args" : {"line_numbers" : false} },
+
+    { "caption": "-" },
+    // { "caption": "HL 1", "command": "sbot_highlight_text", "args" : {"hl_index" : 0} },
+    // { "caption": "HL 2", "command": "sbot_highlight_text", "args" : {"hl_index" : 1} },
+    {
+        "caption": "Notr",
+        "children":
+        [
+            { "caption": "-" },
+            { "caption": "TODO1", "command": "notr_TODO1" },
+        ]
+    },
+    // { "caption": "Clear Highlights in File", "command": "sbot_clear_highlights" },
+
 ]

@@ -1,59 +1,59 @@
 # Notr
-Pure text mode for ST.
+
+Sublime Text markup syntax for coloring plain text files. Somewhat similar to markdown but not intended to be rendered
+into a pretty final form.
+
+Built for ST4 on Windows and Linux.
+
+Persistence file is in `%data_dir%\Packages\User\.SbotStore`.
+
+## Features
+
+- Describe list.
+- See `notr-spec.ntr`. Make a pic of this.
+
+## Scopes
+
+- See my C:\Users\cepth\AppData\Roaming\Sublime Text\Packages\User\CT.sublime-color-scheme.
+
+TODOdoc Notr uses these scopes:
+- ST defaults:
+  - From [Minimal Scope Coverage](https://www.sublimetext.com/docs/scope_naming.html#minimal-scope-coverage).
+  - [Markup languages](https://www.sublimetext.com/docs/scope_naming.html#markup).
+  - ditdit
+
+- New scopes added for this application. Notr is a markup language but some of the default markup.* scopes
+  didn't feel right.
+  - From C:\Users\cepth\AppData\Roaming\Sublime Text\Packages\User\CT.sublime-color-scheme).
+  - ditdit
+
+meta. Meta scopes are used to scope larger sections of code or markup, generally containing multiple, more specific scopes. These are not intended to be styled by a color scheme, but used by preferences and plugins.
 
 
+## Commands
 
-# Scopes
+| Command                    | Implementation | Description                   | Args                           |
+| :--------                  | :-------       | :-------                      | :--------                      |
+| notr_xxx                   | Context        | something here                |                                |
 
-From MINIMAL SCOPE COVERAGE  https://www.sublimetext.com/docs/scope_naming.html.
 
-TODO list required/option/new ones.
+## Settings
 
-ST: Markup scopes are used for content, as opposed to code. This includes syntaxes such as Markdown and Textile.
-Section headings should use:
-    markup.heading
-Lists should use one of:
-    markup.list.unnumbered
-    markup.list.numbered
-Basic text styling should use one of:
-    markup.bold
-    markup.italic
-    markup.underline
-Inserted and deleted content, such as with diff output, should use:
-    markup.inserted
-    markup.deleted
-Links should use:
-    markup.underline.link
-Blockquotes and other quote styles should use:
-    markup.quote
-Inline and block literal quoting, often used for code, should use:
-    markup.raw.inline
-    markup.raw.block
-Other markup, including constructs such as footnotes and tables, should use:
-    markup.other
+| Setting              | Description                              | Options                                    |
+| :--------            | :-------                                 | :------                                    |
+| notr_xxx             | something here                           |                                            |
 
-# TODO temp stuff to remove
 
-[Charlotte Schmidt](http://pattedemouche.free.fr/)
+## Future
+Things to add later, maybe.
 
-https://www.sublimetext.com/docs/syntax.html
-
-https://daringfireball.net/projects/markdown/syntax
-
-| Maine | Iowa | Colorado |
-|-------|------|----------|
-|   1   |  4   |   10     |
-|  ME   |  IA  |   CO     |
-| Blue  | Red  | Brown    |
-
-C:\Users\cepth\AppData\Roaming\Sublime Text\Packages\User\CT.sublime-color-scheme
-
-- list category
-  - list item
-  - list item Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-    - list item
-  - list item
-    - list item
-- list category
-  - list item
-
+- Support attributes in blocks, tables, lists, etc?
+- Block "comment/uncomment" useful? What would that mean?
+- Auto-indent with bullets? Probably not possible as ST controls this.
+- Ligatures?
+    I don't think ligatures are helpful but maybe some variation on them?
+    https://www.sublimetext.com/docs/ligatures.html.
+    Things like:
+       `<- <-- <--- <---- <-< <--< <---< <----<`
+    Supported fonts: Cascadia Code, Cascadia Code SemiBold, Consolas, Courier New, 
+      Lucida Console, DejaVu Sans Mono, Source Code Pro Medium, Source Code Pro Semibold, Noto Mono
