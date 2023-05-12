@@ -11,7 +11,7 @@
         "children":
         [
             { "caption": "-" },
-            { "caption": "TODO1", "command": "notr_TODO1" },
+            { "caption": "TOxxxDO1", "command": "notr_TOxxxDO1" },
         ]
     },
     // { "caption": "Clear Highlights in File", "command": "sbot_clear_highlights" },

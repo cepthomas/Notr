@@ -1,17 +1,19 @@
 
-# section-name tag1 tag2
+# section name [tag1 tag2]
 A section of content. <section-name> can be referenced later as a link.
 Tag(s) are used for searching.
 
 
-## section-no-tags
+## section no tags
 Another section but without tags.
 
 
-### text-attributes tag2 tag3
-Text: *Bold* , /italic/ , and _under line_ are as expected, ~strike through~ is a compromise. TODO1 handle trailing/leading comma, period etc.
+### Text Attributes [tag2 tag3]
+Text: *Bold* , /italic/ , and _under line_ are as expected, ~strike through~ is a compromise. TODO handle trailing/leading comma, period etc.
 
-Auto-highlight things like TODO - from user list. dynamic/runtime.
+Auto-highlight things like 2DO - from user list. dynamic/runtime.
+
+and_a  and_b  and_c.
 
 `An inline chunk of raw text` and here is `another one` ok?
 
@@ -28,20 +30,19 @@ Here is another block. Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
 > This line is part of the same quote.
 
 
-## visual-lines tag4 tag5
+## Visual Lines [tag4 tag5]
 Visual delimiters that don't do anything else. Four flavors.
 
------------------------------------------------------------------------------
+------------------------------ single---------------------------------------
 hello
-=============================================================================
+================================= double ===================================
 hello
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
++++++++++++++++++++++++++++++++++++ fill +++++++++++++++++++++++++++++++++++
 hello
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX hatch XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 hello
 
-## lists tag9 tagZZZ
-
+## Lists [tag9 tagZZZ]
 
 - list category
   - list item
@@ -61,30 +62,30 @@ item states (in settings)
   ! = priority
 
 
-## links-and-refs tag3 tag4 tag9
+## Links and Refs [tag3 tag4 tag9]
 
-TODO1 include file of common links?
+TODO include file of common/frequent links?
 
 Plain URIs:
-[read all about it: http://nytimes.com]
+[read all about it: https://nytimes.com]
 [Charlotte inline: http://pattedemouche.free.fr/]
 
-`!` for image TODO1 use phantom?
-![felix-le-chat: ..\..\Dev\Notr\felix.jpg]
+An image.
+[felix-le-chat: ..\..\Dev\Notr\felix.jpg]
 
-`F` for file TODO1 distinguish notr files? py files open as exes, should be in editor. Would need a new flavor of context open.
-F[just a file: C:\Users\cepth\AppData\Roaming\Sublime Text\Packages\Notr\notr.py]
-F[another-ntr-page:C:\Dev\Notr\page2.ntr]
+A file.
+[just a file: C:\Users\cepth\AppData\Roaming\Sublime Text\Packages\Notr\notr.py]
+[another-ntr-page:C:\Dev\Notr\page2.ntr]
 
-`*` to reference a section in this file or another file.
+Use `*` to reference a section in this file or another file.
 *[Ref section in this file: visual-lines]
 *[Ref section in another file: another-ntr-page.other-section]
 
 
-## tables tag2
+## Tables [tag2]
 
 Very dumb table. Good enough for me. 
-Note that coloring *should* stop at the right edge of the table. This is also how ST renders MD tables...
+Note that coloring *should* stop at the right edge of the table but this is how ST regex does it.
 
 | Maine | Iowa | Colorado |
 |-------|------|----------|
@@ -92,7 +93,3 @@ Note that coloring *should* stop at the right edge of the table. This is also ho
 |  ME   |  IA  |   CO     |
 | Blue  | Red  | Brown    |
 
-
-# Unicode tagTODO2
-UTF-8 encoding.
-UI support...

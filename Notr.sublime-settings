@@ -1,10 +1,13 @@
 {
     "visual_line_length": 100,
 
-    // Tokens (max 3) for highlighting user keywords.
+    // Tokens (max 6) for highlighting user keywords.
     "user_hl": [
-        ["TODO", "things"], // markup.user_hl1.notr
-        ["user"], // markup.user_hl2.notr
-        ["dynamic"], // markup.user_hl3.notr
+        ["2DO", "things"], // markup.user_hl1
+        ["user"], // markup.user_hl2
+        ["dynamic"], // markup.user_hl3
+        ["and_a"], // markup.user_hl4
+        ["and_b"], // markup.user_hl5
+        ["and_c"], // markup.user_hl6
     ]
 }

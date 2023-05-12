@@ -61,16 +61,16 @@ contexts:
 
   structural:
 
-    - match: '^(-{5,})'
+    - match: '^(?:-{5,}.*)$'
       scope: markup.hrule.single.notr
 
-    - match: '^(={5,})'
+    - match: '^(?:={5,}.*)$'
       scope: markup.hrule.double.notr
 
-    - match: '^(\+{5,})'
+    - match: '^(?:\+{5,}.*)$'
       scope: markup.hrule.fill.notr
 
-    - match: '^(x{5,})'
+    - match: '^(?:X{5,}.*)$'
       scope: markup.hrule.hatch.notr
 
 
@@ -79,14 +79,14 @@ contexts:
   atx-heading:
 
     # no tags
-    - match: '^(#+) +([^ ]+)\n'
+    - match: '^(#+) +([^\[]+)\n'
       scope: markup.heading.notr
       captures:
         1: markup.heading.marker.notr
         2: markup.heading.content.notr
 
     # yes tags
-    - match: '^(#+) +([^ ]+) *(.*)'
+    - match: '^(#+) +([^\[]+) +\[(.*)\]'
       scope: markup.heading.notr
       captures:
         1: markup.heading.marker.notr
@@ -148,8 +148,14 @@ contexts:
 
   link:
     # link def
-    - match: '^([F!\*]?)\[([^:]*): *([^\]]*)\]'
+    - match: '\[([^:]*): *([^\]]*)\]'
+      captures:
+        1: markup.link.name.notr
+        2: markup.underline.link
+
+    # link ref
+    - match: '(\*)\[([^:]*): *([^\]]*)\]'
       captures:
         1: markup.link.marker.notr
-        2: markup.link.name.notr
+        2: markup.link.refname.notr
         3: markup.underline.link

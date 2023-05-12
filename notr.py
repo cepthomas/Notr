@@ -12,101 +12,92 @@ from .sbot_common import *
 NOTR_SETTINGS_FILE = "Notr.sublime-settings"
 
 ''' 
-Tool:
-    - TODO1 folding by section
-    - TODO1 nav pane (like word-ish and/or goto anything):
-        - with files/sections
-        - drag/move section
-        - search by section tags
-    - TODO1 context:
-        - click to open/goto linked uri/file/notr section
-        - insert link/reference in this or other doc, paste file/url from clipboard
-        ? change list item state
-        - insert visual-line (type)
-        - toggle syntax coloring - distraction-free
-    - TODO2 image phantoms? hover/thumbnail? https://www.sublimetext.com/docs/minihtml.html
-    - TODO2 table manipulations similar to csvplugin: Autofit/justify.
-    - TODO2 unicode menu/picker to insert, show at caret.
-
-settings:
-    - visual-line length
-    X auto-highlight keywords and colors
-    ? render more like md
-    ? unicode config
+- TODO folding by section - Default.fold.py? folding.py?
+- TODO nav pane (like word-ish and/or goto anything):
+    - with files/sections
+    - drag/move section
+    - search by section tags
+    - context click to open/goto linked uri/file/notr section
+- TODO context insert link/reference in this or other doc, paste file/url from clipboard
+- TODO Block "comment/uncomment" useful? What would that mean? Insert string from settings? Like # or // or...
+- TODO insert visual-line (type) - needs setting for length
+- TODO table manipulations similar to csvplugin: Autofit/justify.
 '''
 
 
 #-----------------------------------------------------------------------------------
 def plugin_loaded():
-    slog(CAT_DBG, 'plugin_loaded')
+    slog(CAT_DBG, 'plugin_loaded()')
 
 
 #-----------------------------------------------------------------------------------
 def plugin_unloaded():
-    slog(CAT_DBG, 'plugin_unloaded')
-
+    slog(CAT_DBG, 'plugin_unloaded()')
 
 
 #-----------------------------------------------------------------------------------
 class NotrEvent(sublime_plugin.EventListener):
 
     # Need to track what's been initialized.
-    _views_inited = set()
-    _whole_word = False # TODO2?
+    # _views_inited = set()
+    # User higlight word selection mode. From settings?
+    _whole_word = True
 
     def on_init(self, views):
-        ''' First thing that happens when plugin/window created. Load the settings file. Views are valid. '''
-        # slog(CAT_DBG, f'on_init {views[0]}')
-        settings = sublime.load_settings(NOTR_SETTINGS_FILE)
-        user_hl = settings.get('user_hl')
+        ''' First thing that happens when plugin/window created. Views are all valid so init them. '''
+        slog(CAT_DBG, f'on_init() {views}')
+        # settings = sublime.load_settings(NOTR_SETTINGS_FILE)
+        # user_hl = settings.get('user_hl')
         for view in views:
-            self._init_view(view)
+            self._init_user_hl(view)
 
-    def on_load_project(self, window):
-        ''' This gets called for new windows but not for the first one. '''
-        # slog(CAT_DBG, f'on_load_project {window.views()[0]}')
-        self._open_hls(window)
-        for view in window.views():
-            self._init_view(view)
+    # def on_load_project(self, window):
+    #     ''' This gets called for new windows but not for the first one. No views yet. '''
+    #     slog(CAT_DBG, f'on_load_project() {window.views()}')
+    #     for view in window.views():
+    #         self._init_user_hl(view)
 
     def on_load(self, view):
-        ''' Load a file. '''
-        # slog(CAT_DBG, f'on_load {view}')
-        self._init_view(view)
+        ''' Load a new file. View is valid so init it. '''
+        slog(CAT_DBG, f'on_load() {view}')
+        self._init_user_hl(view)
 
-    def _init_view(self, view):
-        ''' Lazy init. '''
-        fn = view.file_name()
-        if view.is_scratch() is False and fn is not None:
-            # Init the view if not already.
-            vid = view.id()
-            if vid not in self._views_inited and view.syntax().name == 'Notr':
-                self._views_inited.add(vid)
+    def _init_user_hl(self, view):
+        ''' Add any user highlights. '''
+        if view.is_scratch() is False and view.file_name() is not None and view.syntax().name == 'Notr':
+            settings = sublime.load_settings(NOTR_SETTINGS_FILE)
+            user_hl = settings.get('user_hl')
 
-                # Init the view with any user highligts.
-                settings = sublime.load_settings(NOTR_SETTINGS_FILE)
-                user_hl = settings.get('user_hl')
+            if user_hl is not None:
+                for i in range(max(len(user_hl), 3)):
+                    # Clean first.
+                    region_name = f'userhl_{i+1}_region'
+                    view.erase_regions(region_name)
+                    # New ones.
+                    hl_regions = []
+                    anns = []
+                    # Colorize one token.
+                    for token in user_hl[i]:
+                        escaped = re.escape(token)
+                        if self._whole_word:  # and escaped[0].isalnum():
+                            escaped = r'\b%s\b' % escaped
+                        regs = view.find_all(escaped) if self._whole_word else view.find_all(token, sublime.LITERAL)
+                        hl_regions.extend(regs)
 
-                if user_hl is not None:
-                    # slog(CAT_DBG, f'{user_hl}')
-                    for i in range(max(len(user_hl), 3)):
-                        # slog(CAT_DBG, f'{user_hl[i]}')
+                    if len(hl_regions) > 0:
+                        anns = []
+                        for reg in hl_regions:
+                            anns.append(f'ann=={reg.to_tuple()}')
+                            # anns.append(f'<body><style> p background-color:pink </style><p>{reg}</p></body>')
 
-                        highlight_regions = []
-                        for token in user_hl[i]:
-                            # slog(CAT_DBG, f'{i}:{token}')
-                            # Colorize one token.
-                            escaped = re.escape(token)
-                            if self._whole_word:  # and escaped[0].isalnum():
-                                escaped = r'\b%s\b' % escaped
-                            regs = view.find_all(escaped) if self._whole_word else view.find_all(token, sublime.LITERAL)
-                            highlight_regions.extend(regs)
-
-                        if len(highlight_regions) > 0:
-                            view.add_regions(f'userhl_{i+1}_region', highlight_regions, f'markup.user_hl{i+1}.notr') #TODO2 seems to be only color not style.
+                        view.add_regions(key=region_name, regions=hl_regions, scope=f'markup.user_hl{i+1}.notr',
+                            icon='dot', flags=sublime.RegionFlags.DRAW_STIPPLED_UNDERLINE, annotations=anns, annotation_color='lightgreen')
+                            # TODO something fun with icon and annotations?
 
 
-''' unicode
+
+
+'''
 - Matching pairs «»‹›“”‘’〖〗【】「」『』〈〉《》〔〕
 - Currency  ¤ $ ¢ € ₠ £ ¥
 - Common symbols © ® ™ ² ³ § ¶ † ‡ ※
