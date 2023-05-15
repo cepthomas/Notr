@@ -1,7 +1,8 @@
 # Notr TODO doc
 
-Sublime Text markup syntax for coloring plain text files. Somewhat similar to markdown but not intended to be rendered
-into a pretty final form.
+Sublime Text markup syntax for coloring plain text files. The intention is to provide visual clues for things
+like sections, links, tables, lists, etc. The syntax is somewhat similar to markdown but this is not intended
+to be rendered into some pretty final form.
 
 Built for ST4 on Windows and Linux.
 
@@ -17,6 +18,19 @@ Persistence file is in `%data_dir%\Packages\User\.SbotStore`. ????
 - ST is line-oriented regex only.
 - Note that coloring *should* stop at the right edge of a table. This is also how ST renders MD tables...
 - view.add_regions() apparently only supports colors, annotations, and icon. It does not support font style and region flags.
+    Also they are not available via extract_scope().
+- Auto-indent with bullets? Probably not possible as ST controls this.
+
+## Structure
+
+- Lists of:
+  - managed ntr filepaths.
+  - managed other filepaths.
+like:
+[Charlotte inline: http://pattedemouche.free.fr/]
+[felix-le-chat1: C:\Dev\Notr\felix.jpg]
+[felix-le-chat2: ..\..\Dev\Notr\felix.jpg]
+
 
 ## Scopes
 
@@ -35,7 +49,8 @@ Notr uses these scopes:
 
 meta. Meta scopes are used to scope larger sections of code or markup, generally containing multiple, more specific scopes. These are not intended to be styled by a color scheme, but used by preferences and plugins.
 
-ST uses [Oniguruma Regular Expressions Version 6.8.0    2018/07/26](https://raw.githubusercontent.com/kkos/oniguruma/v6.9.1/doc/RE)
+ST uses [Oniguruma Regular Expressions Version 6.8.0    2018/07/26](https://github.com/kkos/oniguruma)
+Doc: https://github.com/kkos/oniguruma/blob/master/doc/RE
 syntax: ONIG_SYNTAX_ONIGURUMA (default)
 
 ## Links
@@ -60,18 +75,11 @@ Note that this uses the OS association so py files could open as exes. Maybe a n
 ## Future
 Things to add later, maybe.
 
-- Support attributes in blocks, tables, lists, etc?
-- Auto-indent with bullets? Probably not possible as ST controls this.
-- unicode menu/picker to insert, show at caret.
-- Ligatures?
-    I don't think ligatures are helpful but maybe some variation on them?
-    https://www.sublimetext.com/docs/ligatures.html.
-    Things like:
-       `<- <-- <--- <---- <-< <--< <---< <----<`
-    Supported fonts: Cascadia Code, Cascadia Code SemiBold, Consolas, Courier New, 
-      Lucida Console, DejaVu Sans Mono, Source Code Pro Medium, Source Code Pro Semibold, Noto Mono
-- Expose notes to web for access from phone. render html?
-- for image use phantom or hover.
-- toggle syntax coloring - just set to Plain Text?
-- image phantoms? hover/thumbnail? https://www.sublimetext.com/docs/minihtml.html
-
+- Support text/link attributes in blocks, tables, lists, etc.
+- Unicode menu/picker to insert, show at caret.
+- Ligatures - some compromise? https://practicaltypography.com/ligatures-in-programming-fonts-hell-no.html
+- Expose notes to web for access from phone. R/O render html?
+- Show image as phantom or hover. Thumbnail.
+- Toggle syntax coloring (distraction free). Could just set to Plain Text.
+- Block comment/uncomment useful? What would that mean? Insert string (# or //) from settings.
+- Fancy file.section navigator (like word-ish and/or goto anything). Drag/drop section.

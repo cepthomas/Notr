@@ -1,4 +1,8 @@
 {
+    // Where notr files live.
+    "notr_paths": [],
+
+    // Some cosmetics.
     "visual_line_length": 100,
 
     // Tokens (max 6) for highlighting user keywords.
@@ -9,5 +13,9 @@
         ["and_a"], // markup.user_hl4
         ["and_b"], // markup.user_hl5
         ["and_c"], // markup.user_hl6
-    ]
+    ],
+    // User highlights option.
+    "user_hl_whole_word": true,
+
+
 }

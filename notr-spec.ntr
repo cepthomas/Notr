@@ -1,6 +1,6 @@
 
 # section name [tag1 tag2]
-A section of content. <section-name> can be referenced later as a link.
+A section of content. <section name> can be referenced later as a link.
 Tag(s) are used for searching.
 
 
@@ -9,9 +9,9 @@ Another section but without tags.
 
 
 ### Text Attributes [tag2 tag3]
-Text: *Bold* , /italic/ , and _under line_ are as expected, ~strike through~ is a compromise. TODO handle trailing/leading comma, period etc.
+Text: *Bold*, /italic/, and _under line_ are as expected, ~strike through~- is a compromise.
 
-Auto-highlight things like 2DO - from user list. dynamic/runtime.
+Auto-highlight things like 2DO - from user list. dynamic/runtime. Also has annotations -->
 
 and_a  and_b  and_c.
 
@@ -28,6 +28,12 @@ Here is another block. Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
 
 > Blockquotes are very handy.
 > This line is part of the same quote.
+
+[]  {}  ()
+[] {{}} (())
+ |
+  [fdffdfdfd fddffd]
+
 
 
 ## Visual Lines [tag4 tag5]
@@ -62,24 +68,21 @@ item states (in settings)
   ! = priority
 
 
-## Links and Refs [tag3 tag4 tag9]
+## Links and References [tag3 tag4 tag9]
 
-TODO include file of common/frequent links?
+Define link and its name: [name: link]
+      could be anywhere [uri read all about it: https://nytimes.com] in a text  [image felix le chat: ..\..\Dev\Notr\felix.jpg] etc...
+[other type of file: C:\Users\cepth\AppData\Roaming\Sublime Text\Packages\Notr\notr.py]
 
-Plain URIs:
-[read all about it: https://nytimes.com]
-[Charlotte inline: http://pattedemouche.free.fr/]
+Alias to ntr file.
+[ntr file another:C:\Dev\Notr\page2.ntr]
 
-An image.
-[felix-le-chat: ..\..\Dev\Notr\felix.jpg]
 
-A file.
-[just a file: C:\Users\cepth\AppData\Roaming\Sublime Text\Packages\Notr\notr.py]
-[another-ntr-page:C:\Dev\Notr\page2.ntr]
+Use `*` to reference aliases.  [* name]
+URI. [* uri read all about it]  Other file. [* image felix le chat] etc..
 
-Use `*` to reference a section in this file or another file.
-*[Ref section in this file: visual-lines]
-*[Ref section in another file: another-ntr-page.other-section]
+not  Reference section in this ntr file. [*#Links and Refs]  end
+not  Reference section in another ntr file. [*ntr file another#other section]
 
 
 ## Tables [tag2]

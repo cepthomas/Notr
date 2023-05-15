@@ -11,7 +11,13 @@
         "children":
         [
             { "caption": "-" },
-            { "caption": "TOxxxDO1", "command": "notr_TOxxxDO1" },
+            { "caption": "YaYa", "command": "notr_yaya", "args" : {"arg_1" : 999} },
+            // open link or section from ref: markup.link.refname.notr  like open_context_url
+            { "caption": "Open Ref", "command": "notr_open_ref" },
+            // list tags
+            { "caption": "All Tags", "command": "notr_all_tags" },
+            // find all sections with tag(s) - input? put in find pane
+            { "caption": "Find Tags", "command": "notr_find_tags" },
         ]
     },
     // { "caption": "Clear Highlights in File", "command": "sbot_clear_highlights" },
