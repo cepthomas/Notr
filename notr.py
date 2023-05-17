@@ -1,13 +1,14 @@
 import os
-import math
-import textwrap
-import pathlib
-import webbrowser
-import html
+# import math
+# import textwrap
+# import pathlib
+# import webbrowser
+# import html
+import subprocess
 import re
 import glob
 import collections
-from enum import Enum
+# from enum import Enum
 import sublime
 import sublime_plugin
 from .sbot_common import *
@@ -16,38 +17,59 @@ NOTR_SETTINGS_FILE = "Notr.sublime-settings"
 
 ''' 
 
+- TODO? look at other plugins:
+    - linter code to see what they do
+    - Sublime Markdown Popups (mdpopups) is a library for Sublime Text plugins.  It utilizes the new plugin API found in ST3
+        3080+ for generating tooltip popups. It also provides API methods for generating and styling the new phantom elements
+        introduced in ST3 3118+.  Mdpopups utilizes Python Markdown with a couple of special extensions to convert Markdown to
+        HTML that can be used to create the popups and/or phantoms.  It also provides a number of other helpful API commands to
+        aid in creating great tooltips and phantoms.
+        Mdpopups will use your color scheme to create popups/phantoms that fit your editors look.
+
 - TODO folding by section - Default.fold.py? folding.py?
 
-- TODO? context-insert
-    - visual-line (type) - needs setting for length. others: table(W, H), link,...
-    - insert link from clip [TODO: <clip>]
-    - insert ref from clip *[<clip>]
-    - insert ref from list of known refs
+- TODO? tables
+    - insert table = notr_insert_table(w, h)
+    - table autofit/justify - notr_justify_table
+    - table add/delete row(s)/col(s) ?
 
-- TODO bug render html from .ntr doesn't pick up user_hl. .md does. also underline.
+- TODO? odds and ends
+    - Block comment/uncomment useful? What would that mean - "hide" text? Insert string (# or //) from settings.
+    - LMH Priorities (for searching) or could be tag.
 
-- TODO table manipulations similar to csvplugin. insert(W, H), autofit/justify, add/delete row(s)/col(s)
+- TODO bug: render html from .ntr doesn't pick up user_hl. .md does. also underline.
 
 '''
 
 
+
 #-----------------------------------------------------------------------------------
 
-# Fully qualified paths.
+# All ntr files, fully qualified paths.
 _ntr_files = []
 
 # LinkType = Enum('LinkType', ['WEB', 'NTR', 'IMAGE', 'FILE', 'OTHER'])
-Section = collections.namedtuple('Section', 'srcfile, line, level, name, tags')
+
+# One section: ntr file path, ntr file line, ntr file name root, level 1-N, name/id, list of tags
+Section = collections.namedtuple('Section', 'srcfile, line, froot, level, name, tags')
+
+# One link: ntr file path, name/id, uri/file
 Link = collections.namedtuple('Link', 'srcfile, name, target')
+
 # Ref = collections.namedtuple('Ref', 'srcfile, name')
 
-# All Sections in all files.
+# All Sections in all files. TODO multidict?
 _sections = []
-# All Links in all files.
+
+# All Links in all files. TODO multidict?
 _links = []
-# _refs = []
+
+# All ref strings in all files. Mainly used for ui list display or picker.
+_refs = {}
+
 # All unique tags. Value is count.
-_all_tags = {}
+_tags = {}
+
 
 #-----------------------------------------------------------------------------------
 def plugin_loaded():
@@ -63,13 +85,20 @@ def plugin_unloaded():
 
 #-----------------------------------------------------------------------------------
 class NotrEvent(sublime_plugin.EventListener):
+    '''
+    Process view events.
+    '''
 
     def on_init(self, views):
         ''' First thing that happens when plugin/window created. '''
         # slog(CAT_DBG, f'on_init() {views}')
+        global _ntr_files, _tags, _refs, _sections, _links
 
         _ntr_files.clear()
         _tags.clear()
+        _refs.clear()
+        _sections.clear()
+        _links.clear()
 
         # Open and process notr files.
         settings = sublime.load_settings(NOTR_SETTINGS_FILE)
@@ -92,6 +121,7 @@ class NotrEvent(sublime_plugin.EventListener):
     def _process_notr_file(self, fn):
         ''' Regex and process sections and links. '''
         # slog('!!!', f'regex fn:{fn}')
+        global _ntr_files, _tags, _refs, _sections, _links
 
         try:
             with open(fn, 'r') as file:
@@ -100,24 +130,29 @@ class NotrEvent(sublime_plugin.EventListener):
 
                 # Get the things of interest defined in the file.
                 re_links = re.compile(r'\[([^:]*): *([^\]]*)\]')
+                re_refs = re.compile(r'\[\* *([^\]]*)\]')
                 re_sections = re.compile(r'^(#+) +([^\[]+) *(?:\[(.*)\])?')
 
                 for line in lines:
+                    # Links
                     matches = re_links.findall(line)
                     for m in matches:
                         if len(m) == 2:
                             name = m[0].strip()
                             target = m[1].strip()
-                            if name != '*': # link
-                                # slog('LNK', m)
-                                _links.append(Link(fn, name, target))
-                            else: # ref
-                                # refs get handled at run time
-                                # slog('REF', m)
-                                pass
+                            slog('LNK', m)
+                            _links.append(Link(fn, name, target))
                         else:
                             sublime.error_message(f'Invalid syntax in {fn} line{line_num}')
 
+                    # Refs
+                    matches = re_refs.findall(line)
+                    for m in matches:
+                        slog('REF', m)
+                        name = m[0].strip()
+                        _refs[name] = 1
+
+                    # Sections
                     matches = re_sections.findall(line)
                     for m in matches:
                         if len(m) == 3:
@@ -125,30 +160,32 @@ class NotrEvent(sublime_plugin.EventListener):
                             hashes = m[0].strip()
                             name = m[1].strip()
                             tags = m[2].strip().split()
-                            _sections.append(Section(fn, line_num, len(hashes), name, tags))
-                            # slog('!!!', tags)
+                            froot = os.path.basename(os.path.splitext(fn)[0])
+                            # slog('!!!', froot)
+                            _sections.append(Section(fn, line_num, froot, len(hashes), name, tags))
                             for tag in tags:
-                                _all_tags[tag] = _all_tags[tag] + 1 if tag in _all_tags else 1
+                                _tags[tag] = _tags[tag] + 1 if tag in _tags else 1
                         else:
                             sublime.error_message(f'Invalid syntax in {fn} line{line_num}')
 
                     line_num += 1                    
-                # slog('!!!', _all_tags)
+                # slog('!!!', _tags)
 
         except Exception as e:
-            raise
             slog(CAT_ERR, f'{e}')
+            raise
 
     def _init_user_hl(self, view):
         ''' Add any user highlights. '''
-        if view.is_scratch() is False and view.file_name() is not None and view.syntax().name == 'Notr':
+        #print(view.is_scratch(), view.file_name(), view.syntax().name())
+        if view.is_scratch() is False and view.file_name() is not None and view.syntax().name() == 'Notr':
             settings = sublime.load_settings(NOTR_SETTINGS_FILE)
             user_hl = settings.get('user_hl')
             whole_word = settings.get('user_hl_whole_word')
 
             if user_hl is not None:
                 for i in range(max(len(user_hl), 3)):
-                    # Clean first.
+                    # Clean first.r
                     region_name = f'userhl_{i+1}_region'
                     view.erase_regions(region_name)
 
@@ -167,14 +204,16 @@ class NotrEvent(sublime_plugin.EventListener):
                     if len(hl_regions) > 0:
                         anns = []
                         for reg in hl_regions:
-                            anns.append(f'Region: {reg.a}->{len(reg)}') # TODO remove/relocate.
+                            anns.append(f'Region: {reg.a}->{len(reg)}')
 
                         view.add_regions(key=region_name, regions=hl_regions, scope=f'markup.user_hl{i+1}.notr',
                             icon='dot', flags=sublime.RegionFlags.DRAW_STIPPLED_UNDERLINE, annotations=anns, annotation_color='lightgreen')
 
-    def _process_notr_file_not(self, fn):
-        ''' Load file into a hidden view and process links. '''
-        # https://forum.sublimetext.com/t/is-it-possible-to-open-a-file-without-showing-it-to-the-user/35884/3
+    def _process_notr_file_not_not_not(self, fn):
+        '''
+        Load file into a hidden view and process links.
+        https://forum.sublimetext.com/t/is-it-possible-to-open-a-file-without-showing-it-to-the-user/35884/3
+        '''
         # slog('!!!', f'fn:{fn}')
 
         try:
@@ -193,62 +232,152 @@ class NotrEvent(sublime_plugin.EventListener):
 
 
 #-----------------------------------------------------------------------------------
-class NotrOpenRefCommand(sublime_plugin.TextCommand):
-    ''' Do something. Talk about it. '''
+class NotrInsertHruleCommand(sublime_plugin.TextCommand): # TODO
+    ''' Insert visuals. '''
 
-    def run(self, edit):
+    def run(self, edit, style): # 1-4
+        slog('!!!', f'NotrInsertHruleCommand')
+        global _ntr_files, _tags, _refs, _sections, _links
+
         v = self.view
-        scope = v.scope_name(v.sel()[-1].b).rstrip()
-        scopes = scope.split()
-        slog('!!!', f'scopes:{scopes}')
-        if 'markup.link.refname.notr' in scopes:
-            reg = v.expand_to_scope(v.sel()[-1].b, 'markup.link.refname.notr')
-            if reg is not None:
-                refname = v.substr(reg).strip()
-                if '#' in refname:
-                    # Section ref
-                    ref_parts = refname.split('#')
-                    ref = ref_parts[1] if len(ref_parts) > 1 else ref_parts[0]
+        settings = sublime.load_settings(NOTR_SETTINGS_FILE)
+        visual_line_length = settings.get('visual_line_length')
 
-                    pass
-                else:
-                    # Link ref
-                    pass
+        lchar = 'X' # default
+        if style == 1: lchar = '-'
+        elif style == 1: lchar = '='
+        elif style == 1: lchar = '+'
 
-    def is_visible(self):
-        return True
-        # return self.view.settings().get('syntax') == SYNTAX_XML
+        # Start of current line.
+        lst = v.line(v.sel())[0]
 
-
-#-----------------------------------------------------------------------------------
-class NotrAllTagsCommand(sublime_plugin.TextCommand):
-    ''' Do something. Talk about it. '''
-
-    def run(self, edit):
-        slog('!!!', f'_all_tags:{_all_tags}')
+        s = lchar * visual_line_length + '\n'
+        v.insert(edit, lst, s)
 
     def is_visible(self):
         return True
 
 
 #-----------------------------------------------------------------------------------
-class NotrFindTagsCommand(sublime_plugin.TextCommand):
-    ''' Do something. Talk about it. '''
+class NotrInsertLinkCommand(sublime_plugin.TextCommand): # TODO
+    ''' insert link from clipboard. '''
 
     def run(self, edit):
+        slog('!!!', f'NotrInsertLinkCommand')
+        global _ntr_files, _tags, _refs, _sections, _links
+
+
+    def is_visible(self):
+        return True
+
+
+#-----------------------------------------------------------------------------------
+class NotrInsertRefCommand(sublime_plugin.TextCommand): # TODO
+    ''' insert ref from list of known refs. '''
+
+    def run(self, edit):
+        slog('!!!', f'NotrInsertRefCommand')
+        global _ntr_files, _tags, _refs, _sections, _links
+
+
+    def is_visible(self):
+        return True
+
+
+#-----------------------------------------------------------------------------------
+class NotrOpenRefCommand(sublime_plugin.TextCommand):
+    ''' open link or section from selected ref: markup.link.refname.notr. '''
+
+    def run(self, edit):
+        ref_text = _get_selection_for_scope(self.view, 'markup.link.refname.notr')
+        global _ntr_files, _tags, _refs, _sections, _links
+
+
+        if '#' in ref_text:
+            # Section ref like  [*#Links and Refs]  [* file_root#section_name]
+            froot = None
+            ref_name = None
+            ref_parts = ref_text.split('#')
+            if len(ref_parts) > 1:
+                froot = ref_parts[0]
+                ref_name = ref_parts[1]
+            elif len(ref_parts) > 0:
+                ref_name = ref_parts[0]
+                froot = os.path.basename(os.path.splitext(self.view.file_name())[0])
+            else:
+                fn = '???'
+                line_num = -1
+                sublime.error_message(f'Invalid syntax in {fn} line{line_num}')
+
+            # Get the Section spec.
+            for section in _sections:
+                if section.froot == froot:
+                    # Open the file and position it.
+                    vnew = self.view.window().open_file(section.srcfile)
+                    while vnew.is_loading():
+                        pass
+                    vnew.run_command("goto_line", {"line": section.line})
+                    break;
+        else:
+            # Link ref
+            # Get the Link spec.
+            for link in _links:
+                if link.name == ref_text:
+                    cmd = [link.target]
+                    cp = subprocess.run(cmd, universal_newlines=True, capture_output=True, shell=True, check=True)
+                    if(len(cp.stdout) > 0):
+                        create_new_view(self.window, cp.stdout)
+                    break
+
+    def is_visible(self):
+        return _get_selection_for_scope(self.view, 'markup.link.refname.notr') is not None
+
+
+#-----------------------------------------------------------------------------------
+class NotrAllTagsCommand(sublime_plugin.TextCommand): # TODO
+    ''' find all sections with tag(s) - input? put in find pane. '''
+
+    def run(self, edit):
+        slog('!!!', f'_tags:{_tags}')
+        global _ntr_files, _tags, _refs, _sections, _links
+
+
+    def is_visible(self):
+        return True
+
+
+#-----------------------------------------------------------------------------------
+class NotrFindSectionsCommand(sublime_plugin.TextCommand): # TODO
+    ''' find all sections with tag(s) - input? put in find pane. TODO also wildcard search on name. '''
+
+    def run(self, edit):
+        global _ntr_files, _tags, _refs, _sections, _links
         pass
 
     def is_visible(self):
         return True
-        # return self.view.settings().get('syntax') == SYNTAX_XML
 
 
 #-----------------------------------------------------------------------------------
-class NotrYayaCommand(sublime_plugin.TextCommand):
+class NotrToHtmlCommand(sublime_plugin.TextCommand): # TODO
+    ''' rendering. '''
+
+    def run(self, edit, line_numbers):
+        global _ntr_files, _tags, _refs, _sections, _links
+        pass
+
+    def is_visible(self):
+        return True
+
+
+#-----------------------------------------------------------------------------------
+class NotrYayaCommand(sublime_plugin.TextCommand): # TODO
     ''' Do something. Talk about it. '''
 
     def run(self, edit, arg_1):
+        global _ntr_files, _tags, _refs, _sections, _links
         pass
+
         # settings = sublime.load_settings(HIGHLIGHT_SETTINGS_FILE)
         # highlight_scopes = settings.get('highlight_scopes')
 
@@ -270,37 +399,18 @@ class NotrYayaCommand(sublime_plugin.TextCommand):
 
     def is_visible(self):
         return True
-        # return self.view.settings().get('syntax') == SYNTAX_XML
 
 
+#-----------------------------------------------------------------------------------
+def _get_selection_for_scope(view, scope):
+    ''' If the current selection includes the scope return it otherwise None. '''
 
+    sel_text = None
+    scopes = view.scope_name(view.sel()[-1].b).rstrip().split()
+    # slog('!!!', f'scopes:{scopes}')
+    if scope in scopes:
+        reg = view.expand_to_scope(view.sel()[-1].b, scope)
+        if reg is not None:
+            sel_text = view.substr(reg).strip()
 
-
-
-
-'''
-- Matching pairs «»‹›“”‘’〖〗【】「」『』〈〉《》〔〕
-- Currency  ¤ $ ¢ € ₠ £ ¥
-- Common symbols © ® ™ ² ³ § ¶ † ‡ ※
-- Bullets •◦ ‣ ✓ ●■◆ ○□◇ ★☆ ♠♣♥♦ ♤♧♡♢
-- Music ♩♪♫♬♭♮♯
-- Punctuation “” ‘’ ¿¡ ¶§ª - ‐ ‑ ‒ – — ― …
-- Accents àáâãäåæç èéêë ìíîï ðñòóôõö øùúûüýþÿ ÀÁÂÃÄÅ Ç ÈÉÊË ÌÍÎÏ ÐÑ ÒÓÔÕÖ ØÙÚÛÜÝÞß 
-- Math ° ⌈⌉ ⌊⌋ ∏ ∑ ∫ ×÷ ⊕ ⊖ ⊗ ⊘ ⊙ ⊚ ⊛ ∙ ∘ ′ ″ ‴ ∼ ∂ √ ≔ × ⁱ ⁰ ¹ ² ³ ₀ ₁ ₂ π ∞ ± ∎
-- Logic & Set Theory ∀¬∧∨∃⊦∵∴∅∈∉⊂⊃⊆⊇⊄⋂⋃
-- Relations ≠≤≥≮≯≫≪≈≡
-- Sets ℕℤℚℝℂ
-- Arrows ←→↑↓ ↔ ↖↗↙↘  ⇐⇒⇑⇓ ⇔⇗  ⇦⇨⇧⇩ ↞↠↟↡ ↺↻  ☞☜☝☟
-- Computing ⌘ ⌥ ‸ ⇧ ⌤ ↑ ↓ → ← ⇞ ⇟ ↖ ↘ ⌫ ⌦ ⎋⏏ ↶↷ ◀▶▲▼ ◁▷△▽ ⇄ ⇤⇥ ↹ ↵↩⏎ ⌧ ⌨ ␣ ⌶ ⎗⎘⎙⎚ ⌚⌛ ✂✄ ✉✍
-- Digits ➀➁➂➃➄➅➆➇➈➉
-- Religious and cultural symbols ✝✚✡☥⎈☭☪☮☺☹☯☰☱☲☳☴☵☶☷
-- Dingbats ❦☠☢☣☤♲♳⌬♨♿ ☉☼☾☽ ♀♂ ♔♕♖ ♗♘♙ ♚♛ ♜♝♞♟
-
-http://xahlee.info/comp/unicode_computing_symbols.html
-⌘ ✲ ⎈ ^ ⌃ ❖ ⎇ ⌥ ⇮ ◆ ◇ ✦ ✧ ⇧ ⇪ 🄰 🅰 ⇪ ⇬ 🔠 🔡 ⇭ 🔢 🔤 ↩ ↵ ⏎ ⌤ ⎆ ▤ ☰ 𝌆 ⎄ ⭾ ↹ ⇄ ⇤ ⇥ ↤ ↦ ⎋ ⌫ ⟵ ⌦ ⎀ ⎚ ⌧ ↖ ↘ ⇤ ⇥ ⤒ ⤓ ⇞ ⇟ △ ▽ ▲ ▼ ⎗ ⎘ ↑ ↓ ← → ◀ ▶ ▲ ▼ ◁ ▷ △ ▽ ⇦ ⇨ ⇧ ⇩ ⬅ ➡ ⮕ ⬆ ⬇ ⎉ ⎊ ⎙ ⍰ ❓ ❔ ℹ 🛈 ☾ ⏏ ✉ 🏠 🏡 ⌂ ✂ ✄ ⎌ ↶ ↷ ⟲ ⟳ ↺ ↻ 🔍 🔎 🔅 🔆 🔇 🔈 🔉 🔊 🕨 🕩 🕪 ◼ ⏯ ⏮ ⏭ ⏪ ⏩ ⏫ ⏬ 🌐
-
-- github-unicode-?
-You can use either decimal or hex code point or HTML entity name (if exists) of a unicode character:
-`&#8364; &#x20AC; &euro; displays as â‚¬ â‚¬ â‚¬`
-
-'''
+    return sel_text

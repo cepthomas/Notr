@@ -1,3 +1,4 @@
+Meta? ID, Description
 
 # section name [tag1 tag2]
 A section of content. <section name> can be referenced later as a link.
@@ -29,23 +30,18 @@ Here is another block. Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
 > Blockquotes are very handy.
 > This line is part of the same quote.
 
-[]  {}  ()
-[] {{}} (())
- |
-  [fdffdfdfd fddffd]
 
 
+## Visuals [tag4 tag5]
+Visual delimiters that don't do anything else.
 
-## Visual Lines [tag4 tag5]
-Visual delimiters that don't do anything else. Four flavors.
-
------------------------------- single---------------------------------------
+------------------------------ single hrule --------------------------------------
 hello
-================================= double ===================================
+================================= double hrule ===================================
 hello
-+++++++++++++++++++++++++++++++++++ fill +++++++++++++++++++++++++++++++++++
++++++++++++++++++++++++++++++++++++ fill hrule +++++++++++++++++++++++++++++++++++
 hello
-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX hatch XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX hatch hrule XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 hello
 
 ## Lists [tag9 tagZZZ]
@@ -75,14 +71,14 @@ Define link and its name: [name: link]
 [other type of file: C:\Users\cepth\AppData\Roaming\Sublime Text\Packages\Notr\notr.py]
 
 Alias to ntr file.
-[ntr file another:C:\Dev\Notr\page2.ntr]
+NOT--[ntr file another:C:\Dev\Notr\page2.ntr]
 
 
 Use `*` to reference aliases.  [* name]
-URI. [* uri read all about it]  Other file. [* image felix le chat] etc..
+Ref to URI. [* uri read all about it]  Ref to other file. [* image felix le chat] etc..
 
-not  Reference section in this ntr file. [*#Links and Refs]  end
-not  Reference section in another ntr file. [*ntr file another#other section]
+Ref section in this ntr file: [*#Links and Refs]  end.
+Ref section in another ntr file: [* file_root#section_name] like [*page2#P2 section 2]. file_root is just the root of a pathless name so be careful.
 
 
 ## Tables [tag2]

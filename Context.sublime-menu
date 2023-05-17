@@ -10,14 +10,38 @@
         "caption": "Notr",
         "children":
         [
-            { "caption": "-" },
+            // { "caption": "-" },
+            // dummy
             { "caption": "YaYa", "command": "notr_yaya", "args" : {"arg_1" : 999} },
+
+
+            // visuals
+            {
+                "caption": "Insert Rule",
+                "children":
+                [
+                    { "caption": "Single", "command": "notr_insert_hrule", "args" : {"style" : 1} },
+                    { "caption": "Double", "command": "notr_insert_hrule", "args" : {"style" : 2} },
+                    { "caption": "Fill", "command": "notr_insert_hrule", "args" : {"style" : 3} },
+                    { "caption": "Hatch", "command": "notr_insert_hrule", "args" : {"style" : 4} },
+                ]
+            },
+
+
+            // insert link from clipboard
+            { "caption": "Insert Link", "command": "notr_insert_link" },
+            // insert ref from list of known refs
+            { "caption": "Insert Ref", "command": "notr_insert_ref" },
             // open link or section from ref: markup.link.refname.notr  like open_context_url
             { "caption": "Open Ref", "command": "notr_open_ref" },
-            // list tags
+            // list all tags
             { "caption": "All Tags", "command": "notr_all_tags" },
-            // find all sections with tag(s) - input? put in find pane
-            { "caption": "Find Tags", "command": "notr_find_tags" },
+            // find all sections with tag(s) - input? put in find pane. also wildcard search on name.
+            { "caption": "Find Sections", "command": "notr_find_sections" },
+            // insert link from clipboard
+            { "caption": "Insert Link Sections", "command": "notr_insert_link" },
+            // rendering
+            { "caption": "Notr HTML", "command": "notr_to_html", "args" : {"line_numbers" : false} },
         ]
     },
     // { "caption": "Clear Highlights in File", "command": "sbot_clear_highlights" },
