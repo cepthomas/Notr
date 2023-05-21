@@ -1,49 +1,25 @@
 [
-    // { "caption": "-" },
-
-    // { "caption": "Notr HTML", "command": "notr_to_html", "args" : {"line_numbers" : false} },
-
     { "caption": "-" },
-    // { "caption": "HL 1", "command": "sbot_highlight_text", "args" : {"hl_index" : 0} },
-    // { "caption": "HL 2", "command": "sbot_highlight_text", "args" : {"hl_index" : 1} },
     {
         "caption": "Notr",
         "children":
         [
-            // { "caption": "-" },
-            // dummy
-            { "caption": "YaYa", "command": "notr_yaya", "args" : {"arg_1" : 999} },
-
-
-            // visuals
+            { "caption": "Goto Tag Section", "command": "notr_goto_section", "args" : {"filter_by_tag" : true} },
+            { "caption": "Goto Section", "command": "notr_goto_section", "args" : {"filter_by_tag" : false} },
+            { "caption": "Goto Ref", "command": "notr_goto_ref" },
             {
-                "caption": "Insert Rule",
+                "caption": "Insert",
                 "children":
                 [
-                    { "caption": "Single", "command": "notr_insert_hrule", "args" : {"style" : 1} },
-                    { "caption": "Double", "command": "notr_insert_hrule", "args" : {"style" : 2} },
-                    { "caption": "Fill", "command": "notr_insert_hrule", "args" : {"style" : 3} },
-                    { "caption": "Hatch", "command": "notr_insert_hrule", "args" : {"style" : 4} },
+                    { "caption": "Insert Link", "command": "notr_insert_link" },
+                    // { "caption": "Insert Ref", "command": "notr_insert_ref" },
+                    { "caption": "Single Rule", "command": "notr_insert_hrule", "args" : {"style" : 1} },
+                    { "caption": "Double Rule", "command": "notr_insert_hrule", "args" : {"style" : 2} },
+                    { "caption": "Fill Rule", "command": "notr_insert_hrule", "args" : {"style" : 3} },
+                    { "caption": "Hatch Rule", "command": "notr_insert_hrule", "args" : {"style" : 4} },
                 ]
             },
-
-
-            // insert link from clipboard
-            { "caption": "Insert Link", "command": "notr_insert_link" },
-            // insert ref from list of known refs
-            { "caption": "Insert Ref", "command": "notr_insert_ref" },
-            // open link or section from ref: markup.link.refname.notr  like open_context_url
-            { "caption": "Open Ref", "command": "notr_open_ref" },
-            // list all tags
-            { "caption": "All Tags", "command": "notr_all_tags" },
-            // find all sections with tag(s) - input? put in find pane. also wildcard search on name.
-            { "caption": "Find Sections", "command": "notr_find_sections" },
-            // insert link from clipboard
-            { "caption": "Insert Link Sections", "command": "notr_insert_link" },
-            // rendering
-            { "caption": "Notr HTML", "command": "notr_to_html", "args" : {"line_numbers" : false} },
+            { "caption": "To HTML", "command": "notr_to_html", "args" : {"line_numbers" : false} },
         ]
     },
-    // { "caption": "Clear Highlights in File", "command": "sbot_clear_highlights" },
-
 ]

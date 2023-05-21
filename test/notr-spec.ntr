@@ -67,17 +67,12 @@ item states (in settings)
 ## Links and References [tag3 tag4 tag9]
 
 Define link and its name: [name: link]
-      could be anywhere [uri read all about it: https://nytimes.com] in a text  [image felix le chat: ..\..\Dev\Notr\felix.jpg] etc...
-[other type of file: C:\Users\cepth\AppData\Roaming\Sublime Text\Packages\Notr\notr.py]
-
-Alias to ntr file.
-NOT--[ntr file another:C:\Dev\Notr\page2.ntr]
-
+Like  [image felix le chat: ..\..\Dev\Notr\felix.jpg] or [other type of file: C:\Users\cepth\AppData\Roaming\Sublime Text\Packages\Notr\notr.py]
 
 Use `*` to reference aliases.  [* name]
-Ref to URI. [* uri read all about it]  Ref to other file. [* image felix le chat] etc..
+Ref to other file. [* image felix le chat] or [* other type of file].
 
-Ref section in this ntr file: [*#Links and Refs]  end.
+Ref section in this ntr file: [*#section no tags]  end.
 Ref section in another ntr file: [* file_root#section_name] like [*page2#P2 section 2]. file_root is just the root of a pathless name so be careful.
 
 

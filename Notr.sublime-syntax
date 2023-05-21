@@ -78,19 +78,8 @@ contexts:
 
   atx-heading:
 
-    ## section no tags
-    # - match: '^(#+) +([^\[]+)\n$'
-    #   scope: markup.heading.notr
-    #   captures:
-    #     1: markup.heading.marker.notr
-    #     2: markup.heading.content.notr
-
-    # yes tags
     ### Text Attributes [[tag2 tag3]]
-    - match: '^(#+) +([^\[]+) *(?:\[(.*)\])?\n' # 1brackets not in scope
-    # - match: '^(#+) +([^\[]+) +\[(.*)\]' # 1brackets not in scope
-    # - match: '^(#+) +([^\[]+) +\[\[(.*)\]\]' # 2brackets not in scope
-    # - match: '^(#+) +([^\[]+) +(\[\[.*\]\])' # 2brackets in scope
+    - match: '^(#+) +([^\[]+) *(?:\[(.*)\])?\n'
       scope: markup.heading.notr
       captures:
         1: markup.heading.marker.notr
@@ -152,24 +141,12 @@ contexts:
 
   link:
     # link def
-    - match: '\[([^:]*): *([^\]]*)\]' #1brackets not in scope
-    # - match: '\[\[([^:]*): *([^\]]*)\]\]' # 2brackets not in scope
+    - match: '\[([^:]*): *([^\]]*)\]'
       captures:
         1: markup.link.name.notr
         2: markup.underline.link.notr
 
     # link ref
-    # - match: '(\*)\[([^:]*): *([^\]]*)\]'
-    # - match: '(\*)\[ *([^\]]*)\]'
-    # - match: '(\*)\[ *([^\]]*)\]' # 1brackets not in scope
-    # - match: '(\*)\[\[ *([^\]]*)\]\]' # 2brackets not in scope
-    - match: '\[\* *([^\]]*)\]' # 1brackets not in scope
+    - match: '\[\* *([^\]]*)\]'
       captures:
-        # 1: markup.link.marker.notr
         1: markup.link.refname.notr
-
-    # - match: '(\*)\[([^:]*): *([^\]]*)\]'
-      # captures:
-      #   1: markup.link.marker.notr
-      #   2: markup.link.refname.notr
-      #   3: markup.underline.link

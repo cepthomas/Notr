@@ -64,22 +64,7 @@ Note that this uses the OS association so py files could open as exes. Maybe a n
 | :--------                  | :-------       | :-------                      | :--------                      |
 | notr_xxxx                  | Context        | something here                |                                |
 
-// visuals
-{ "caption": "Insert", "command": "notr_insert_hrule", "args" : {"style" : 1} },
-// insert link from clipboard
-{ "caption": "Insert Link", "command": "notr_insert_link" },
-// insert ref from list of known refs
-{ "caption": "Insert Ref", "command": "notr_insert_ref" },
-// open link or section from ref: markup.link.refname.notr  like open_context_url
-{ "caption": "Open Ref", "command": "notr_open_ref" },
-// list all tags
-{ "caption": "All Tags", "command": "notr_all_tags" },
-// find all sections with tag(s) - input? put in find pane. also wildcard search on name.
-{ "caption": "Find Sections", "command": "notr_find_sections" },
-// insert link from clipboard
-{ "caption": "Insert Link Sections", "command": "notr_insert_link" },
-// rendering
-{ "caption": "Notr HTML", "command": "notr_to_html", "args" : {"line_numbers" : false} },
+Gotos put tags/sections on clipboard if esc.
 
 
 ## Settings
@@ -95,8 +80,3 @@ Things to add later, maybe.
 - Support text/link attributes in blocks, tables, lists, etc.
 - Unicode menu/picker to insert, show at caret.
 - Ligatures - some compromise? https://practicaltypography.com/ligatures-in-programming-fonts-hell-no.html
-- Expose notes to web for access from phone. R/O render html?
-- Show image as phantom or hover. Thumbnail.
-- Annotations? See anns.append()
-- Toggle syntax coloring (distraction free). Could just set to Plain Text.
-- Fancy file.section navigator (like word-ish and/or goto anything). Drag/drop section.
