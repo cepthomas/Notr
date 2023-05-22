@@ -70,10 +70,10 @@ Define link and its name: [name: link]
 Like  [image felix le chat: ..\..\Dev\Notr\felix.jpg] or [other type of file: C:\Users\cepth\AppData\Roaming\Sublime Text\Packages\Notr\notr.py]
 
 Use `*` to reference aliases.  [* name]
-Ref to other file. [* image felix le chat] or [* other type of file].
-
+Ref to other file. [* image felix le chat] or [* other type of file] or [* another felix].
+Ref to URI. [* nyt]
 Ref section in this ntr file: [*#section no tags]  end.
-Ref section in another ntr file: [* file_root#section_name] like [*page2#P2 section 2]. file_root is just the root of a pathless name so be careful.
+Ref section in another ntr file: [* file_root#section_name] like [*page2#P2 section 2]. file_root is just the root of a pathless name - no duplicates.
 
 
 ## Tables [tag2]
