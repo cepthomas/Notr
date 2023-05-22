@@ -4,6 +4,7 @@
         "caption": "Notr",
         "children":
         [
+            { "caption": "Dump", "command": "notr_dump" },
             { "caption": "Goto Tag Section", "command": "notr_goto_section", "args" : {"filter_by_tag" : true} },
             { "caption": "Goto Section", "command": "notr_goto_section", "args" : {"filter_by_tag" : false} },
             { "caption": "Goto Ref", "command": "notr_goto_ref" },

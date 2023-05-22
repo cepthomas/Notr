@@ -45,10 +45,10 @@ _ntr_files = []
 
 # LinkType = Enum('LinkType', ['WEB', 'NTR', 'IMAGE', 'FILE', 'OTHER'])
 
-# One section: ntr file path, ntr file line, ntr file name root, level 1-N, name/id, list of tags
+# One section: srcfile=ntr file path, line=ntr file line, froot=ntr file name root, level=1-N, name=section text, tags[]
 Section = collections.namedtuple('Section', 'srcfile, line, froot, level, name, tags')
 
-# One link: ntr file path, name/id, uri/file
+# One link: srcfile=ntr file path, name=desc text, target=uri/file/clickable
 Link = collections.namedtuple('Link', 'srcfile, name, target')
 
 # Ref = collections.namedtuple('Ref', 'srcfile, name')
@@ -59,8 +59,8 @@ _sections = []
 # All Links in all files. Could be multidict?
 _links = []
 
-# All ref strings in all files. Mainly used for ui list display or picker. TODO-refs
-_refs = {}
+# All refs in all files. Mainly used for ui list display or picker. TODO-refs
+_refs = []
 
 # All tags. Value is count.
 _tags = {}
@@ -92,7 +92,7 @@ class NotrEvent(sublime_plugin.EventListener):
         _sections.clear()
         _links.clear()
 
-        # Open and process notr files.
+        # Open and process notr files. TODO need to redo if one of the ntr files is changed.
         settings = sublime.load_settings(NOTR_SETTINGS_FILE)
         notr_paths = settings.get('notr_paths')
         for npath in notr_paths:
@@ -101,9 +101,9 @@ class NotrEvent(sublime_plugin.EventListener):
                     _ntr_files.append(nfile)
                     self._process_notr_file(nfile)
 
-        # TODO check that all collected links and refs are valid.
+        # TODO check that all collected links and refs are valid. Check for duplicate refs.
 
-        # Views are all valid so init them.
+        # Views are all valid now so init them.
         for view in views:
             self._init_user_hl(view)
 
@@ -140,8 +140,8 @@ class NotrEvent(sublime_plugin.EventListener):
                     matches = re_refs.findall(line)
                     for m in matches:
                         # slog('REF', m)
-                        name = m[0].strip()
-                        _refs[name] = 1
+                        # name = m[0].strip()
+                        _refs.append(m)
 
                     # Sections
                     matches = re_sections.findall(line)
@@ -312,6 +312,7 @@ class NotrGotoRefCommand(sublime_plugin.TextCommand):
             # Get the Link spec.
             for link in _links:
                 if link.name == ref_text:
+                    slog(CAT_DBG, f'>>> {ref_text} {link.target}')
                     if os.path.exists(link.target) or link.target.startswith('http'):
                         start_file(link.target)
                     break
@@ -353,7 +354,7 @@ class NotrInsertLinkCommand(sublime_plugin.TextCommand):
 
     def run(self, edit):
         v = self.view
-        s = f'[XYZZY: {sublime.get_clipboard()}]'
+        s = f'[name?: {sublime.get_clipboard()}]'
         v.insert(edit, v.sel()[0].a, s)
 
     def is_visible(self):
@@ -380,6 +381,27 @@ class NotrToHtmlCommand(sublime_plugin.TextCommand):
 
     def is_visible(self):
         return self.view.syntax().name == 'Notr'
+
+
+#-----------------------------------------------------------------------------------
+class NotrDumpCommand(sublime_plugin.TextCommand):
+    ''' Diagnostic. '''
+
+    def run(self, edit):
+        text = []
+        text.append('=== Sections ===')
+        for x in _sections: text.append(str(x))
+
+        text.append('=== Links ===')
+        for x in _links: text.append(str(x))
+
+        text.append('=== Tags ===')
+        for x in _tags: text.append(f'{x}:{_tags[x]}')
+
+        text.append('=== Refs ===')
+        for x in _refs: text.append(str(x))
+
+        create_new_view(self.view.window(), '\n'.join(text))
 
 
 #-----------------------------------------------------------------------------------
