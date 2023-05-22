@@ -15,8 +15,8 @@
     <SuppressConfigureTestFrameworkPrompt>true</SuppressConfigureTestFrameworkPrompt>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
     <Environment>UNIT_TEST=1;
-PYTHONPATH=%PYTHONPATH%;..\..\SbotDev\st_emul;..\..\</Environment>
-    <TestFramework>pytest</TestFramework>
+</Environment>
+    <TestFramework>unittest</TestFramework>
     <UnitTestPattern>test_*.py</UnitTestPattern>
     <UnitTestRootDirectory>.</UnitTestRootDirectory>
     <IsWindowsApplication>False</IsWindowsApplication>

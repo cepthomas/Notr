@@ -2,8 +2,11 @@ import unittest
 from unittest.mock import MagicMock
 import sublime
 import sublime_plugin
-from sbot_common import *
-import Notr.notr as snotr
+from .sbot_common import *
+#import Notr.notr as snotr
+#from .notr import *
+
+#import ..notr
 
 
 #-----------------------------------------------------------------------------------
@@ -20,6 +23,8 @@ class TestNotr(unittest.TestCase):
             "user_hl_whole_word": True,
         }
         sublime.load_settings = MagicMock(return_value = mock_settings)
+
+
 
         # Mock settings with side effect.
         #settings = sublime.load_settings('NOTR_SETTINGS_FILE')
