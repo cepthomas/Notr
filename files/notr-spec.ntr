@@ -1,4 +1,3 @@
-Meta? ID, Description
 
 # section name [tag1 tag2]
 A section of content. <section name> can be referenced later as a link.
@@ -67,7 +66,8 @@ item states (in settings)
 ## Links and References [tag3 tag4 tag9]
 
 Define link and its name: [name: link]
-Like  [image felix le chat: files\felix1.jpg] or [other type of file: C:\Users\cepth\AppData\Roaming\Sublime Text\Packages\Notr\notr.py]
+Like [image felix le chat: C:\Users\cepth\AppData\Roaming\Sublime Text\Packages\Notr\files\felix1.jpg] or
+   [other type of file: C:\Users\cepth\AppData\Roaming\Sublime Text\Packages\Notr\notr.py]
 
 Use `*` to reference aliases.  [* name]
 Ref to other file. [* image felix le chat] or [* other type of file] or [* another felix].

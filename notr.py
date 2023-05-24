@@ -5,35 +5,37 @@ import glob
 import collections
 import sublime
 import sublime_plugin
-from .sbot_common import *# slog
+from .sbot_common import *# TODO fix everywhere
+
 
 NOTR_SETTINGS_FILE = "Notr.sublime-settings"
 
 ''' 
-- TODO look at other plugins:
-    - linter code to see what they do
-    - Sublime Markdown Popups (mdpopups) is a library for Sublime Text plugins.  It utilizes the new plugin API found in ST3
-        3080+ for generating tooltip popups. It also provides API methods for generating and styling the new phantom elements
-        introduced in ST3 3118+.  Mdpopups utilizes Python Markdown with a couple of special extensions to convert Markdown to
-        HTML that can be used to create the popups and/or phantoms.  It also provides a number of other helpful API commands to
-        aid in creating great tooltips and phantoms.
-        Mdpopups will use your color scheme to create popups/phantoms that fit your editors look.
+- TODO look at other plugins - icons, style, annotations, phantoms:
+    - linter code to see what they do: outline
+    - Sublime Markdown Popups (mdpopups) is a library for Sublime Text plugins. for generating tooltip popups.
+      It also provides API methods for generating and styling the new phantom elements
+        utilizes Python Markdown with a couple of special extensions to convert Markdown to
+        HTML that can be used to create the popups and/or phantoms.
+        API commands to aid in creating great tooltips and phantoms.
+        will use your color scheme
+    - Show image as phantom or hover. Thumbnail. See SbotDev.
+    - Annotations? See anns.append()
 
 - TODO folding by section - Default.fold.py? folding.py?
 
-- TODO tables
+- TODO tables:
     - insert table = notr_insert_table(w, h)
     - table autofit/justify - notr_justify_table
     - table add/delete row(s)/col(s) ?
 
-- TODO odds and ends
-    - Block comment/uncomment useful? What would that mean - "hide" text? Insert string (# or //) from settings.
-    - LMH Priorities (for searching) or could be tag.
-    - Expose notes to web for access from phone. R/O render html?
-    - Show image as phantom or hover. Thumbnail. See SbotDev.
-    - Annotations? See anns.append()
-    - Toggle syntax coloring (distraction free). Could just set to Plain Text.
-    - Fancy file.section navigator (like word-ish and/or goto anything). Drag/drop section.
+- TODO Block comment/uncomment useful? What would that mean - "hide" text? Insert string (# or //) from settings.
+
+- TODO Expose notes to web for access from phone. R/O render html?
+
+- TODO Toggle syntax coloring (distraction free). Could just set to Plain Text.
+
+- TODO Fancy file.section navigator (like word-ish and/or goto anything). Drag/drop section.
 
 '''
 
@@ -53,16 +55,16 @@ Link = collections.namedtuple('Link', 'srcfile, name, target')
 
 # Ref = collections.namedtuple('Ref', 'srcfile, name')
 
-# All Sections in all files. Could be multidict?
+# All Sections found in all ntr files. Could be multidict?
 _sections = []
 
-# All Links in all files. Could be multidict?
+# All Links found in all ntr files. Could be multidict?
 _links = []
 
-# All refs in all files. Mainly used for ui list display or picker. TODO-refs
+# All refs found in all ntr files.
 _refs = []
 
-# All tags. Value is count.
+# All tags found in all ntr files. Value is count.
 _tags = {}
 
 
@@ -165,7 +167,8 @@ class NotrEvent(sublime_plugin.EventListener):
             raise
 
     def _init_user_hl(self, view):
-        ''' Add any user highlights. TODO differentiate these from SbotHighlight flavor. '''
+        ''' Add any user highlights. TODO differentiate these from SbotHighlight flavor - outline or inverse or italic or something. '''
+
         if view.is_scratch() is False and view.file_name() is not None and view.syntax().name == 'Notr':
             settings = sublime.load_settings(NOTR_SETTINGS_FILE)
             user_hl = settings.get('user_hl')
@@ -238,7 +241,7 @@ class NotrGotoSectionCommand(sublime_plugin.TextCommand):
             n = []
             for section in _sections:
                 if sel_tag in section.tags:
-                    n.append(f'{section.froot}.{section.name}')
+                    n.append(f'{section.froot}#{section.name}')
             if len(n) > 0:
                 self._sorted_sec_names = sorted(n)
                 # Hide current quick panel.
@@ -260,7 +263,7 @@ class NotrGotoSectionCommand(sublime_plugin.TextCommand):
             # Locate the section record.
             sel_secname = self._sorted_sec_names[sel]
             for section in _sections:
-                if f'{section.froot}.{section.name}' == sel_secname:
+                if f'{section.froot}#{section.name}' == sel_secname:
                     # Open the section in a new view.
                     vnew = wait_load_file(self.view.window(), section.srcfile, section.line)
                     break
@@ -274,7 +277,7 @@ class NotrGotoSectionCommand(sublime_plugin.TextCommand):
 
 #-----------------------------------------------------------------------------------
 class NotrGotoRefCommand(sublime_plugin.TextCommand):
-    ''' Open link or section from selected ref. TODO-refs fix. '''
+    ''' Open link or section from selected ref. '''
 
     def run(self, edit):
         ref_text = _get_selection_for_scope(self.view, 'markup.link.refname.notr')
@@ -306,13 +309,12 @@ class NotrGotoRefCommand(sublime_plugin.TextCommand):
                         break
 
             if not valid:
-                slog(CAT_ERR, f'Invalid reference in {self.view.file_name()} name {ref_name}')
+                slog(CAT_ERR, f'Invalid reference in {self.view.file_name()} name:{ref_name}')
 
         else:  # Link ref
             # Get the Link spec.
             for link in _links:
                 if link.name == ref_text:
-                    slog(CAT_DBG, f'>>> {ref_text} {link.target}')
                     if os.path.exists(link.target) or link.target.startswith('http'):
                         start_file(link.target)
                     break
@@ -362,11 +364,38 @@ class NotrInsertLinkCommand(sublime_plugin.TextCommand):
 
 
 #-----------------------------------------------------------------------------------
-class NotrInsertRefCommand(sublime_plugin.TextCommand):  # TODO-refs
+class NotrInsertRefCommand(sublime_plugin.TextCommand):
     ''' Insert ref from list of known refs. '''
+    _sorted_refs = []
 
     def run(self, edit):
-        slog('!!!', f'NotrInsertRefCommand')
+        # slog('!!!', f'NotrInsertRefCommand()')
+        self._sorted_refs.clear()
+        panel_items = []
+
+        # Collect all possible refs. TODO make into private function.
+        n = []
+        for section in _sections:
+            n.append(f'{section.froot}#{section.name}')
+        for link in _links:
+            n.append(f'{link.name}')
+
+        self._sorted_refs = sorted(n)
+        for sec_name in self._sorted_refs:
+            panel_items.append(sublime.QuickPanelItem(trigger=sec_name, kind=sublime.KIND_AMBIGUOUS))
+        self.view.window().show_quick_panel(panel_items, on_select=self.on_sel_ref)
+
+    def on_sel_ref(self, *args, **kwargs):
+        sel = args[0]
+        if sel >= 0:
+            v = self.view
+            # s = f'[*{self._sorted_refs[sel]}]'
+            s = f'[*{self._sorted_refs[sel]}]'
+            v.run_command("insert", {"characters": f'{s}'}) # Insert in created view
+            # v.insert(edit, v.sel()[0].a, s)
+        else:
+            # Stick them in the clipboard.
+            sublime.set_clipboard('\n'.join(self._sorted_refs))
 
     def is_visible(self):
         return self.view.syntax().name == 'Notr'
@@ -389,16 +418,16 @@ class NotrDumpCommand(sublime_plugin.TextCommand):
 
     def run(self, edit):
         text = []
-        text.append('=== Sections ===')
+        text.append('=== _sections ===')
         for x in _sections: text.append(str(x))
 
-        text.append('=== Links ===')
+        text.append('=== _links ===')
         for x in _links: text.append(str(x))
 
-        text.append('=== Tags ===')
+        text.append('=== _tags ===')
         for x in _tags: text.append(f'{x}:{_tags[x]}')
 
-        text.append('=== Refs ===')
+        text.append('=== _refs ===')
         for x in _refs: text.append(str(x))
 
         create_new_view(self.view.window(), '\n'.join(text))

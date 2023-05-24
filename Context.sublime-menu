@@ -13,14 +13,14 @@
                 "children":
                 [
                     { "caption": "Insert Link", "command": "notr_insert_link" },
-                    // { "caption": "Insert Ref", "command": "notr_insert_ref" },
+                    { "caption": "Insert Ref", "command": "notr_insert_ref" },
                     { "caption": "Single Rule", "command": "notr_insert_hrule", "args" : {"style" : 1} },
                     { "caption": "Double Rule", "command": "notr_insert_hrule", "args" : {"style" : 2} },
                     { "caption": "Fill Rule", "command": "notr_insert_hrule", "args" : {"style" : 3} },
                     { "caption": "Hatch Rule", "command": "notr_insert_hrule", "args" : {"style" : 4} },
                 ]
             },
-            { "caption": "To HTML", "command": "notr_to_html", "args" : {"line_numbers" : false} },
+            // { "caption": "To HTML", "command": "notr_to_html", "args" : {"line_numbers" : false} },
         ]
     },
 ]

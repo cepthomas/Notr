@@ -1,17 +1,25 @@
-# Notr TODO doc
+# Notr
 
 Sublime Text markup syntax for coloring plain text files. The intention is to provide visual clues for things
 like sections, links, tables, lists, etc. The syntax is somewhat similar to markdown but this is not intended
-to be rendered into some pretty final form.
+to be rendered into a pretty final form.
 
 Built for ST4 on Windows and Linux.
 
-Persistence file is in `%data_dir%\Packages\User\.SbotStore`. ????
-
 ## Features
 
-- Describe list.
-- See `notr-spec.ntr`. Make a pic of this.
+- Sections with tags
+- Various text decorations
+- Links and references
+- Lists
+- Tables
+
+- See `notr-spec.ntr` for an example of the features. Looks like this (sorry about the colors...):
+
+![Some][files/ex1.jpg]
+
+![Other][files/ex2.jpg]
+
 
 ## Limitations
 
@@ -21,20 +29,7 @@ Persistence file is in `%data_dir%\Packages\User\.SbotStore`. ????
     Also they are not available via extract_scope().
 - Auto-indent with bullets? Probably not possible as ST controls this.
 
-## Structure
-
-- Lists of:
-  - managed ntr filepaths.
-  - managed other filepaths.
-like:
-[Charlotte inline: http://pattedemouche.free.fr/]
-[felix-le-chat1: C:\Dev\Notr\felix.jpg]
-[felix-le-chat2: ..\..\Dev\Notr\felix.jpg]
-
-
 ## Scopes
-
-- See my C:\Users\cepth\AppData\Roaming\Sublime Text\Packages\User\CT.sublime-color-scheme.
 
 Notr uses these scopes:
 - ST defaults:
@@ -52,10 +47,6 @@ meta. Meta scopes are used to scope larger sections of code or markup, generally
 ST uses [Oniguruma Regular Expressions Version 6.8.0    2018/07/26](https://github.com/kkos/oniguruma)
 Doc: https://github.com/kkos/oniguruma/blob/master/doc/RE
 syntax: ONIG_SYNTAX_ONIGURUMA (default)
-
-## Links
-
-Note that this uses the OS association so py files could open as exes. Maybe a new flavor of open_context_url.py.
 
 
 ## Commands
