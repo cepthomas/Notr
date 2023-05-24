@@ -16,9 +16,9 @@ Built for ST4 on Windows and Linux.
 
 - See `notr-spec.ntr` for an example of the features. Looks like this (sorry about the colors...):
 
-![Some][files/ex1.jpg]
+![Some](files/ex1.jpg)
 
-![Other][files/ex2.jpg]
+![Other](files/ex2.jpg)
 
 
 ## Limitations
