@@ -5,7 +5,7 @@ import glob
 import collections
 import sublime
 import sublime_plugin
-from .sbot_common import *
+from .sbot_common import *# slog
 
 NOTR_SETTINGS_FILE = "Notr.sublime-settings"
 
