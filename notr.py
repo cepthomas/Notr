@@ -1,17 +1,16 @@
 import os
-# import subprocess
 import re
 import glob
 import collections
 import sublime
 import sublime_plugin
-from .sbot_common import *# TODO fix everywhere
+from .sbot_common import *
 
 
 NOTR_SETTINGS_FILE = "Notr.sublime-settings"
 
 ''' 
-- TODO look at other plugins - icons, style, annotations, phantoms:
+- TODO look at other plugins - for icons, style, annotations, phantoms:
     - linter code to see what they do: outline
     - Sublime Markdown Popups (mdpopups) is a library for Sublime Text plugins. for generating tooltip popups.
       It also provides API methods for generating and styling the new phantom elements
@@ -29,7 +28,7 @@ NOTR_SETTINGS_FILE = "Notr.sublime-settings"
     - table autofit/justify - notr_justify_table
     - table add/delete row(s)/col(s) ?
 
-- TODO Block comment/uncomment useful? What would that mean - "hide" text? Insert string (# or //) from settings.
+- TODO Block comment/uncomment useful? What would that mean - "hide" text? Insert string (# or // or ...) from settings.
 
 - TODO Expose notes to web for access from phone. R/O render html?
 

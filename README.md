@@ -14,7 +14,7 @@ Built for ST4 on Windows and Linux.
 - Lists
 - Tables
 
-- See `notr-spec.ntr` for an example of the features. Looks like this (sorry about the colors...):
+- See [The spec](files/notr-spec.ntr) for an example of the features. Looks like this (sorry about the colors...):
 
 ![Some](files/ex1.jpg)
 
