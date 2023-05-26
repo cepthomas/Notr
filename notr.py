@@ -4,37 +4,37 @@ import glob
 import collections
 import sublime
 import sublime_plugin
-from .sbot_common import *
+from . import sbot_common as sc
 
 
 NOTR_SETTINGS_FILE = "Notr.sublime-settings"
 
 ''' 
-- TODO look at other plugins - for icons, style, annotations, phantoms:
-    - linter code to see what they do: outline
-    - Sublime Markdown Popups (mdpopups) is a library for Sublime Text plugins. for generating tooltip popups.
+- TODO2 icons, style, annotations, phantoms:
+    - Show image as phantom or hover. Thumbnail. See SbotDev.
+    - Annotations? See anns.append()
+    - see linter code to see what they do: outline
+    - see Sublime Markdown Popups (mdpopups) is a library for Sublime Text plugins. for generating tooltip popups.
       It also provides API methods for generating and styling the new phantom elements
         utilizes Python Markdown with a couple of special extensions to convert Markdown to
         HTML that can be used to create the popups and/or phantoms.
         API commands to aid in creating great tooltips and phantoms.
         will use your color scheme
-    - Show image as phantom or hover. Thumbnail. See SbotDev.
-    - Annotations? See anns.append()
 
-- TODO folding by section - Default.fold.py? folding.py?
+- TODO1 folding by section - Default.fold.py? folding.py?
 
-- TODO tables:
+- TODO2 tables:
     - insert table = notr_insert_table(w, h)
     - table autofit/justify - notr_justify_table
     - table add/delete row(s)/col(s) ?
 
-- TODO Block comment/uncomment useful? What would that mean - "hide" text? Insert string (# or // or ...) from settings.
+- TODO2 Block comment/uncomment useful? What would that mean - "hide" text? Insert string (# or // or ...) from settings.
 
-- TODO Expose notes to web for access from phone. R/O render html?
+- TODO1 Expose notes to web for access from phone. R/O render html?
 
-- TODO Toggle syntax coloring (distraction free). Could just set to Plain Text.
+- TODO2 Toggle syntax coloring (distraction free). Could just set to Plain Text.
 
-- TODO Fancy file.section navigator (like word-ish and/or goto anything). Drag/drop section.
+- TODO2 Fancy file.section navigator (like word-ish and/or goto anything). Drag/drop section.
 
 '''
 
@@ -69,13 +69,13 @@ _tags = {}
 
 #-----------------------------------------------------------------------------------
 def plugin_loaded():
-    # slog(CAT_DBG, 'plugin_loaded()')
+    # sc.slog(sc.CAT_DBG, 'plugin_loaded()')
     pass
 
 
 #-----------------------------------------------------------------------------------
 def plugin_unloaded():
-    # slog(CAT_DBG, 'plugin_unloaded()')
+    # sc.slog(sc.CAT_DBG, 'plugin_unloaded()')
     pass
 
 
@@ -85,7 +85,7 @@ class NotrEvent(sublime_plugin.EventListener):
 
     def on_init(self, views):
         ''' First thing that happens when plugin/window created. Initialize everything. '''
-        # slog(CAT_DBG, f'on_init() {views}')
+        # sc.slog(sc.CAT_DBG, f'on_init() {views}')
 
         _ntr_files.clear()
         _tags.clear()
@@ -93,16 +93,8 @@ class NotrEvent(sublime_plugin.EventListener):
         _sections.clear()
         _links.clear()
 
-        # Open and process notr files. TODO need to redo if one of the ntr files is changed.
-        settings = sublime.load_settings(NOTR_SETTINGS_FILE)
-        notr_paths = settings.get('notr_paths')
-        for npath in notr_paths:
-            if os.path.exists(npath):
-                for nfile in glob.glob(os.path.join(npath, '*.ntr')):
-                    _ntr_files.append(nfile)
-                    self._process_notr_file(nfile)
-
-        # TODO check that all collected links and refs are valid. Check for duplicate refs.
+        # Open and process notr files. TODO1 need to redo if one of the ntr files is changed.
+        _process_notr_files()
 
         # Views are all valid now so init them.
         for view in views:
@@ -110,63 +102,11 @@ class NotrEvent(sublime_plugin.EventListener):
 
     def on_load(self, view):
         ''' Load a new file. View is valid so init it. '''
-        # slog(CAT_DBG, f'on_load() {view}')
+        # sc.slog(sc.CAT_DBG, f'on_load() {view}')
         self._init_user_hl(view)
 
-    def _process_notr_file(self, fn):
-        ''' Regex and process sections and links. '''
-        try:
-            with open(fn, 'r') as file:
-                lines = file.read().splitlines()
-                line_num = 1
-
-                # Get the things of interest defined in the file.
-                re_links = re.compile(r'\[([^:]*): *([^\]]*)\]')
-                re_refs = re.compile(r'\[\* *([^\]]*)\]')
-                re_sections = re.compile(r'^(#+) +([^\[]+) *(?:\[(.*)\])?')
-
-                for line in lines:
-                    # Links
-                    matches = re_links.findall(line)
-                    for m in matches:
-                        if len(m) == 2:
-                            name = m[0].strip()
-                            target = m[1].strip()
-                            # slog('LNK', m)
-                            _links.append(Link(fn, name, target))
-                        else:
-                            slog(CAT_ERR, f'Invalid syntax in {fn} line {line_num}')
-
-                    # Refs
-                    matches = re_refs.findall(line)
-                    for m in matches:
-                        # slog('REF', m)
-                        # name = m[0].strip()
-                        _refs.append(m)
-
-                    # Sections
-                    matches = re_sections.findall(line)
-                    for m in matches:
-                        if len(m) == 3:
-                            # slog('SEC', m)
-                            hashes = m[0].strip()
-                            name = m[1].strip()
-                            tags = m[2].strip().split()
-                            froot = os.path.basename(os.path.splitext(fn)[0])
-                            _sections.append(Section(fn, line_num, froot, len(hashes), name, tags))
-                            for tag in tags:
-                                _tags[tag] = _tags[tag] + 1 if tag in _tags else 1
-                        else:
-                            slog(CAT_ERR, f'Invalid syntax in {fn} line {line_num}')
-
-                    line_num += 1                    
-
-        except Exception as e:
-            slog(CAT_ERR, f'{e}')
-            raise
-
     def _init_user_hl(self, view):
-        ''' Add any user highlights. TODO differentiate these from SbotHighlight flavor - outline or inverse or italic or something. '''
+        ''' Add any user highlights. TODO1 differentiate these from SbotHighlight flavor - outline or inverse or italic or something. '''
 
         if view.is_scratch() is False and view.file_name() is not None and view.syntax().name == 'Notr':
             settings = sublime.load_settings(NOTR_SETTINGS_FILE)
@@ -175,7 +115,7 @@ class NotrEvent(sublime_plugin.EventListener):
 
             if user_hl is not None:
                 for i in range(max(len(user_hl), 3)):
-                    # Clean first.r
+                    # Clean first.
                     region_name = f'userhl_{i+1}_region'
                     view.erase_regions(region_name)
 
@@ -207,7 +147,7 @@ class NotrGotoSectionCommand(sublime_plugin.TextCommand):
     _sorted_sec_names = []
 
     def run(self, edit, filter_by_tag):
-        # slog(CAT_DBG, f'NotrGotoSectionCommand.run()')
+        # sc.slog(sc.CAT_DBG, f'NotrGotoSectionCommand.run()')
         self._sorted_tags.clear()
         self._sorted_sec_names.clear()
         panel_items = []
@@ -224,7 +164,7 @@ class NotrGotoSectionCommand(sublime_plugin.TextCommand):
         else:  # all sections
             n = []
             for section in _sections:
-                n.append(f'{section.froot}.{section.name}')
+                n.append(f'{section.froot}#{section.name}')
             self._sorted_sec_names = sorted(n)
             for sec_name in self._sorted_sec_names:
                 panel_items.append(sublime.QuickPanelItem(trigger=sec_name, kind=sublime.KIND_AMBIGUOUS))
@@ -264,7 +204,7 @@ class NotrGotoSectionCommand(sublime_plugin.TextCommand):
             for section in _sections:
                 if f'{section.froot}#{section.name}' == sel_secname:
                     # Open the section in a new view.
-                    vnew = wait_load_file(self.view.window(), section.srcfile, section.line)
+                    vnew = sc.wait_load_file(self.view.window(), section.srcfile, section.line)
                     break
         else:
             # Stick them in the clipboard.
@@ -303,19 +243,19 @@ class NotrGotoRefCommand(sublime_plugin.TextCommand):
                 for section in _sections:
                     if section.froot == froot and section.name == ref_name:
                         # Open the file and position it.
-                        wait_load_file(self.view.window(), section.srcfile, section.line)
+                        sc.wait_load_file(self.view.window(), section.srcfile, section.line)
                         valid = True
                         break
 
             if not valid:
-                slog(CAT_ERR, f'Invalid reference in {self.view.file_name()} name:{ref_name}')
+                sc.slog(sc.CAT_ERR, f'Invalid reference in {self.view.file_name()} name:{ref_name}')
 
         else:  # Link ref
             # Get the Link spec.
             for link in _links:
                 if link.name == ref_text:
                     if os.path.exists(link.target) or link.target.startswith('http'):
-                        start_file(link.target)
+                        sc.start_file(link.target)
                     break
 
     def is_visible(self):
@@ -368,11 +308,11 @@ class NotrInsertRefCommand(sublime_plugin.TextCommand):
     _sorted_refs = []
 
     def run(self, edit):
-        # slog('!!!', f'NotrInsertRefCommand()')
+        # sc.slog('!!!', f'NotrInsertRefCommand()')
         self._sorted_refs.clear()
         panel_items = []
 
-        # Collect all possible refs. TODO make into private function.
+        # Collect all possible refs.
         n = []
         for section in _sections:
             n.append(f'{section.froot}#{section.name}')
@@ -380,6 +320,7 @@ class NotrInsertRefCommand(sublime_plugin.TextCommand):
             n.append(f'{link.name}')
 
         self._sorted_refs = sorted(n)
+
         for sec_name in self._sorted_refs:
             panel_items.append(sublime.QuickPanelItem(trigger=sec_name, kind=sublime.KIND_AMBIGUOUS))
         self.view.window().show_quick_panel(panel_items, on_select=self.on_sel_ref)
@@ -390,7 +331,7 @@ class NotrInsertRefCommand(sublime_plugin.TextCommand):
             v = self.view
             # s = f'[*{self._sorted_refs[sel]}]'
             s = f'[*{self._sorted_refs[sel]}]'
-            v.run_command("insert", {"characters": f'{s}'}) # Insert in created view
+            v.run_command("insert", {"characters": f'{s}'})  # Insert in created view
             # v.insert(edit, v.sel()[0].a, s)
         else:
             # Stick them in the clipboard.
@@ -402,7 +343,7 @@ class NotrInsertRefCommand(sublime_plugin.TextCommand):
 
 #-----------------------------------------------------------------------------------
 class NotrToHtmlCommand(sublime_plugin.TextCommand):
-    ''' Make an html file. TODO useful? Sbot render doesn't pick up user_hl, underline, annotations. '''
+    ''' Make an html file. TODO2 useful? Sbot render doesn't pick up user_hl, underline, annotations. '''
 
     def run(self, edit, line_numbers):
         pass
@@ -418,18 +359,22 @@ class NotrDumpCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         text = []
         text.append('=== _sections ===')
-        for x in _sections: text.append(str(x))
+        for x in _sections:
+            text.append(str(x))
 
         text.append('=== _links ===')
-        for x in _links: text.append(str(x))
+        for x in _links:
+            text.append(str(x))
 
         text.append('=== _tags ===')
-        for x in _tags: text.append(f'{x}:{_tags[x]}')
+        for x in _tags:
+            text.append(f'{x}:{_tags[x]}')
 
         text.append('=== _refs ===')
-        for x in _refs: text.append(str(x))
+        for x in _refs:
+            text.append(str(x))
 
-        create_new_view(self.view.window(), '\n'.join(text))
+        sc.create_new_view(self.view.window(), '\n'.join(text))
 
 
 #-----------------------------------------------------------------------------------
@@ -444,3 +389,79 @@ def _get_selection_for_scope(view, scope):
             sel_text = view.substr(reg).strip()
 
     return sel_text
+
+
+#-----------------------------------------------------------------------------------
+def _process_notr_files():
+    ''' Get all ntr files and grab their goodies. '''
+
+    _ntr_files.clear()
+    _tags.clear()
+    _refs.clear()
+    _sections.clear()
+    _links.clear()
+
+    # Open and process notr files.
+    settings = sublime.load_settings(NOTR_SETTINGS_FILE)
+    notr_paths = settings.get('notr_paths')
+    for npath in notr_paths:
+        if os.path.exists(npath):
+            for nfile in glob.glob(os.path.join(npath, '*.ntr')):
+                _ntr_files.append(nfile)
+                _process_notr_file(nfile)
+
+    # TODO1 check that all collected links and refs are valid. Check for duplicate refs.
+
+
+#-----------------------------------------------------------------------------------
+def _process_notr_file(fn):
+    ''' Regex and process sections and links. '''
+    try:
+        with open(fn, 'r') as file:
+            lines = file.read().splitlines()
+            line_num = 1
+
+            # Get the things of interest defined in the file.
+            re_links = re.compile(r'\[([^:]*): *([^\]]*)\]')
+            re_refs = re.compile(r'\[\* *([^\]]*)\]')
+            re_sections = re.compile(r'^(#+) +([^\[]+) *(?:\[(.*)\])?')
+
+            for line in lines:
+                # Links
+                matches = re_links.findall(line)
+                for m in matches:
+                    if len(m) == 2:
+                        name = m[0].strip()
+                        target = m[1].strip()
+                        # sc.slog('LNK', m)
+                        _links.append(Link(fn, name, target))
+                    else:
+                        sc.slog(sc.CAT_ERR, f'Invalid syntax in {fn} line {line_num}')
+
+                # Refs
+                matches = re_refs.findall(line)
+                for m in matches:
+                    # sc.slog('REF', m)
+                    # name = m[0].strip()
+                    _refs.append(m)
+
+                # Sections
+                matches = re_sections.findall(line)
+                for m in matches:
+                    if len(m) == 3:
+                        # sc.slog('SEC', m)
+                        hashes = m[0].strip()
+                        name = m[1].strip()
+                        tags = m[2].strip().split()
+                        froot = os.path.basename(os.path.splitext(fn)[0])
+                        _sections.append(Section(fn, line_num, froot, len(hashes), name, tags))
+                        for tag in tags:
+                            _tags[tag] = _tags[tag] + 1 if tag in _tags else 1
+                    else:
+                        sc.slog(sc.CAT_ERR, f'Invalid syntax in {fn} line {line_num}')
+
+                line_num += 1                    
+
+    except Exception as e:
+        sc.slog(sc.CAT_ERR, f'{e}')
+        raise
