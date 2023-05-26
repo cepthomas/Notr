@@ -65,9 +65,37 @@ Gotos put tags/sections on clipboard if esc.
 | notr_xxxx            | something here                           |                                            |
 
 
+## These
+
+- TODO1 folding by section - Default.fold.py? folding.py?
+
+- TODO2 Expose notes to web for access from phone. Render html?
+
+- TODO2 icons, style, annotations, phantoms - see:
+    - Show image as phantom or hover. Thumbnail. See SbotDev.
+    - Annotations? See anns.append()
+    - see linter code to see what they do: outline
+    - see Sublime Markdown Popups (mdpopups) is a library for Sublime Text plugins. for generating tooltip popups.
+      It also provides API methods for generating and styling the new phantom elements
+        utilizes Python Markdown with a couple of special extensions to convert Markdown to
+        HTML that can be used to create the popups and/or phantoms.
+        API commands to aid in creating great tooltips and phantoms.
+        will use your color scheme
+
+- TODO2 tables:
+    - insert table = notr_insert_table(w, h)
+    - table autofit/justify - notr_justify_table
+    - table add/delete row(s)/col(s) ?
+
+- TODO2 Block comment/uncomment useful? What would that mean - "hide" text? shade? Insert string (# or // or ...) from settings.
+
+- TODO2 Toggle syntax coloring (distraction free). Could just set to Plain Text.
+
+- TODO2 Fancy file.section navigator (like word-ish and/or goto anything). Drag/drop section.
+
 ## Future
 Things to add later, maybe.
 
 - Support text/link attributes in blocks, tables, lists, etc.
 - Unicode menu/picker to insert, show at caret.
-- Ligatures - some compromise? https://practicaltypography.com/ligatures-in-programming-fonts-hell-no.html
+- Ligatures - https://practicaltypography.com/ligatures-in-programming-fonts-hell-no.html

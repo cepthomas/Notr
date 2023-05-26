@@ -9,50 +9,14 @@ from . import sbot_common as sc
 
 NOTR_SETTINGS_FILE = "Notr.sublime-settings"
 
-''' 
-- TODO2 icons, style, annotations, phantoms:
-    - Show image as phantom or hover. Thumbnail. See SbotDev.
-    - Annotations? See anns.append()
-    - see linter code to see what they do: outline
-    - see Sublime Markdown Popups (mdpopups) is a library for Sublime Text plugins. for generating tooltip popups.
-      It also provides API methods for generating and styling the new phantom elements
-        utilizes Python Markdown with a couple of special extensions to convert Markdown to
-        HTML that can be used to create the popups and/or phantoms.
-        API commands to aid in creating great tooltips and phantoms.
-        will use your color scheme
-
-- TODO1 folding by section - Default.fold.py? folding.py?
-
-- TODO2 tables:
-    - insert table = notr_insert_table(w, h)
-    - table autofit/justify - notr_justify_table
-    - table add/delete row(s)/col(s) ?
-
-- TODO2 Block comment/uncomment useful? What would that mean - "hide" text? Insert string (# or // or ...) from settings.
-
-- TODO1 Expose notes to web for access from phone. R/O render html?
-
-- TODO2 Toggle syntax coloring (distraction free). Could just set to Plain Text.
-
-- TODO2 Fancy file.section navigator (like word-ish and/or goto anything). Drag/drop section.
-
-'''
-
 
 #-----------------------------------------------------------------------------------
-
-# All processed ntr files, fully qualified paths.
-_ntr_files = []
-
-# LinkType = Enum('LinkType', ['WEB', 'NTR', 'IMAGE', 'FILE', 'OTHER'])
 
 # One section: srcfile=ntr file path, line=ntr file line, froot=ntr file name root, level=1-N, name=section text, tags[]
 Section = collections.namedtuple('Section', 'srcfile, line, froot, level, name, tags')
 
 # One link: srcfile=ntr file path, name=desc text, target=uri/file/clickable
 Link = collections.namedtuple('Link', 'srcfile, name, target')
-
-# Ref = collections.namedtuple('Ref', 'srcfile, name')
 
 # All Sections found in all ntr files. Could be multidict?
 _sections = []
@@ -65,6 +29,9 @@ _refs = []
 
 # All tags found in all ntr files. Value is count.
 _tags = {}
+
+# All processed ntr files, fully qualified paths.
+_ntr_files = []
 
 
 #-----------------------------------------------------------------------------------
@@ -93,7 +60,7 @@ class NotrEvent(sublime_plugin.EventListener):
         _sections.clear()
         _links.clear()
 
-        # Open and process notr files. TODO1 need to redo if one of the ntr files is changed.
+        # Open and process notr files.
         _process_notr_files()
 
         # Views are all valid now so init them.
@@ -104,6 +71,12 @@ class NotrEvent(sublime_plugin.EventListener):
         ''' Load a new file. View is valid so init it. '''
         # sc.slog(sc.CAT_DBG, f'on_load() {view}')
         self._init_user_hl(view)
+
+    def on_post_save(self, view):
+        ''' Called after a view has been saved so reload ntr files. TODO1 or from a menu? or close/open file? '''
+        if view.syntax().name == 'Notr':
+            # _process_notr_files()
+            pass
 
     def _init_user_hl(self, view):
         ''' Add any user highlights. TODO1 differentiate these from SbotHighlight flavor - outline or inverse or italic or something. '''
@@ -343,7 +316,7 @@ class NotrInsertRefCommand(sublime_plugin.TextCommand):
 
 #-----------------------------------------------------------------------------------
 class NotrToHtmlCommand(sublime_plugin.TextCommand):
-    ''' Make an html file. TODO2 useful? Sbot render doesn't pick up user_hl, underline, annotations. '''
+    ''' Make an html file. TODO2 useful? Sbot render doesn't pick up user_hl (needs HIGHLIGHT_REGION_NAME), underline, annotations. '''
 
     def run(self, edit, line_numbers):
         pass

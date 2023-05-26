@@ -8,6 +8,7 @@ Tag(s) are used for searching.
 Another section but without tags.
 
 
+
 ### Text Attributes [tag2 tag3]
 Text: *Bold*, /italic/, and _under line_ are as expected, ~strike through~- is a compromise.
 
