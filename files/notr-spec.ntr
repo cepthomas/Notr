@@ -7,10 +7,12 @@ Tag(s) are used for searching.
 ## section no tags
 Another section but without tags.
 
+### subject text [tag2 tag3]
+TODO2 Remove trailing space from title capture?
 
 
-### Text Attributes [tag2 tag3]
-Text: *Bold*, /italic/, and _under line_ are as expected, ~strike through~- is a compromise.
+### Text Attributes [tag2  dds tag3]
+Text: *Bold*, /italic/, and _under line_ are as expected, ~strike through~ is a compromise.
 
 Auto-highlight things like 2DO - from user list. dynamic/runtime. Also has annotations -->
 
@@ -44,6 +46,7 @@ hello
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX hatch hrule XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 hello
 
+
 ## Lists [tag9 tagZZZ]
 
 - list category
@@ -57,6 +60,7 @@ hello
   - list item
     - list item
 
+
 item states (in settings)
   - = neutral
   X = done 
@@ -66,15 +70,15 @@ item states (in settings)
 
 ## Links and References [tag3 tag4 tag9]
 
-Define link and its name: [name: link]
-Like [image felix le chat: C:\Users\cepth\AppData\Roaming\Sublime Text\Packages\Notr\files\felix1.jpg] or
-   [other type of file: C:\Users\cepth\AppData\Roaming\Sublime Text\Packages\Notr\notr.py]
+Define link and its name like [image felix le chat: $NOTR_PATH\files\felix1.jpg] or
+   [other type of file: $NOTR_PATH\notr.py]
+or... [nyt: https://nytimes.com]
 
-Use `*` to reference aliases.  [* name]
+Use `*` to reference aliases.
 Ref to other file. [* image felix le chat] or [* other type of file] or [* another felix].
 Ref to URI. [* nyt]
 Ref section in this ntr file: [*#section no tags]  end.
-Ref section in another ntr file: [* file_root#section_name] like [*page2#P2 section 2]. file_root is just the pathless root of a unique filename
+Ref section in another ntr file: [*page2#P2 section 2]. file_root is just the pathless root of a unique filename
 
 
 ## Tables [tag2]

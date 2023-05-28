@@ -20,6 +20,7 @@
                     { "caption": "Hatch Rule", "command": "notr_insert_hrule", "args" : {"style" : 4} },
                 ]
             },
+            { "caption": "Reload", "command": "notr_reload" },
             // { "caption": "To HTML", "command": "notr_to_html", "args" : {"line_numbers" : false} },
         ]
     },

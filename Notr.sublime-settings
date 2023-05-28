@@ -1,19 +1,13 @@
 {
     // Where notr files live.
     "notr_paths": [],
+    "notr_index": "",
 
     // Some cosmetics.
     "visual_line_length": 100,
 
-    // Tokens (max 6) for highlighting user keywords.
-    "user_hl": [
-        ["2DO", "things"], // markup.user_hl1
-        ["user"], // markup.user_hl2
-        ["dynamic"], // markup.user_hl3
-        ["and_a"], // markup.user_hl4
-        ["and_b"], // markup.user_hl5
-        ["and_c"], // markup.user_hl6
-    ],
+    // Tokens for highlighting user keywords. Scopes are markup.user_hl1-6.
+    "user_hl": [ [], [], [], [], [], [] ],
     // User highlights option.
     "user_hl_whole_word": true,
 }
