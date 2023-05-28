@@ -3,20 +3,20 @@
 A section of content. <section name> can be referenced later as a link.
 Tag(s) are used for searching.
 
-
 ## section no tags
 Another section but without tags.
 
 ### subject text [tag2 tag3]
-TODO2 Remove trailing space from title capture?
 
 
 ### Text Attributes [tag2  dds tag3]
 Text: *Bold*, /italic/, and _under line_ are as expected, ~strike through~ is a compromise.
 
-Auto-highlight things like 2DO - from user list. dynamic/runtime. Also has annotations -->
+Auto-highlight things like:
+  2DO - from user list.
+  dynamic/runtime. Note that SbotHighlight will override these.
 
-and_a  and_b  and_c.
+and_a  and_b  and_c.  Also has annotations -->
 
 `An inline chunk of raw text` and here is `another one` ok?
 
@@ -32,19 +32,9 @@ Here is another block. Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
 > Blockquotes are very handy.
 > This line is part of the same quote.
 
-
-
-## Visuals [tag4 tag5]
-Visual delimiters that don't do anything else.
-
------------------------------- single hrule --------------------------------------
-hello
-================================= double hrule ===================================
-hello
-+++++++++++++++++++++++++++++++++++ fill hrule +++++++++++++++++++++++++++++++++++
-hello
-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX hatch hrule XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-hello
+Visual delimiters that don't do anything else. Like a horizontal rule:
+----------------------------------------------------------------------------------------------------
+hello!
 
 
 ## Lists [tag9 tagZZZ]

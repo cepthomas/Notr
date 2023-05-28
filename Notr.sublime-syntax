@@ -1,6 +1,8 @@
 %YAML 1.2
 ---
 # http://www.sublimetext.com/docs/3/syntax.html
+# ST uses [Oniguruma Regular Expressions Version 6.8.0](https://github.com/kkos/oniguruma) - syntax: ONIG_SYNTAX_ONIGURUMA (default)
+
 name: Notr
 scope: text.notr
 # version: 2
@@ -21,7 +23,6 @@ contexts:
   main:
     - include: atx-heading
     - include: simple-text
-    - include: structural
     - include: table
     - include: link
     - include: list
@@ -55,21 +56,9 @@ contexts:
       captures:
         0: markup.quote.notr
 
-
-#################### structural ###########################################
-
-  structural:
-    - match: '^(?:-{5,}.*)$'
-      scope: markup.hrule.single.notr
-
-    - match: '^(?:={5,}.*)$'
-      scope: markup.hrule.double.notr
-
-    - match: '^(?:\+{5,}.*)$'
-      scope: markup.hrule.fill.notr
-
-    - match: '^(?:X{5,}.*)$'
-      scope: markup.hrule.hatch.notr
+    - match: '^(?:[-=\+Xx]{5,}.*)$'
+      captures:
+        0: markup.hrule.notr
 
 
 #################### headings ###########################################

@@ -13,6 +13,7 @@ Built for ST4 on Windows and Linux.
 - Links and references
 - Lists
 - Tables
+- Auto highlight TODO1 these are shared with SbotHighlight differentiate?
 
 - See [The spec](files/notr-spec.ntr) for an example of the features. Looks like this (sorry about the colors...):
 
@@ -23,7 +24,7 @@ Built for ST4 on Windows and Linux.
 
 ## Limitations
 
-- ST is line-oriented regex only.
+- ST regex is a line-oriented version of [Oniguruma Regular Expressions Version 6.8.0](https://github.com/kkos/oniguruma).
 - Note that coloring *should* stop at the right edge of a table. This is also how ST renders MD tables...
 - view.add_regions() apparently only supports colors, annotations, and icon. It does not support font style and region flags.
     Also they are not available via extract_scope().
@@ -31,71 +32,104 @@ Built for ST4 on Windows and Linux.
 
 ## Scopes
 
-Notr uses these scopes:
-- ST defaults:
+ST defaults:
   - From [Minimal Scope Coverage](https://www.sublimetext.com/docs/scope_naming.html#minimal-scope-coverage).
   - [Markup languages](https://www.sublimetext.com/docs/scope_naming.html#markup).
   - ditdit
 
-- New scopes added for this application. Notr is a markup language but some of the default markup.* scopes
-  didn't feel right.
-  - From C:\Users\cepth\AppData\Roaming\Sublime Text\Packages\User\CT.sublime-color-scheme).
-  - ditdit
+Notr uses these existing scopes.
 
-meta. Meta scopes are used to scope larger sections of code or markup, generally containing multiple, more specific scopes. These are not intended to be styled by a color scheme, but used by preferences and plugins.
+- meta.table
+- meta.table.header
+- markup.bold - capture
+- markup.italic - capture
+- markup.strikethrough - capture
 
-ST uses [Oniguruma Regular Expressions Version 6.8.0    2018/07/26](https://github.com/kkos/oniguruma)
-Doc: https://github.com/kkos/oniguruma/blob/master/doc/RE
-syntax: ONIG_SYNTAX_ONIGURUMA (default)
+New scopes added for this application. Notr is a markup language but some of the default markup.* scopes didn't feel right.
+
+- text.notr
+- markup.underline.link.notr
+- markup.heading.notr
+- markup.heading.content.notr
+- markup.heading.marker.notr
+- markup.heading.tags.notr
+- markup.hrule.notr
+- markup.link.alias.notr
+- markup.link.name.notr
+- markup.link.refname.notr
+- markup.list.content.notr
+- markup.list.indent.notr
+- markup.list.marker.notr
+- markup.quote.notr
+- markup.raw.block.notr
+- markup.raw.inline.notr
+
+New scopes added for general use.
+
+- markup.underline
+- markup.user_hl1
+- markup.user_hl2
+- markup.user_hl3
+- markup.user_hl4
+- markup.user_hl5
+- markup.user_hl6
+
+## Configuration
+
+- Commands: see Context.sublime-menu
+- Settings: see Notr.sublime-settings
 
 
-## Commands
+## Now
 
-| Command                    | Implementation | Description                   | Args                           |
-| :--------                  | :-------       | :-------                      | :--------                      |
-| notr_xxxx                  | Context        | something here                |                                |
+- TODO1 Add execute-python-script menu item (utils.context and sidebar)
+- TODO1 Consolidate ? :
+utils Context.sublime-menu
+[ 
+    // My custom menu.
+    { "caption": "-" },
+    { "caption": "Split View 2 Pane", "command": "sbot_split_view" },
+    { "caption": "Open Terminal", "command": "sbot_terminal"},
+    { "caption": "Execute", "command": "sbot_exec"},
+    // { "caption": "CSV Justify columns", "command": "csv_format_expand" },
+    // { "caption": "CSV Compact columns", "command": "csv_format_compact" },
+    { "caption": "Toggle Hex View", "command": "hex_viewer" },
+    { "caption": "Reopen as UTF-8", "command": "reopen", "args": { "encoding": "utf-8" } },
+]
+Side Bar.sublime-menu
+[
+    { "caption": "-", "id": "sbot_sidebar_addons" },
+    { "caption": "Copy Name", "command": "sbot_sidebar_copy_name", "args": { "paths": [] }},
+    { "caption": "Copy Path", "command": "sbot_sidebar_copy_path", "args": { "paths": [] }},
+    { "caption": "Copy File", "command": "sbot_sidebar_copy_file", "args": { "paths": [] }},
+    { "caption": "Execute", "command": "sbot_sidebar_exec", "args": { "paths": [] }},
+    { "caption": "Open Terminal", "command": "sbot_sidebar_terminal", "args": { "paths": [] }},
+    { "caption": "Tree", "command": "sbot_sidebar_tree", "args": { "paths": [] }},
+]
 
-Gotos put tags/sections on clipboard if esc.
+- TODO1 C:\Users\cepth\OneDrive\OneDrive Documents\do_st_repos.py zip User
 
+- TODO1 folding by section
 
-## Settings
-
-| Setting              | Description                              | Options                                    |
-| :--------            | :-------                                 | :------                                    |
-| notr_xxxx            | something here                           |                                            |
-
-
-## These
-
-- TODO1 folding by section - Default.fold.py? folding.py?
-
-- TODO2 Expose notes to web for access from phone. Render html?
-
-- TODO2 icons, style, annotations, phantoms - see:
+- TODO1 Use icons, style, annotations, phantoms? see:
     - Show image as phantom or hover. Thumbnail. See SbotDev.
     - Annotations? See anns.append()
     - see linter code to see what they do: outline
     - see Sublime Markdown Popups (mdpopups) is a library for Sublime Text plugins. for generating tooltip popups.
-      It also provides API methods for generating and styling the new phantom elements
+        It also provides API methods for generating and styling the new phantom elements
         utilizes Python Markdown with a couple of special extensions to convert Markdown to
         HTML that can be used to create the popups and/or phantoms.
         API commands to aid in creating great tooltips and phantoms.
         will use your color scheme
 
-- TODO2 tables:
-    - insert table = notr_insert_table(w, h)
-    - table autofit/justify - notr_justify_table
-    - table add/delete row(s)/col(s) ?
-
-- TODO2 Block comment/uncomment useful? What would that mean - "hide" text? shade? Insert string (# or // or ...) from settings.
-
-- TODO2 Toggle syntax coloring (distraction free). Could just set to Plain Text.
-
-- TODO2 Fancy file.section navigator (like word-ish and/or goto anything). Drag/drop section.
 
 ## Future
 Things to add later, maybe.
 
 - Support text/link attributes in blocks, tables, lists, etc.
 - Unicode menu/picker to insert, show at caret.
-- Ligatures - https://practicaltypography.com/ligatures-in-programming-fonts-hell-no.html
+- Toggle syntax coloring (distraction free). Could just set to Plain Text.
+- Block comment/uncomment useful? What would that mean - "hide" text? shade? Insert string (# or // or ...) from settings.
+- Fancy file.section navigator (like word-ish and/or goto anything). Drag/drop section.
+- Expose notes to web for access from phone. Render html with anchors/links?
+- Tables: insert table(w, h)  autofit/justify  add/delete row(s)/col(s)

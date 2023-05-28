@@ -85,7 +85,7 @@ class NotrEvent(sublime_plugin.EventListener):
             pass
 
     def _init_user_hl(self, view):
-        ''' Add any user highlights. TODO2 differentiate these from SbotHighlight flavor - outline or inverse or italic or something. '''
+        ''' Add any user highlights. '''
 
         if view.is_scratch() is False and view.file_name() is not None and view.syntax().name == 'Notr':
             settings = sublime.load_settings(NOTR_SETTINGS_FILE)
@@ -95,8 +95,8 @@ class NotrEvent(sublime_plugin.EventListener):
             if user_hl is not None:
                 for i in range(max(len(user_hl), 3)):
                     # Clean first.
-                    # region_name = f'userhl_{i+1}_region'
-                    region_name = sc.HIGHLIGHT_REGION_NAME % i
+                    scope = f'markup.user_hl{i+1}'
+                    region_name = sc.HIGHLIGHT_REGION_NAME % scope
                     view.erase_regions(region_name)
 
                     # New ones.
@@ -116,13 +116,15 @@ class NotrEvent(sublime_plugin.EventListener):
                         for reg in hl_regions:
                             anns.append(f'Region: {reg.a}->{len(reg)}')
 
-                        view.add_regions(key=region_name, regions=hl_regions, scope=f'markup.user_hl{i+1}.notr',
+                        view.add_regions(key=region_name, regions=hl_regions, scope=scope,
                                          icon='dot', flags=sublime.RegionFlags.DRAW_STIPPLED_UNDERLINE, annotations=anns, annotation_color='lightgreen')
 
 
 #-----------------------------------------------------------------------------------
 class NotrGotoSectionCommand(sublime_plugin.TextCommand):
-    ''' List all the tag(s) or sections(s) for user selection then open corresponding file. '''
+    ''' List all the tag(s) and/or sections(s) for user selection then open corresponding file. '''
+
+    # Prepared lists for quick panel.
     _sorted_tags = []
     _sorted_sec_names = []
 
@@ -132,10 +134,12 @@ class NotrGotoSectionCommand(sublime_plugin.TextCommand):
         panel_items = []
 
         if filter_by_tag:
-            # Sort by frequency.
-            self._sorted_tags = [x[0] for x in sorted(_tags.items(), key=lambda x:x[1], reverse=True)]
-            # Sort alphabetically.
-            self._sorted_tags = sorted(_tags)
+            settings = sublime.load_settings(NOTR_SETTINGS_FILE)
+            sort_tags_alpha = settings.get('sort_tags_alpha')
+            if sort_tags_alpha:
+                self._sorted_tags = sorted(_tags)
+            else: # Sort by frequency.
+                self._sorted_tags = [x[0] for x in sorted(_tags.items(), key=lambda x:x[1], reverse=True)]
 
             for tag in self._sorted_tags:
                 panel_items.append(sublime.QuickPanelItem(trigger=tag, annotation=f"qty:{_tags[tag]}", kind=sublime.KIND_AMBIGUOUS))
@@ -245,23 +249,16 @@ class NotrGotoRefCommand(sublime_plugin.TextCommand):
 class NotrInsertHruleCommand(sublime_plugin.TextCommand):
     ''' Insert visuals. '''
 
-    def run(self, edit, style):  # 1-4
+    def run(self, edit):
         v = self.view
         settings = sublime.load_settings(NOTR_SETTINGS_FILE)
         visual_line_length = settings.get('visual_line_length')
-
-        lchar = 'X'  # default
-        if style == 1:
-            lchar = '-'
-        elif style == 1:
-            lchar = '='
-        elif style == 1:
-            lchar = '+'
+        fill_char = settings.get('fill_char')
 
         # Start of current line.
         lst = v.line(v.sel()[0].a)
 
-        s = lchar * visual_line_length + '\n'
+        s = fill_char * visual_line_length + '\n'
         v.insert(edit, lst.a, s)
 
     def is_visible(self):
@@ -300,17 +297,6 @@ class NotrInsertRefCommand(sublime_plugin.TextCommand):
         else:
             # Stick them in the clipboard.
             sublime.set_clipboard('\n'.join(self._sorted_refs))
-
-    def is_visible(self):
-        return self.view.syntax().name == 'Notr'
-
-
-#-----------------------------------------------------------------------------------
-class NotrToHtmlCommand(sublime_plugin.TextCommand):
-    ''' Make an html file. TODO2 useful? Sbot render doesn't pick up user_hl (needs HIGHLIGHT_REGION_NAME), underline, annotations. '''
-
-    def run(self, edit, line_numbers):
-        pass
 
     def is_visible(self):
         return self.view.syntax().name == 'Notr'

@@ -8,20 +8,10 @@
             { "caption": "Goto Tag Section", "command": "notr_goto_section", "args" : {"filter_by_tag" : true} },
             { "caption": "Goto Section", "command": "notr_goto_section", "args" : {"filter_by_tag" : false} },
             { "caption": "Goto Ref", "command": "notr_goto_ref" },
-            {
-                "caption": "Insert",
-                "children":
-                [
-                    { "caption": "Insert Link", "command": "notr_insert_link" },
-                    { "caption": "Insert Ref", "command": "notr_insert_ref" },
-                    { "caption": "Single Rule", "command": "notr_insert_hrule", "args" : {"style" : 1} },
-                    { "caption": "Double Rule", "command": "notr_insert_hrule", "args" : {"style" : 2} },
-                    { "caption": "Fill Rule", "command": "notr_insert_hrule", "args" : {"style" : 3} },
-                    { "caption": "Hatch Rule", "command": "notr_insert_hrule", "args" : {"style" : 4} },
-                ]
-            },
+            { "caption": "Insert Link", "command": "notr_insert_link" },
+            { "caption": "Insert Ref", "command": "notr_insert_ref" },
+            { "caption": "Insert HRule", "command": "notr_insert_hrule" },
             { "caption": "Reload", "command": "notr_reload" },
-            // { "caption": "To HTML", "command": "notr_to_html", "args" : {"line_numbers" : false} },
         ]
     },
 ]

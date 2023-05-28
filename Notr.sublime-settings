@@ -1,10 +1,16 @@
 {
     // Where notr files live.
     "notr_paths": [],
+    // Main notr file.
     "notr_index": "",
+
+    // Sort tags alphabetically or by frequency.
+    "sort_tags_alpha": true,
 
     // Some cosmetics.
     "visual_line_length": 100,
+    // Fill char for things like horizontal rules.
+    "fill_char": "-",
 
     // Tokens for highlighting user keywords. Scopes are markup.user_hl1-6.
     "user_hl": [ [], [], [], [], [], [] ],
