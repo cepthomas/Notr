@@ -16,4 +16,6 @@
     "user_hl": [ [], [], [], [], [], [] ],
     // User highlights option.
     "user_hl_whole_word": true,
+
+    "debug": true,
 }

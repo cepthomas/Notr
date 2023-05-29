@@ -93,10 +93,10 @@ class NotrEvent(sublime_plugin.EventListener):
             whole_word = settings.get('user_hl_whole_word')
 
             if user_hl is not None:
-                for i in range(max(len(user_hl), 3)):
+                for hl_index in range(len(user_hl)):
                     # Clean first.
-                    scope = f'markup.user_hl{i+1}'
-                    region_name = sc.HIGHLIGHT_REGION_NAME % scope
+                    scope = f'markup.user_hl{hl_index+1}'
+                    region_name = sc.HIGHLIGHT_REGION_NAME % hl_index
                     view.erase_regions(region_name)
 
                     # New ones.
@@ -104,7 +104,7 @@ class NotrEvent(sublime_plugin.EventListener):
                     anns = []
 
                     # Colorize one token.
-                    for token in user_hl[i]:
+                    for token in user_hl[hl_index]:
                         escaped = re.escape(token)
                         if whole_word:  # and escaped[0].isalnum():
                             escaped = r'\b%s\b' % escaped
@@ -112,12 +112,15 @@ class NotrEvent(sublime_plugin.EventListener):
                         hl_regions.extend(regs)
 
                     if len(hl_regions) > 0:
-                        anns = []
-                        for reg in hl_regions:
-                            anns.append(f'Region: {reg.a}->{len(reg)}')
+                        view.add_regions(key=region_name, regions=hl_regions, scope=scope, flags=sublime.RegionFlags.DRAW_STIPPLED_UNDERLINE)
 
-                        view.add_regions(key=region_name, regions=hl_regions, scope=scope,
-                                         icon='dot', flags=sublime.RegionFlags.DRAW_STIPPLED_UNDERLINE, annotations=anns, annotation_color='lightgreen')
+                    # # With annotations and icon:
+                    # if len(hl_regions) > 0:
+                    #     anns = []
+                    #     for reg in hl_regions:
+                    #         anns.append(f'Region: {reg.a}->{len(reg)}')
+                    #     view.add_regions(key=region_name, regions=hl_regions, scope=scope,
+                    #                      icon='dot', flags=sublime.RegionFlags.DRAW_STIPPLED_UNDERLINE, annotations=anns, annotation_color='lightgreen')
 
 
 #-----------------------------------------------------------------------------------
@@ -313,8 +316,9 @@ class NotrReloadCommand(sublime_plugin.TextCommand):
         if len(_parse_errors) > 0:
             sc.create_new_view(self.view.window(), '\n'.join(_parse_errors))
 
-    # def is_visible(self):
-    #     return self.view.syntax().name == 'Notr'
+    def is_visible(self):
+        settings = sublime.load_settings(NOTR_SETTINGS_FILE)
+        return settings.get('debug')
 
 
 #-----------------------------------------------------------------------------------
@@ -352,6 +356,10 @@ class NotrDumpCommand(sublime_plugin.TextCommand):
             text.append(f'{x}')
 
         sc.create_new_view(self.view.window(), '\n'.join(text))
+
+    def is_visible(self):
+        settings = sublime.load_settings(NOTR_SETTINGS_FILE)
+        return settings.get('debug')
 
 
 #-----------------------------------------------------------------------------------

@@ -13,7 +13,7 @@ Built for ST4 on Windows and Linux.
 - Links and references
 - Lists
 - Tables
-- Auto highlight TODO1 these are shared with SbotHighlight differentiate?
+- Auto highlight
 
 - See [The spec](files/notr-spec.ntr) for an example of the features. Looks like this (sorry about the colors...):
 
@@ -35,7 +35,7 @@ Built for ST4 on Windows and Linux.
 ST defaults:
   - From [Minimal Scope Coverage](https://www.sublimetext.com/docs/scope_naming.html#minimal-scope-coverage).
   - [Markup languages](https://www.sublimetext.com/docs/scope_naming.html#markup).
-  - ditdit
+
 
 Notr uses these existing scopes.
 
@@ -74,53 +74,31 @@ New scopes added for general use.
 - markup.user_hl5
 - markup.user_hl6
 
-## Configuration
 
-- Commands: see Context.sublime-menu
-- Settings: see Notr.sublime-settings
+## Commands
+
+| Command                  | Implementation | Description                   | Args        |
+| :--------                | :-------       | :-------                      | :--------   |
+| xxx         | Context         | xxxx          |             |
+
+## Settings
+
+| Setting            | Description         | Options                                                               |
+| :--------          | :-------            | :------                                                               |
+| xxx            | xxx   | xxx   |
 
 
-## Now
+## Notr stuff
 
-- TODO1 Add execute-python-script menu item (utils.context and sidebar)
-- TODO1 Consolidate ? :
-utils Context.sublime-menu
-[ 
-    // My custom menu.
-    { "caption": "-" },
-    { "caption": "Split View 2 Pane", "command": "sbot_split_view" },
-    { "caption": "Open Terminal", "command": "sbot_terminal"},
-    { "caption": "Execute", "command": "sbot_exec"},
-    // { "caption": "CSV Justify columns", "command": "csv_format_expand" },
-    // { "caption": "CSV Compact columns", "command": "csv_format_compact" },
-    { "caption": "Toggle Hex View", "command": "hex_viewer" },
-    { "caption": "Reopen as UTF-8", "command": "reopen", "args": { "encoding": "utf-8" } },
-]
-Side Bar.sublime-menu
-[
-    { "caption": "-", "id": "sbot_sidebar_addons" },
-    { "caption": "Copy Name", "command": "sbot_sidebar_copy_name", "args": { "paths": [] }},
-    { "caption": "Copy Path", "command": "sbot_sidebar_copy_path", "args": { "paths": [] }},
-    { "caption": "Copy File", "command": "sbot_sidebar_copy_file", "args": { "paths": [] }},
-    { "caption": "Execute", "command": "sbot_sidebar_exec", "args": { "paths": [] }},
-    { "caption": "Open Terminal", "command": "sbot_sidebar_terminal", "args": { "paths": [] }},
-    { "caption": "Tree", "command": "sbot_sidebar_tree", "args": { "paths": [] }},
-]
+- TODO1 Differentiate user_hl from SbotHighlight. They share region names, may need different ones for notr + outline.
+    See linter code to see what they do: outline. RegionFlags doesn't work in add_regions().
+- TODO1 Folding by section.
+
+
+## General stuff
 
 - TODO1 C:\Users\cepth\OneDrive\OneDrive Documents\do_st_repos.py zip User
-
-- TODO1 folding by section
-
-- TODO1 Use icons, style, annotations, phantoms? see:
-    - Show image as phantom or hover. Thumbnail. See SbotDev.
-    - Annotations? See anns.append()
-    - see linter code to see what they do: outline
-    - see Sublime Markdown Popups (mdpopups) is a library for Sublime Text plugins. for generating tooltip popups.
-        It also provides API methods for generating and styling the new phantom elements
-        utilizes Python Markdown with a couple of special extensions to convert Markdown to
-        HTML that can be used to create the popups and/or phantoms.
-        API commands to aid in creating great tooltips and phantoms.
-        will use your color scheme
+- TODO1 git diff  https://github.com/kemayo/sublime-text-git
 
 
 ## Future
@@ -133,3 +111,7 @@ Things to add later, maybe.
 - Fancy file.section navigator (like word-ish and/or goto anything). Drag/drop section.
 - Expose notes to web for access from phone. Render html with anchors/links?
 - Tables: insert table(w, h)  autofit/justify  add/delete row(s)/col(s)
+- Use icons, style, annotations, phantoms? see mdpopups for generating tooltip popups.
+- Show image file as phantom or hover, maybe thumbnail. See SbotDev.
+- Annotations useful? See anns.append().
+- Indent/dedent with bullets - or in sbot?
