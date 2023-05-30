@@ -7,6 +7,14 @@ import sublime_plugin
 from . import sbot_common as sc
 
 
+# TODO Differentiate user_hl from SbotHighlight. They share region names, may need different ones for notr + outline.
+#   See linter code to see what they do: outline. RegionFlags doesn't work in add_regions().
+
+# TODO Folding by section.
+
+# TODO Make into package. https://packagecontrol.io/docs/submitting_a_package.
+
+
 NOTR_SETTINGS_FILE = "Notr.sublime-settings"
 
 

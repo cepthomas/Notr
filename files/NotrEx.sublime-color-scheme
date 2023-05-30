@@ -1,0 +1,38 @@
+{
+    "name": "NotrEx",
+    "globals":
+    {
+        // Your favorites...
+    },
+    "rules":
+    [
+        // Your favorites...
+
+        // Added/modified for notr.
+        { "scope": "markup.italic", "font_style": "italic" },
+        { "scope": "markup.bold", "font_style": "bold" },
+        { "scope": "markup.underline", "font_style": "underline" },
+        { "scope": "markup.strikethrough", "background": "lightgray" },
+        { "scope": "markup.heading.marker.notr", "background": "cyan", "font_style": "bold" },
+        { "scope": "markup.heading.content.notr", "background": "aquamarine", "font_style": "bold" },
+        { "scope": "markup.heading.tags.notr", "background": "bisque", "font_style": "italic" },
+        { "scope": "markup.hrule.notr", "background": "mediumaquamarine" },
+        { "scope": "markup.raw.inline.notr", "background": "aliceblue" },
+        { "scope": "markup.raw.block.notr", "background": "aliceblue" },
+        { "scope": "markup.quote.notr", "background": "lightyellow", "font_style": "italic" },
+        { "scope": "markup.list.indent.notr", "background": "orange" },
+        { "scope": "markup.list.marker.notr", "background": "pink", "font_style": "bold" },
+        { "scope": "markup.list.content.notr", "background": "lightyellow" },
+        { "scope": "markup.link.name.notr", "background": "wheat" },
+        { "scope": "markup.link.refname.notr", "background": "violet" },
+        { "scope": "markup.link.alias.notr", "background": "lightsalmon" },
+
+        // User highlighting. Not .notr because they are also used by the sbot plugin family.
+        { "scope": "markup.user_hl1", "background": "red", "foreground": "white" },
+        { "scope": "markup.user_hl2", "background": "green", "foreground": "white" },
+        { "scope": "markup.user_hl3", "background": "blue", "foreground": "white" },
+        { "scope": "markup.user_hl4", "background": "moccasin", "foreground": "red" },
+        { "scope": "markup.user_hl5", "background": "moccasin", "foreground": "green" },
+        { "scope": "markup.user_hl6", "background": "moccasin", "foreground": "blue" },
+    ]
+}
