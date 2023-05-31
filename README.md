@@ -1,6 +1,6 @@
 # Notr
 
-Sublime Text markup syntax for coloring plain text files. The intention is to provide visual clues for things
+Sublime Text markup syntax for colorizing plain text files. The intention is to provide visual clues for things
 like sections, links, tables, lists, etc. The syntax is somewhat similar to markdown but this is not intended
 to be rendered into a pretty final form.
 
@@ -15,7 +15,7 @@ Built for ST4 on Windows and Linux.
 - Tables
 - Auto highlight
 
-- See [The spec](files/notr-spec.ntr) for an example of the features with plugin installed. Looks like this (sorry about the colors...):
+- See [The spec](files/notr-spec.ntr) for an example of the features with plugin installed. Looks like this (excuse the colors...):
 
 ![Some](files/ex1.jpg)
 
@@ -27,7 +27,7 @@ Built for ST4 on Windows and Linux.
 - ST regex is a line-oriented version of [Oniguruma Regular Expressions Version 6.8.0](https://github.com/kkos/oniguruma).
   Some things pertaining to line endings don't quite work as expected.
 - Note that coloring *should* stop at the right edge of a table. This is also how ST renders MD tables...
-- Coloring for the markup.user_hlX only supports fore and back colors, but not font style like bold and italic.
+- TODO Coloring for the markup.user_hls only supports fore and back colors, but not font_style - RegionFlags doesn't work in add_regions().
 - view.add_regions() apparently only supports colors, annotations, and icon. It does not support font style and region flags.
   Also they are not available via extract_scope().
 
@@ -76,25 +76,40 @@ markup.fixed_hl2
 markup.fixed_hl3
 ```
 
-files\NotrEx.sublime-color-scheme can be used as a starting point for colorizing. These work for all members of the sbot family.
+`files\NotrEx.sublime-color-scheme` can be used as an example for colorizing. These are used for all members of the sbot family.
 
 
 ## Commands
 
-| Command                  | Implementation | Description                   | Args        |
-| :--------                | :-------       | :-------                      | :--------   |
-| xxx         | Context         | xxxx          |             |
+| Command              | Type     | Description                             | Args                              |
+| :--------            | :------- | :-------                                | :--------                         |
+| notr_insert_link     | Context  | Insert a link from clipboard            |                                   |
+| notr_insert_ref      | Context  | Insert a ref from selector              |                                   |
+| notr_insert_hrule    | Context  | Visual horizontal rule                  |                                   |
+| notr_goto_section    | Context  | Go to section from selector             | filter_by_tag = select tag first  |
+| notr_goto_ref        | Context  | Go to a reference from selector         |                                   |
+| notr_reload          | Context  | Reload after editing colors or settings |                                   |
+| notr_dump            | Context  | xxxx                                    |                                   |
+
 
 ## Settings
 
-| Setting            | Description         | Options                                                               |
-| :--------          | :-------            | :------                                                               |
-| xxx            | xxx   | xxx   |
+| Setting             | Description                                | Options                                    |
+| :--------           | :-------                                   | :------                                    |
+| notr_paths          | List of where notr files live              |                                            |
+| notr_index          | Main notr file                             |                                            |
+| sort_tags_alpha     | Sort tags alphabetically or by frequency   |                                            |
+| visual_line_length  | For horizontal rule                        |                                            |
+| fill_char           | For horizontal rule                        |                                            |
+| fixed_hl            | 3 sets of user keywords                    |                                            |
+| fixed_hl_whole_word | User highlights option                     |                                            |
+| debug               | debug                                      |                                            |
 
 
 ## Future
 Things to consider.
 
+- Simple git tools: diff, commit, push? https://github.com/kemayo/sublime-text-git.
 - Support text attributes, links, refs in blocks, tables, lists, etc.
 - Unicode menu/picker to insert and view at caret.
 - Toggle syntax coloring (distraction free). Maybe just set to Plain Text.
@@ -105,3 +120,4 @@ Things to consider.
 - Use icons, style, annotations, phantoms? See mdpopups for generating tooltip popups.
 - Show image file as phantom or hover, maybe thumbnail. See SbotDev.
 - Auto/manual Indent/dedent lists with bullets. Probably not possible as ST controls this.
+- Make into package when it's cooked. https://packagecontrol.io/docs/submitting_a_package.

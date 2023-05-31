@@ -6,13 +6,7 @@ import sublime
 import sublime_plugin
 from . import sbot_common as sc
 
-
-# TODO Differentiate fixed_hl from SbotHighlight. They share region names, may need different ones for notr + outline.
-#   See linter code to see what they do: outline. RegionFlags doesn't work in add_regions().
-
-# TODO Folding by section.
-
-# TODO Make into package. https://packagecontrol.io/docs/submitting_a_package.
+# TODOX Folding by section.
 
 
 NOTR_SETTINGS_FILE = "Notr.sublime-settings"
@@ -87,7 +81,7 @@ class NotrEvent(sublime_plugin.EventListener):
         self._init_fixed_hl(view)
 
     def on_post_save(self, view):
-        ''' Called after a view has been saved so reload ntr files. '''
+        ''' Called after a ntr view has been saved so reload ntr files. TODO Do this every time or use explicit reload cmd? '''
         if view.syntax().name == 'Notr':
             # _process_notr_files()
             pass
@@ -101,11 +95,11 @@ class NotrEvent(sublime_plugin.EventListener):
             whole_word = settings.get('fixed_hl_whole_word')
 
             if fixed_hl is not None:
+                hl_info = sc.get_highlight_info('fixed')
                 for hl_index in range(len(fixed_hl)):
+                    hl = hl_info[hl_index]
                     # Clean first.
-                    scope = f'markup.fixed_hl{hl_index+1}'
-                    region_name = sc.HIGHLIGHT_REGION_NAME % hl_index
-                    view.erase_regions(region_name)
+                    view.erase_regions(hl.region_name)
 
                     # New ones.
                     hl_regions = []
@@ -120,15 +114,8 @@ class NotrEvent(sublime_plugin.EventListener):
                         hl_regions.extend(regs)
 
                     if len(hl_regions) > 0:
-                        view.add_regions(key=region_name, regions=hl_regions, scope=scope, flags=sublime.RegionFlags.DRAW_STIPPLED_UNDERLINE)
-
-                    # # With annotations and icon:
-                    # if len(hl_regions) > 0:
-                    #     anns = []
-                    #     for reg in hl_regions:
-                    #         anns.append(f'Region: {reg.a}->{len(reg)}')
-                    #     view.add_regions(key=region_name, regions=hl_regions, scope=scope,
-                    #                      icon='dot', flags=sublime.RegionFlags.DRAW_STIPPLED_UNDERLINE, annotations=anns, annotation_color='lightgreen')
+                        view.add_regions(key=hl.region_name, regions=hl_regions, scope=hl.scope_name,
+                                         flags=sublime.RegionFlags.DRAW_STIPPLED_UNDERLINE)
 
 
 #-----------------------------------------------------------------------------------
@@ -149,7 +136,7 @@ class NotrGotoSectionCommand(sublime_plugin.TextCommand):
             sort_tags_alpha = settings.get('sort_tags_alpha')
             if sort_tags_alpha:
                 self._sorted_tags = sorted(_tags)
-            else: # Sort by frequency.
+            else:  # Sort by frequency.
                 self._sorted_tags = [x[0] for x in sorted(_tags.items(), key=lambda x:x[1], reverse=True)]
 
             for tag in self._sorted_tags:
@@ -273,7 +260,7 @@ class NotrInsertHruleCommand(sublime_plugin.TextCommand):
         v.insert(edit, lst.a, s)
 
     def is_visible(self):
-        return self.view.syntax().name == 'Notr'
+        return self.view.syntax() is not None and self.view.syntax().name == 'Notr'
 
 
 #-----------------------------------------------------------------------------------
@@ -285,7 +272,7 @@ class NotrInsertLinkCommand(sublime_plugin.TextCommand):
         self.view.insert(edit, self.view.sel()[0].a, s)
 
     def is_visible(self):
-        return self.view.syntax().name == 'Notr'
+        return self.view.syntax() is not None and self.view.syntax().name == 'Notr'
 
 
 #-----------------------------------------------------------------------------------
@@ -310,7 +297,7 @@ class NotrInsertRefCommand(sublime_plugin.TextCommand):
             sublime.set_clipboard('\n'.join(self._sorted_refs))
 
     def is_visible(self):
-        return self.view.syntax().name == 'Notr'
+        return self.view.syntax() is not None and self.view.syntax().name == 'Notr'
 
 
 #-----------------------------------------------------------------------------------
@@ -498,7 +485,7 @@ def _process_notr_file(fn):
                 line_num += 1
 
     except Exception as e:
-        sc.slog(sc.CAT_ERR, f'{e}')
+        sc.slog(sc.CAT_ERR, f'Error processing {fn}\n{e}')
         raise
 
 #-----------------------------------------------------------------------------------
