@@ -67,8 +67,8 @@ or... [nyt: https://nytimes.com]
 Use `*` to reference aliases.
 Ref to other file. [* image felix le chat] or [* other type of file] or [* another felix].
 Ref to URI. [* nyt]
-Ref section in this ntr file: [*#section no tags]  end.
-Ref section in another ntr file: [*page2#P2 section 2]. file_root is just the pathless root of a unique filename
+Ref section in this ntr file: [*#section no tags] end.
+Ref section in another ntr file: [*page2#P2 section 2]. page2 is the pathless root of a unique filename. Must be unique!
 
 
 ## Tables [tag2]

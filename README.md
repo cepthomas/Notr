@@ -27,6 +27,7 @@ Built for ST4 on Windows and Linux.
 - ST regex is a line-oriented version of [Oniguruma Regular Expressions Version 6.8.0](https://github.com/kkos/oniguruma).
   Some things pertaining to line endings don't quite work as expected.
 - Note that coloring *should* stop at the right edge of a table. This is also how ST renders MD tables...
+- Coloring for the markup.user_hlX only supports fore and back colors, but not font style like bold and italic.
 - view.add_regions() apparently only supports colors, annotations, and icon. It does not support font style and region flags.
   Also they are not available via extract_scope().
 
@@ -70,9 +71,12 @@ markup.user_hl3
 markup.user_hl4
 markup.user_hl5
 markup.user_hl6
+markup.fixed_hl1
+markup.fixed_hl2
+markup.fixed_hl3
 ```
 
-files\NotrEx.sublime-color-scheme can be used as a starting point for colorizing.
+files\NotrEx.sublime-color-scheme can be used as a starting point for colorizing. These work for all members of the sbot family.
 
 
 ## Commands

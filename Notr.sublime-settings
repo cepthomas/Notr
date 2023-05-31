@@ -12,10 +12,10 @@
     // Fill char for things like horizontal rules.
     "fill_char": "-",
 
-    // Tokens for highlighting user keywords. Scopes are markup.user_hl1-6.
-    "user_hl": [ [], [], [], [], [], [] ],
+    // Tokens for highlighting 3 sets of user keywords. Scopes are markup.fixed_hl1-3.
+    "fixed_hl": [ [], [], [] ],
     // User highlights option.
-    "user_hl_whole_word": true,
+    "fixed_hl_whole_word": true,
 
     "debug": true,
 }

@@ -1,16 +1,8 @@
 {
     "name": "NotrEx",
-    "globals":
-    {
-        // Your favorites...
-    },
     "rules":
     [
-        // Your favorites...
-
         // Added/modified for notr.
-        { "scope": "markup.italic", "font_style": "italic" },
-        { "scope": "markup.bold", "font_style": "bold" },
         { "scope": "markup.underline", "font_style": "underline" },
         { "scope": "markup.strikethrough", "background": "lightgray" },
         { "scope": "markup.heading.marker.notr", "background": "cyan", "font_style": "bold" },
@@ -19,20 +11,25 @@
         { "scope": "markup.hrule.notr", "background": "mediumaquamarine" },
         { "scope": "markup.raw.inline.notr", "background": "aliceblue" },
         { "scope": "markup.raw.block.notr", "background": "aliceblue" },
-        { "scope": "markup.quote.notr", "background": "lightyellow", "font_style": "italic" },
-        { "scope": "markup.list.indent.notr", "background": "orange" },
+        { "scope": "markup.quote.notr", "background": "lightcyan", "font_style": "italic" },
+        { "scope": "markup.list.indent.notr", "background": "snow" },
         { "scope": "markup.list.marker.notr", "background": "pink", "font_style": "bold" },
         { "scope": "markup.list.content.notr", "background": "lightyellow" },
-        { "scope": "markup.link.name.notr", "background": "wheat" },
-        { "scope": "markup.link.refname.notr", "background": "violet" },
+        { "scope": "markup.link.name.notr", "background": "lemonchiffon", "font_style": "italic" },
+        { "scope": "markup.link.refname.notr", "background": "lavender", "font_style": "bold" },
         { "scope": "markup.link.alias.notr", "background": "lightsalmon" },
 
         // User highlighting. Not .notr because they are also used by the sbot plugin family.
+        // Note that coloring for the markup.user_hls only supports fore and back colors, but not font_style.
         { "scope": "markup.user_hl1", "background": "red", "foreground": "white" },
         { "scope": "markup.user_hl2", "background": "green", "foreground": "white" },
         { "scope": "markup.user_hl3", "background": "blue", "foreground": "white" },
-        { "scope": "markup.user_hl4", "background": "moccasin", "foreground": "red" },
-        { "scope": "markup.user_hl5", "background": "moccasin", "foreground": "green" },
-        { "scope": "markup.user_hl6", "background": "moccasin", "foreground": "blue" },
+        { "scope": "markup.user_hl4", "background": "yellow", "foreground": "black" },
+        { "scope": "markup.user_hl5", "background": "lime", "foreground": "black" },
+        { "scope": "markup.user_hl6", "background": "cyan", "foreground": "black" },
+        // Fixed highlighting separate from user_hl.
+        { "scope": "markup.fixed_hl1", "background": "whitesmoke", "foreground": "red" },
+        { "scope": "markup.fixed_hl2", "background": "whitesmoke", "foreground": "green" },
+        { "scope": "markup.fixed_hl3", "background": "whitesmoke", "foreground": "blue" },
     ]
 }

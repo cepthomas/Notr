@@ -7,7 +7,7 @@ import sublime_plugin
 from . import sbot_common as sc
 
 
-# TODO Differentiate user_hl from SbotHighlight. They share region names, may need different ones for notr + outline.
+# TODO Differentiate fixed_hl from SbotHighlight. They share region names, may need different ones for notr + outline.
 #   See linter code to see what they do: outline. RegionFlags doesn't work in add_regions().
 
 # TODO Folding by section.
@@ -80,11 +80,11 @@ class NotrEvent(sublime_plugin.EventListener):
 
         # Views are all valid now so init them.
         for view in views:
-            self._init_user_hl(view)
+            self._init_fixed_hl(view)
 
     def on_load(self, view):
         ''' Load a new file. View is valid so init it. '''
-        self._init_user_hl(view)
+        self._init_fixed_hl(view)
 
     def on_post_save(self, view):
         ''' Called after a view has been saved so reload ntr files. '''
@@ -92,18 +92,18 @@ class NotrEvent(sublime_plugin.EventListener):
             # _process_notr_files()
             pass
 
-    def _init_user_hl(self, view):
-        ''' Add any user highlights. '''
+    def _init_fixed_hl(self, view):
+        ''' Add any highlights. '''
 
         if view.is_scratch() is False and view.file_name() is not None and view.syntax().name == 'Notr':
             settings = sublime.load_settings(NOTR_SETTINGS_FILE)
-            user_hl = settings.get('user_hl')
-            whole_word = settings.get('user_hl_whole_word')
+            fixed_hl = settings.get('fixed_hl')
+            whole_word = settings.get('fixed_hl_whole_word')
 
-            if user_hl is not None:
-                for hl_index in range(len(user_hl)):
+            if fixed_hl is not None:
+                for hl_index in range(len(fixed_hl)):
                     # Clean first.
-                    scope = f'markup.user_hl{hl_index+1}'
+                    scope = f'markup.fixed_hl{hl_index+1}'
                     region_name = sc.HIGHLIGHT_REGION_NAME % hl_index
                     view.erase_regions(region_name)
 
@@ -112,7 +112,7 @@ class NotrEvent(sublime_plugin.EventListener):
                     anns = []
 
                     # Colorize one token.
-                    for token in user_hl[hl_index]:
+                    for token in fixed_hl[hl_index]:
                         escaped = re.escape(token)
                         if whole_word:  # and escaped[0].isalnum():
                             escaped = r'\b%s\b' % escaped
