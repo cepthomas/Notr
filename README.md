@@ -1,8 +1,9 @@
 # Notr
 
-Sublime Text markup syntax for colorizing plain text files. The intention is to provide visual clues for things
-like sections, links, tables, lists, etc. The syntax is somewhat similar to markdown but this is not intended
-to be rendered into a pretty final form.
+Sublime Text plugin for managing collections of notes. Note files have the extension `.ntr` and the corresponding markup syntax
+provides file and section navigation and colorizing to provide visual clues for things like sections, links, tables, lists, etc.
+It is a plain text format with a lot of similarity to markdown but is not intended to be rendered into a publication - the text
+itself is the whole point of this.
 
 Built for ST4 on Windows and Linux.
 
@@ -13,9 +14,11 @@ Built for ST4 on Windows and Linux.
 - Links and references
 - Lists
 - Tables
-- Auto highlight
+- Auto highlight - supplements [SbotHighlight](https://github.com/cepthomas/SbotHighlight)
+- Render to html with [SbotRender](https://github.com/cepthomas/SbotRender)
 
-- See [The spec](files/notr-spec.ntr) for an example of the features with plugin installed. Looks like this (excuse the colors...):
+
+See [The spec](files/notr-spec.ntr) for an example of the features with plugin installed. Looks like this (excuse the colors...):
 
 ![Some](files/ex1.jpg)
 
@@ -25,9 +28,10 @@ Built for ST4 on Windows and Linux.
 ## Limitations
 
 - ST regex is a line-oriented version of [Oniguruma Regular Expressions Version 6.8.0](https://github.com/kkos/oniguruma).
-  Some things pertaining to line endings don't quite work as expected.
+  Some things pertaining to normal line endings don't quite work as expected.
 - Note that coloring *should* stop at the right edge of a table. This is also how ST renders MD tables...
-- TODO Coloring for the markup.user_hls only supports fore and back colors, but not font_style - RegionFlags doesn't work in add_regions().
+- Coloring for the markup.user_hls and markup.fixed_hls only supports fore and back colors, but not font_style.
+  Also RegionFlags doesn't work in add_regions().
 - view.add_regions() apparently only supports colors, annotations, and icon. It does not support font style and region flags.
   Also they are not available via extract_scope().
 
@@ -62,7 +66,7 @@ markup.raw.block.notr
 markup.raw.inline.notr
 ```
 
-New general scopes added (used by other sbot plugins)
+New general scopes added (also used by other sbot plugins)
 ```
 markup.underline
 markup.user_hl1
@@ -82,7 +86,7 @@ markup.fixed_hl3
 ## Commands
 
 | Command              | Type     | Description                             | Args                              |
-| :--------            | :------- | :-------                                | :--------                         |
+| :--------            | :-----   | :-------                                | :--------                         |
 | notr_insert_link     | Context  | Insert a link from clipboard            |                                   |
 | notr_insert_ref      | Context  | Insert a ref from selector              |                                   |
 | notr_insert_hrule    | Context  | Visual horizontal rule                  |                                   |
@@ -98,26 +102,22 @@ markup.fixed_hl3
 | :--------           | :-------                                   | :------                                    |
 | notr_paths          | List of where notr files live              |                                            |
 | notr_index          | Main notr file                             |                                            |
-| sort_tags_alpha     | Sort tags alphabetically or by frequency   |                                            |
+| sort_tags_alpha     | Sort tags alphabetically or by frequency   | true/false                                 |
 | visual_line_length  | For horizontal rule                        |                                            |
 | fill_char           | For horizontal rule                        |                                            |
-| fixed_hl            | 3 sets of user keywords                    |                                            |
-| fixed_hl_whole_word | User highlights option                     |                                            |
-| debug               | debug                                      |                                            |
+| fixed_hl            | Three sets of user keywords                |                                            |
+| fixed_hl_whole_word | User highlights option                     | true/false                                 |
 
 
 ## Future
 Things to consider.
 
-- Simple git tools: diff, commit, push? https://github.com/kemayo/sublime-text-git.
 - Support text attributes, links, refs in blocks, tables, lists, etc.
 - Unicode menu/picker to insert and view at caret.
 - Toggle syntax coloring (distraction free). Maybe just set to Plain Text.
-- Block "comment/uncomment" useful? What would that mean - "hide" text? shade?
 - File/section navigator, drag/drop/cut/copy/paste section.
 - Publish notes to web for access from phone. Render html would need links.
 - Tables: insert table(w, h), autofit/justify, add/delete row(s)/col(s).
-- Use icons, style, annotations, phantoms? See mdpopups for generating tooltip popups.
-- Show image file as phantom or hover, maybe thumbnail. See SbotDev.
+- Use icons, style, annotations, phantoms for something? See mdpopups for generating tooltip popups.
+- Show image file as phantom or hover, maybe thumbnail.
 - Auto/manual Indent/dedent lists with bullets. Probably not possible as ST controls this.
-- Make into package when it's cooked. https://packagecontrol.io/docs/submitting_a_package.

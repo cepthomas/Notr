@@ -6,10 +6,15 @@ import sublime
 import sublime_plugin
 from . import sbot_common as sc
 
-# TODOX Folding by section.
+# TODO Folding by section.
+# TODO Search in all notr files.
+# TODO Block "comment/uncomment" useful? What would that mean - "hide" text? shade?
+# TODO Make into package when it's cooked. https://packagecontrol.io/docs/submitting_a_package.
 
 
-NOTR_SETTINGS_FILE = "Notr.sublime-settings"
+_debug = True # TODO remove later.
+
+NOTR_SETTINGS_FILE = "Notr_debug.sublime-settings" if _debug else "Notr.sublime-settings"
 
 
 #--------------------------- Types -------------------------------------------------
@@ -229,7 +234,7 @@ class NotrGotoRefCommand(sublime_plugin.TextCommand):
                         break
 
             if not valid:
-                sc.slog(sc.CAT_ERR, f'Invalid reference in {self.view.file_name()} name:{ref_name}')
+                sc.slog(sc.CAT_ERR, f'Invalid reference: {self.view.file_name()} :{ref_name}')
 
         else:  # Link ref
             # Get the Link spec.
@@ -312,8 +317,7 @@ class NotrReloadCommand(sublime_plugin.TextCommand):
             sc.create_new_view(self.view.window(), '\n'.join(_parse_errors))
 
     def is_visible(self):
-        settings = sublime.load_settings(NOTR_SETTINGS_FILE)
-        return settings.get('debug')
+        return _debug
 
 
 #-----------------------------------------------------------------------------------
@@ -353,8 +357,7 @@ class NotrDumpCommand(sublime_plugin.TextCommand):
         sc.create_new_view(self.view.window(), '\n'.join(text))
 
     def is_visible(self):
-        settings = sublime.load_settings(NOTR_SETTINGS_FILE)
-        return settings.get('debug')
+        return _debug
 
 
 #-----------------------------------------------------------------------------------
@@ -446,7 +449,7 @@ def _process_notr_file(fn):
                         value = os.path.expandvars(parts[1].strip())
                         os.environ[alias] = value
                     else:
-                        sc.slog(sc.CAT_ERR, f'Invalid alias in {fn} line {line_num}')
+                        sc.slog(sc.CAT_ERR, f'Invalid alias: {fn}({line_num})')
 
                 # Links
                 matches = re_links.findall(line)
@@ -456,7 +459,7 @@ def _process_notr_file(fn):
                         target = os.path.expandvars(m[1].strip())
                         _links.append(Link(fn, line_num, name, target))
                     else:
-                        sc.slog(sc.CAT_ERR, f'Invalid syntax in {fn} line {line_num}')
+                        sc.slog(sc.CAT_ERR, f'Invalid syntax: {fn}({line_num})')
 
                 # Refs
                 matches = re_refs.findall(line)
@@ -480,12 +483,12 @@ def _process_notr_file(fn):
                         for tag in tags:
                             _tags[tag] = _tags[tag] + 1 if tag in _tags else 1
                     else:
-                        sc.slog(sc.CAT_ERR, f'Invalid syntax in {fn} line {line_num}')
+                        sc.slog(sc.CAT_ERR, f'Invalid syntax: {fn}({line_num})')
 
                 line_num += 1
 
     except Exception as e:
-        sc.slog(sc.CAT_ERR, f'Error processing {fn}\n{e}')
+        sc.slog(sc.CAT_ERR, f'Error processing {fn}: {e}')
         raise
 
 #-----------------------------------------------------------------------------------

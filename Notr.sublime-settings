@@ -16,6 +16,4 @@
     "fixed_hl": [ [], [], [] ],
     // User highlights option.
     "fixed_hl_whole_word": true,
-
-    "debug": true,
 }

@@ -1,7 +1,9 @@
 
 # section name [tag1 tag2]
-A section of content. <section name> can be referenced later as a link.
-Tag(s) are used for searching.
+A section of content.
+Starts in first column with number of `#` indicates level.
+Tag(s) are used for categorizing and selecting sections..
+Right click to select from a list of all sections or tags to navigate to!
 
 ## section no tags
 Another section but without tags.
@@ -10,13 +12,15 @@ Another section but without tags.
 
 
 ### Text Attributes [tag2  dds tag3]
+Basic things you can do with text.
+
 Text: *Bold*, /italic/, and _under line_ are as expected, ~strike through~ is a compromise.
 
 Auto-highlight things like:
   2DO - from user list.
-  dynamic/runtime. Note that SbotHighlight will override these.
-
-and_a  and_b  and_c.  Also has annotations -->
+  dynamic/runtime.
+bla and_a  bla and_b  bla and_c bla.
+Set the text tokens in your settings.
 
 `An inline chunk of raw text` and here is `another one` ok?
 
@@ -34,7 +38,8 @@ Here is another block. Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
 
 Visual delimiters that don't do anything else. Like a horizontal rule:
 ----------------------------------------------------------------------------------------------------
-hello!
+Hello! Welcome to my world. I have invincible walls.
+====================================================================================================
 
 
 ## Lists [tag9 tagZZZ]
@@ -60,16 +65,18 @@ item states (in settings)
 
 ## Links and References [tag3 tag4 tag9]
 
-Define link and its name like [image felix le chat: $NOTR_PATH\files\felix1.jpg] or
+Define a link and its ref name like [image felix le chat: $NOTR_PATH\files\felix1.jpg] or
    [other type of file: $NOTR_PATH\notr.py]
 or... [nyt: https://nytimes.com]
 
-Use `*` to reference aliases.
+Define things like `$NOTR_PATH` before being referenced, usually in your `notr_index` file.
+
+Use `*` to identify references defined beforehand - above or in `notr_index` file. Right click to navigate to the ref.
+
 Ref to other file. [* image felix le chat] or [* other type of file] or [* another felix].
 Ref to URI. [* nyt]
 Ref section in this ntr file: [*#section no tags] end.
-Ref section in another ntr file: [*page2#P2 section 2]. page2 is the pathless root of a unique filename. Must be unique!
-
+Ref section in another ntr file: [*page2#P2 section 2]. `page2` is the pathless root of the ntr filename. Must be unique in all ntr files!
 
 ## Tables [tag2]
 
