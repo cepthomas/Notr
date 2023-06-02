@@ -18,69 +18,37 @@ Built for ST4 on Windows and Linux.
 - Render to html with [SbotRender](https://github.com/cepthomas/SbotRender)
 
 
-See [The spec](files/notr-spec.ntr) for an example of the features with plugin installed. Looks like this (excuse the colors...):
+## Demo
+
+[The spec](files/notr-spec.ntr) provides an example of the features. If the plugin is installed it will look
+something  like this (excuse the colors...):
 
 ![Some](files/ex1.jpg)
 
 ![More](files/ex2.jpg)
 
-
-## Limitations
-
-- ST regex is a line-oriented version of [Oniguruma Regular Expressions Version 6.8.0](https://github.com/kkos/oniguruma).
-  Some things pertaining to normal line endings don't quite work as expected.
-- Note that coloring *should* stop at the right edge of a table. This is also how ST renders MD tables...
-- Coloring for the markup.user_hls and markup.fixed_hls only supports fore and back colors, but not font_style.
-  Also RegionFlags doesn't work in add_regions().
-- view.add_regions() apparently only supports colors, annotations, and icon. It does not support font style and region flags.
-  Also they are not available via extract_scope().
-
-## Scopes
-
-Notr uses these existing scopes.
+To run the demo:
+- Install the plugin.
+- Open `Preferences->Package Settings->Notr`.
+- Edit to something like this:
 ```
-meta.table
-meta.table.header
-markup.bold
-markup.italic
-markup.strikethrough
+{
+    "notr_paths": [
+        "<$LOCALAPPDATA>\\Sublime Text\\Packages\\Notr\\files",
+    ],
+    "notr_index": "<$LOCALAPPDATA>\\Sublime Text\\Packages\\Notr\\files\\test-index.ntr",
+    "fixed_hl": [
+        ["2DO", "and_a"],
+        ["user", "and_b"],
+        ["dynamic", "and_c"],
+    ],
+}
 ```
 
-New notr-specific scopes added for this application.
-```
-text.notr
-markup.underline.link.notr
-markup.heading.notr
-markup.heading.content.notr
-markup.heading.marker.notr
-markup.heading.tags.notr
-markup.hrule.notr
-markup.link.alias.notr
-markup.link.name.notr
-markup.link.refname.notr
-markup.list.content.notr
-markup.list.indent.notr
-markup.list.marker.notr
-markup.quote.notr
-markup.raw.block.notr
-markup.raw.inline.notr
-```
-
-New general scopes added (also used by other sbot plugins)
-```
-markup.underline
-markup.user_hl1
-markup.user_hl2
-markup.user_hl3
-markup.user_hl4
-markup.user_hl5
-markup.user_hl6
-markup.fixed_hl1
-markup.fixed_hl2
-markup.fixed_hl3
-```
-
-`files\NotrEx.sublime-color-scheme` can be used as an example for colorizing. These are used for all members of the sbot family.
+- Create a custom color scheme file for Notr based on `file/NotrOverlay.sublime-color-scheme`.
+  Implement it per [Color customization](https://www.sublimetext.com/docs/color_schemes.html#customization).
+- Note that Notr uses some existing scopes and adds some new ones - these are specified in the overlay scheme.
+- Now open `files/notr-spec.ntr` and be amazed.
 
 
 ## Commands
@@ -107,6 +75,17 @@ markup.fixed_hl3
 | fill_char           | For horizontal rule                        |                                            |
 | fixed_hl            | Three sets of user keywords                |                                            |
 | fixed_hl_whole_word | User highlights option                     | true/false                                 |
+
+
+## Caveats
+
+- ST regex is a line-oriented version of [Oniguruma Regular Expressions Version 6.8.0](https://github.com/kkos/oniguruma).
+  Some things pertaining to normal line endings don't quite work as expected.
+- Note that coloring *should* stop at the right edge of a table. This is also how ST renders MD tables...
+- Coloring for the markup.user_hls and markup.fixed_hls only supports fore and back colors, but not font_style.
+  Also RegionFlags doesn't work in add_regions().
+- view.add_regions() apparently only supports colors, annotations, and icon. It does not support font style and region flags.
+  Also they are not available via extract_scope().
 
 
 ## Future

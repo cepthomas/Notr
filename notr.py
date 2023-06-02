@@ -12,7 +12,7 @@ from . import sbot_common as sc
 # TODO Make into package when it's cooked. https://packagecontrol.io/docs/submitting_a_package.
 
 
-_debug = True # TODO remove later.
+_debug = False # TODO remove later.
 
 NOTR_SETTINGS_FILE = "Notr_debug.sublime-settings" if _debug else "Notr.sublime-settings"
 
