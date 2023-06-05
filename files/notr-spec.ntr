@@ -39,7 +39,7 @@ Here is another block. Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
 Visual delimiters that don't do anything else. Like a horizontal rule:
 ----------------------------------------------------------------------------------------------------
 Hello! Welcome to my world. I have invincible walls.
-====================================================================================================
+IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
 
 
 ## Lists [tag9 tagZZZ]
@@ -80,11 +80,10 @@ Ref section in another ntr file: [*page2#P2 section 2]. `page2` is the pathless 
 
 ## Tables [tag2]
 
-Very dumb table. Good enough for me. 
+Very dumb table. Good enough for me. You can use the heading break like markdown if you want but it's not necessary.
 Note that coloring *should* stop at the right edge of the table but this is how ST regex does it.
 
 | Maine | Iowa | Colorado |
-|-------|------|----------|
 |   1   |  4   |   10     |
 |  ME   |  IA  |   CO     |
 | Blue  | Red  | Brown    |

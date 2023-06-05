@@ -6,7 +6,8 @@
         [
             { "caption": "Insert Link", "command": "notr_insert_link" },
             { "caption": "Insert Ref", "command": "notr_insert_ref" },
-            { "caption": "Insert HRule", "command": "notr_insert_hrule" },
+            { "caption": "Insert HRule Thin", "command": "notr_insert_hrule", "args" : {"fill_char" : "-"} },
+            { "caption": "Insert HRule Thick", "command": "notr_insert_hrule", "args" : {"fill_char" : "I"} },
             { "caption": "Dump", "command": "notr_dump" },
             { "caption": "Reload", "command": "notr_reload" },
         ],

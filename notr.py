@@ -7,14 +7,15 @@ import sublime_plugin
 from . import sbot_common as sc
 
 # TODO Folding by section.
-# TODO Search in all notr files.
 # TODO Block "comment/uncomment" useful? What would that mean - "hide" text? shade?
+# TODO Text attributes in links, refs in blocks, tables, lists, etc. Don't work right after comma.
+# TODO Tables: insert table(w, h), autofit/justify, add/delete row(s)/col(s), sort by column. Probably existing csv plugin with streamlined menus.
 # TODO Make into package when it's cooked. https://packagecontrol.io/docs/submitting_a_package.
 
+_debug = True # TODO fix or remove later.
 
-_debug = False # TODO remove later.
-
-NOTR_SETTINGS_FILE = "Notr_debug.sublime-settings" if _debug else "Notr.sublime-settings"
+NOTR_SETTINGS_FILE = "Notr.sublime-settings"
+# NOTR_SETTINGS_FILE = "Notr_debug.sublime-settings"
 
 
 #--------------------------- Types -------------------------------------------------
@@ -252,11 +253,10 @@ class NotrGotoRefCommand(sublime_plugin.TextCommand):
 class NotrInsertHruleCommand(sublime_plugin.TextCommand):
     ''' Insert visuals. '''
 
-    def run(self, edit):
+    def run(self, edit, fill_char):
         v = self.view
         settings = sublime.load_settings(NOTR_SETTINGS_FILE)
         visual_line_length = settings.get('visual_line_length')
-        fill_char = settings.get('fill_char')
 
         # Start of current line.
         lst = v.line(v.sel()[0].a)
@@ -427,9 +427,9 @@ def _process_notr_files():
 
 #-----------------------------------------------------------------------------------
 def _process_notr_file(fn):
-    ''' Regex and process sections and links. This just collects the text, validity will be checked when all files processed. '''
+    ''' Regex and process sections and links. This collects the text and checks syntax. Validity will be checked when all files processed. '''
     try:
-        with open(fn, 'r') as file:
+        with open(fn, 'r', encoding='utf-8') as file:
             lines = file.read().splitlines()
             line_num = 1
 
@@ -449,7 +449,8 @@ def _process_notr_file(fn):
                         value = os.path.expandvars(parts[1].strip())
                         os.environ[alias] = value
                     else:
-                        sc.slog(sc.CAT_ERR, f'Invalid alias: {fn}({line_num})')
+                        # sc.slog(sc.CAT_ERR, f'Invalid alias: {fn}({line_num})')
+                        _user_error(fn, line_num, f'Invalid alias')
 
                 # Links
                 matches = re_links.findall(line)
@@ -459,7 +460,8 @@ def _process_notr_file(fn):
                         target = os.path.expandvars(m[1].strip())
                         _links.append(Link(fn, line_num, name, target))
                     else:
-                        sc.slog(sc.CAT_ERR, f'Invalid syntax: {fn}({line_num})')
+                        # sc.slog(sc.CAT_ERR, f'Invalid syntax: {fn}({line_num})')
+                        _user_error(fn, line_num, f'Invalid syntax')
 
                 # Refs
                 matches = re_refs.findall(line)
@@ -483,7 +485,8 @@ def _process_notr_file(fn):
                         for tag in tags:
                             _tags[tag] = _tags[tag] + 1 if tag in _tags else 1
                     else:
-                        sc.slog(sc.CAT_ERR, f'Invalid syntax: {fn}({line_num})')
+                        # sc.slog(sc.CAT_ERR, f'Invalid syntax: {fn}({line_num})')
+                        _user_error(fn, line_num, f'Invalid syntax')
 
                 line_num += 1
 

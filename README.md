@@ -61,7 +61,6 @@ To run the demo:
 | notr_goto_section    | Context  | Go to section from selector             | filter_by_tag = select tag first  |
 | notr_goto_ref        | Context  | Go to a reference from selector         |                                   |
 | notr_reload          | Context  | Reload after editing colors or settings |                                   |
-| notr_dump            | Context  | xxxx                                    |                                   |
 
 
 ## Settings
@@ -91,12 +90,11 @@ To run the demo:
 ## Future
 Things to consider.
 
-- Support text attributes, links, refs in blocks, tables, lists, etc.
 - Unicode menu/picker to insert and view at caret.
 - Toggle syntax coloring (distraction free). Maybe just set to Plain Text.
 - File/section navigator, drag/drop/cut/copy/paste section.
 - Publish notes to web for access from phone. Render html would need links.
-- Tables: insert table(w, h), autofit/justify, add/delete row(s)/col(s).
 - Use icons, style, annotations, phantoms for something? See mdpopups for generating tooltip popups.
 - Show image file as phantom or hover, maybe thumbnail.
 - Auto/manual Indent/dedent lists with bullets. Probably not possible as ST controls this.
+- syntax_test_notr.ntr.
