@@ -1,32 +1,40 @@
 import sublime
 import sublime_plugin
 
-# From C:\Dev\Notr\py\Default.fold.py
 
-#   { "keys": ["ctrl+shift+["], "command": "fold" },
-#   { "keys": ["ctrl+shift+]"], "command": "unfold" },
-#   { "keys": ["ctrl+k", "ctrl+1"], "command": "fold_by_level", "args": {"level": 1} },
-#   { "keys": ["ctrl+k", "ctrl+2"], "command": "fold_by_level", "args": {"level": 2} },
-#   { "keys": ["ctrl+k", "ctrl+3"], "command": "fold_by_level", "args": {"level": 3} },
-#   { "keys": ["ctrl+k", "ctrl+4"], "command": "fold_by_level", "args": {"level": 4} },
-#   { "keys": ["ctrl+k", "ctrl+5"], "command": "fold_by_level", "args": {"level": 5} },
-#   { "keys": ["ctrl+k", "ctrl+6"], "command": "fold_by_level", "args": {"level": 6} },
-#   { "keys": ["ctrl+k", "ctrl+7"], "command": "fold_by_level", "args": {"level": 7} },
-#   { "keys": ["ctrl+k", "ctrl+8"], "command": "fold_by_level", "args": {"level": 8} },
-#   { "keys": ["ctrl+k", "ctrl+9"], "command": "fold_by_level", "args": {"level": 9} },
-#   { "keys": ["ctrl+k", "ctrl+0"], "command": "unfold_all" },
-#   { "keys": ["ctrl+k", "ctrl+j"], "command": "unfold_all" },
-#   { "keys": ["ctrl+k", "ctrl+t"], "command": "fold_tag_attributes" },
 
-# API View:
-#   is_folded(Region) Returns Whether the provided Region is folded.
-#   folded_regions() Returns The list of folded regions.
-# 
-#   fold(list[Region]) Returns  False if the regions were already folded.
-#     Fold the provided Region (s).
-# 
-#   unfold(list[Region]) Returns  The unfolded regions.
-#     Unfold all text in the provided Region (s).
+# These are from Default/fold.py I think.
+
+r'''
+From C:\Dev\Notr\py\Default.fold.py
+
+  { "keys": ["ctrl+shift+["], "command": "fold" },
+  { "keys": ["ctrl+shift+]"], "command": "unfold" },
+  { "keys": ["ctrl+k", "ctrl+1"], "command": "fold_by_level", "args": {"level": 1} },
+  { "keys": ["ctrl+k", "ctrl+2"], "command": "fold_by_level", "args": {"level": 2} },
+  { "keys": ["ctrl+k", "ctrl+3"], "command": "fold_by_level", "args": {"level": 3} },
+  { "keys": ["ctrl+k", "ctrl+4"], "command": "fold_by_level", "args": {"level": 4} },
+  { "keys": ["ctrl+k", "ctrl+5"], "command": "fold_by_level", "args": {"level": 5} },
+  { "keys": ["ctrl+k", "ctrl+6"], "command": "fold_by_level", "args": {"level": 6} },
+  { "keys": ["ctrl+k", "ctrl+7"], "command": "fold_by_level", "args": {"level": 7} },
+  { "keys": ["ctrl+k", "ctrl+8"], "command": "fold_by_level", "args": {"level": 8} },
+  { "keys": ["ctrl+k", "ctrl+9"], "command": "fold_by_level", "args": {"level": 9} },
+  { "keys": ["ctrl+k", "ctrl+0"], "command": "unfold_all" },
+  { "keys": ["ctrl+k", "ctrl+j"], "command": "unfold_all" },
+  { "keys": ["ctrl+k", "ctrl+t"], "command": "fold_tag_attributes" },
+
+API View:
+  is_folded(Region) Returns Whether the provided Region is folded.
+  folded_regions() Returns The list of folded regions.
+
+  fold(list[Region]) Returns  False if the regions were already folded.
+    Fold the provided Region (s).
+
+  unfold(list[Region]) Returns  The unfolded regions.
+    Unfold all text in the provided Region (s).
+'''
+
+
 
 
 def fold_region_from_indent(view, r):
@@ -34,7 +42,6 @@ def fold_region_from_indent(view, r):
         return sublime.Region(r.a - 1, r.b)
     else:
         return sublime.Region(r.a - 1, r.b - 1)
-
 
 class FoldUnfoldCommand(sublime_plugin.TextCommand):
     def run(self, edit):

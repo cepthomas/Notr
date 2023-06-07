@@ -13,7 +13,7 @@ Built for ST4 on Windows and Linux.
 - Various text decorations
 - Links and references
 - Lists
-- Tables
+- Tables --- https://github.com/wadetb/Sublime-Text-Advanced-CSV
 - Auto highlight - supplements [SbotHighlight](https://github.com/cepthomas/SbotHighlight)
 - Render to html with [SbotRender](https://github.com/cepthomas/SbotRender)
 
@@ -34,9 +34,9 @@ To run the demo:
 ```
 {
     "notr_paths": [
-        "<$LOCALAPPDATA>\\Sublime Text\\Packages\\Notr\\files",
+        "<$LOCALAPPDATA>\Sublime Text\Packages\Notr\files",
     ],
-    "notr_index": "<$LOCALAPPDATA>\\Sublime Text\\Packages\\Notr\\files\\test-index.ntr",
+    "notr_index": "<$LOCALAPPDATA>\Sublime Text\Packages\Notr\files\test-index.ntr",
     "fixed_hl": [
         ["2DO", "and_a"],
         ["user", "and_b"],
@@ -45,13 +45,12 @@ To run the demo:
 }
 ```
 
-- Create a custom color scheme file for Notr based on `file/NotrOverlay.sublime-color-scheme`.
-  Implement it per [Color customization](https://www.sublimetext.com/docs/color_schemes.html#customization).
-- Note that Notr uses some existing scopes and adds some new ones - these are specified in the overlay scheme.
+- Color schemes require new and edited scopes to support this tool. They are specified in `file/NotrOverlay.sublime-color-scheme`.
+  Implement your unique version of this per [Color customization](https://www.sublimetext.com/docs/color_schemes.html#customization).
 - Now open `files/notr-spec.ntr` and be amazed.
 
 
-## Commands
+## Commands TODO table ones
 
 | Command              | Type     | Description                             | Args                              |
 | :--------            | :-----   | :-------                                | :--------                         |
@@ -93,7 +92,6 @@ Things to consider.
 - Unicode menu/picker to insert and view at caret.
 - Toggle syntax coloring (distraction free). Maybe just set to Plain Text.
 - File/section navigator, drag/drop/cut/copy/paste section.
-- Publish notes to web for access from phone. Render html would need links.
 - Use icons, style, annotations, phantoms for something? See mdpopups for generating tooltip popups.
 - Show image file as phantom or hover, maybe thumbnail.
 - Auto/manual Indent/dedent lists with bullets. Probably not possible as ST controls this.

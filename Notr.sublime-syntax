@@ -108,7 +108,7 @@ contexts:
   #################### list ###########################################
 
   list:
-    - match: '^([ ]*)([-X\?!])[ ]+(.*)'
+    - match: '^([ ]*)([-X\?!\*])[ ]+(.*)'
       captures:
         1: markup.list.indent.notr
         2: markup.list.marker.notr

@@ -7,15 +7,15 @@ import sublime_plugin
 from . import sbot_common as sc
 
 # TODO Folding by section.
-# TODO Block "comment/uncomment" useful? What would that mean - "hide" text? shade?
-# TODO Text attributes in links, refs in blocks, tables, lists, etc. Don't work right after comma.
 # TODO Tables: insert table(w, h), autofit/justify, add/delete row(s)/col(s), sort by column. Probably existing csv plugin with streamlined menus.
-# TODO Make into package when it's cooked. https://packagecontrol.io/docs/submitting_a_package.
-
-_debug = True # TODO fix or remove later.
+# TODO When/how to reload? on_post_save, explicit command, ???
+# TODO Block "comment/uncomment" useful? What would that mean - "hide" text? shade?
+# TODO Publish notes to web for access from phone. Render html would need links.
+# TODO Text attributes in links, refs in blocks, tables, lists, etc. Don't work right after comma.
+# TODO Make into package when it's cooked. https://packagecontrol.io/docs/submitting_a_package. Do something about demo/dump/etc.
 
 NOTR_SETTINGS_FILE = "Notr.sublime-settings"
-# NOTR_SETTINGS_FILE = "Notr_debug.sublime-settings"
+# NOTR_DEMO_FILE = "Notr_demo.sublime-settings"
 
 
 #--------------------------- Types -------------------------------------------------
@@ -87,7 +87,7 @@ class NotrEvent(sublime_plugin.EventListener):
         self._init_fixed_hl(view)
 
     def on_post_save(self, view):
-        ''' Called after a ntr view has been saved so reload ntr files. TODO Do this every time or use explicit reload cmd? '''
+        ''' Called after a ntr view has been saved so reload ntr files. '''
         if view.syntax().name == 'Notr':
             # _process_notr_files()
             pass
@@ -317,7 +317,7 @@ class NotrReloadCommand(sublime_plugin.TextCommand):
             sc.create_new_view(self.view.window(), '\n'.join(_parse_errors))
 
     def is_visible(self):
-        return _debug
+        return True
 
 
 #-----------------------------------------------------------------------------------
@@ -357,7 +357,7 @@ class NotrDumpCommand(sublime_plugin.TextCommand):
         sc.create_new_view(self.view.window(), '\n'.join(text))
 
     def is_visible(self):
-        return _debug
+        return True
 
 
 #-----------------------------------------------------------------------------------
