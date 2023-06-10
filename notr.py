@@ -15,14 +15,6 @@ from . import sbot_common as sc
 # TODO Make into package when it's cooked. https://packagecontrol.io/docs/submitting_a_package. Do something about demo/dump/etc.
 
 
-# __init__ is used to initialize the state of multiple instances of a class where each instance's state is decoupled from each other, whereas your second example, without __init__ initializes an attribute that is shared among all instances of a class.
-# class myClass():
-#     x = 3 class member
-# class myClass():
-#     def __init__ (self):
-#         self.x = 3 instance member
-
-
 NOTR_SETTINGS_FILE = "Notr.sublime-settings"
 # NOTR_DEMO_FILE = "Notr_demo.sublime-settings"
 
