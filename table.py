@@ -64,7 +64,7 @@ class TableMatrix:
         if self.region is not None:
             text = view.substr(self.region)
 
-            for line in text.split("\n"):
+            for line in text.split('\n'):
                 row = self.parse_row(line)
                 self.rows.append(row)
 

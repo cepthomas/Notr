@@ -1,5 +1,6 @@
 [
     { "caption": "-" },
+
     {
         "caption": "Notr",
         "children":
@@ -10,8 +11,10 @@
             { "caption": "Insert HRule Thick", "command": "notr_insert_hrule", "args" : {"fill_char" : "I"} },
             { "caption": "Dump", "command": "notr_dump" },
             { "caption": "Reload", "command": "notr_reload" },
-        ],
-        "caption": "-",
+        ]
+    },
+
+    {
         "caption": "Table",
         "children":
         [
@@ -21,8 +24,9 @@
             { "caption": "Select column", "command": "table_select_col" },
             { "caption": "Sort Ascending", "command": "table_sort_by_col", "args" : {"asc" : true} },
             { "caption": "Sort Descending", "command": "table_sort_by_col", "args" : {"asc" : false} },
-        ],
+        ]
     },
+
     { "caption": "Goto Tag Section", "command": "notr_goto_section", "args" : {"filter_by_tag" : true} },
     { "caption": "Goto Section", "command": "notr_goto_section", "args" : {"filter_by_tag" : false} },
     { "caption": "Goto Ref", "command": "notr_goto_ref" },

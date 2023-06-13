@@ -50,7 +50,7 @@ To run the demo:
 - Now open `files/notr-spec.ntr` and be amazed.
 
 
-## Commands TODO table ones
+## Commands >>> add table ones
 
 | Command              | Type     | Description                             | Args                              |
 | :--------            | :-----   | :-------                                | :--------                         |
