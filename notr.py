@@ -6,11 +6,11 @@ import sublime
 import sublime_plugin
 from . import sbot_common as sc
 
-# TODO Folding by section.
 # TODO Tables: insert table(w, h), autofit/justify, add/delete row(s)/col(s), sort by column. Probably existing csv plugin with streamlined menus.
-# TODO When/how to reload? on_post_save, explicit command, ???
-# TODO Block "comment/uncomment" useful? What would that mean - "hide" text? shade?
 # TODO Publish notes to web for access from phone. Render html would need links.
+
+# TODO Folding by section.
+# TODO Block "comment/uncomment" useful? What would that mean - "hide" text? shade?
 # TODO Text attributes in links, refs in blocks, tables, lists, etc. Don't work right after comma.
 # TODO Make into package when it's cooked. https://packagecontrol.io/docs/submitting_a_package. Do something about demo/dump/etc.
 
@@ -88,7 +88,7 @@ class NotrEvent(sublime_plugin.EventListener):
         self._init_fixed_hl(view)
 
     def on_post_save(self, view):
-        ''' Called after a ntr view has been saved so reload ntr files. '''
+        ''' Called after a ntr view has been saved so reload ntr files. TODO now/here? '''
         if view.syntax().name == 'Notr':
             # _process_notr_files()
             pass
