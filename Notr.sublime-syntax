@@ -58,13 +58,20 @@ contexts:
 #################### headings ###########################################
 
   atx-heading:
-    - match: '^(#+) +([^\[]+) *(?:\[(.*)\])?\n'
+    - match: '^(#+ +[^\[]+) *(?:\[(.*)\])?\n'
       scope: markup.heading.notr
       captures:
-        1: markup.heading.marker.notr
-        2: markup.heading.content.notr
-        3: markup.heading.tags.notr
-    
+        1: markup.heading.content.notr
+        2: markup.heading.tags.notr
+
+  # atx-heading:
+  #   - match: '^(#+) +([^\[]+) *(?:\[(.*)\])?\n'
+  #     scope: markup.heading.notr
+  #     captures:
+  #       1: markup.heading.marker.notr
+  #       2: markup.heading.content.notr
+  #       3: markup.heading.tags.notr
+
 
   #################### raw block ###########################################
 

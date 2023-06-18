@@ -6,18 +6,6 @@ import sublime
 import sublime_plugin
 from . import sbot_common as sc
 
-
-# TODO Tables: insert table(w, h), autofit/justify, add/delete row(s)/col(s), sort by column. Probably existing csv plugin with streamlined menus.
-# TODO Publish notes to web for access from phone. Render html would need links.
-#   https://drive.google.com/file/d/1glF1s3u4vtKE8Ct9syhXdTaPeQxnAVm1/view?usp=drive_link
-#   https://1drv.ms/u/s!Ah3H5smt8XPUiv0uiDKNL2DImD6zKw?e=X2IJRH
-
-
-# TODO Folding by section.
-# TODO Block "comment/uncomment" useful? What would that mean - "hide" text? shade?
-# TODO Text attributes in links, refs in blocks, tables, lists, etc. Don't work right after comma.
-# TODO Make into package when it's cooked. https://packagecontrol.io/docs/submitting_a_package. Do something about demo/dump/etc.
-
 # TODO Need section hierarchy/nesting.
 
 # TODO Use popups for nav/links, like ST.
@@ -32,6 +20,23 @@ from . import sbot_common as sc
 # on_hover(point: Point, hover_zone: HoverZone)
 # on_hover(view: View, point: Point, hover_zone: HoverZone)
 # Called when the user’s mouse hovers over the view for a short period.
+
+# TODO Tables: insert table(w, h), autofit/justify, add/delete row(s)/col(s), sort by column. Probably existing csv plugin with streamlined menus.
+
+# TODO Publish notes to web for access from phone. Render html would need links.
+#   https://www.ecanarys.com/Blogs/ArticleID/135/How-to-Host-your-Webpages-on-Google-Drive#:~:text=You%20can%20use%20Google%20Drive,a%20folder%20in%20google%20drive.
+#   https://www.process.st/how-to-host-a-website-on-google-drive-for-free/
+# 
+#   https://drive.google.com/file/d/1glF1s3u4vtKE8Ct9syhXdTaPeQxnAVm1/view?usp=drive_link
+#   https://1drv.ms/u/s!Ah3H5smt8XPUi5FpjzKWn2nlsSGKCw?e=IQ9K3M
+
+
+# ---------------------------------------------------------
+# TODO Folding by section.
+# TODO Block "comment/uncomment" useful? What would that mean - "hide" text? shade?
+# TODO Text attributes in links, refs in blocks, tables, lists, etc. Don't work right after comma.
+# TODO Make into package when it's cooked. https://packagecontrol.io/docs/submitting_a_package. Do something about demo/dump/etc.
+
 
 
 
@@ -351,26 +356,32 @@ class NotrDumpCommand(sublime_plugin.TextCommand):
         for x in _sections:
             text.append(str(x))
 
+        text.append('')
         text.append('=== _links ===')
         for x in _links:
             text.append(str(x))
 
+        text.append('')
         text.append('=== _refs ===')
         for x in _refs:
             text.append(str(x))
 
+        text.append('')
         text.append('=== _valid_ref_targets ===')
         for x in _valid_ref_targets:
             text.append(f'{x}')
 
+        text.append('')
         text.append('=== _tags ===')
         for x in _tags:
             text.append(f'{x}:{_tags[x]}')
 
+        text.append('')
         text.append('=== _ntr_files ===')
         for x in _ntr_files:
             text.append(f'{x}')
 
+        text.append('')
         text.append('=== _parse_errors ===')
         for x in _parse_errors:
             text.append(f'{x}')
@@ -464,7 +475,8 @@ def _process_notr_file(fn):
             re_directives = re.compile(r'^\$(.*)')
             re_links = re.compile(r'\[([^:]*): *([^\]]*)\]')
             re_refs = re.compile(r'\[\* *([^\]]*)\]')
-            re_sections = re.compile(r'^(#+) +([^\[]+) *(?:\[(.*)\])?')
+            re_sections = re.compile(r'^(#+ +[^\[]+) *(?:\[(.*)\])?')
+            # re_sections = re.compile(r'^(#+) +([^\[]+) *(?:\[(.*)\])?')
 
             for line in lines:
                 # First: directives, aliases.
@@ -483,7 +495,7 @@ def _process_notr_file(fn):
                         value = parts[1].strip()
                         os.environ[alias] = value
                         handled = True
-                        sc.slog(sc.CAT_DBG, f'>>> alias {alias}={value}')
+                        # sc.slog(sc.CAT_DBG, f'>>> alias {alias}={value}')
 
                     if not handled:
                         _user_error(fn, line_num, f'Invalid directive')
@@ -515,16 +527,41 @@ def _process_notr_file(fn):
                 # Sections
                 matches = re_sections.findall(line)
                 for m in matches:
-                    if len(m) == 3:
-                        hashes = m[0].strip()
-                        name = m[1].strip()
-                        tags = m[2].strip().split()
+                    valid = True
+                    if len(m) == 2:
+                        # ## bla bla
+                        content = m[0].strip().split(None, 1)
+                        if len(content) == 2:
+                            hashes = content[0].strip()
+                            name = content[1].strip()
+                        else:
+                            valid = False
+
+                        if valid:
+                            tags = m[1].strip().split()
+                    else:
+                        valid = False
+
+
+                    # if len(m) == 3:
+                    #     hashes = m[0].strip()
+                    #     name = m[1].strip()
+                    #     tags = m[2].strip().split()
+                    #     froot = _get_froot(fn)
+                    #     sections.append(Section(fn, line_num, froot, len(hashes), name, tags))
+                    #     for tag in tags:
+                    #         _tags[tag] = _tags[tag] + 1 if tag in _tags else 1
+                    # else:
+                    #     _user_error(fn, line_num, f'Invalid syntax')
+
+                    if valid:
                         froot = _get_froot(fn)
                         sections.append(Section(fn, line_num, froot, len(hashes), name, tags))
                         for tag in tags:
                             _tags[tag] = _tags[tag] + 1 if tag in _tags else 1
                     else:
                         _user_error(fn, line_num, f'Invalid syntax')
+
 
                 line_num += 1
 

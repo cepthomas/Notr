@@ -16,7 +16,6 @@
         { "scope": "markup.underline", "font_style": "underline" },
         { "scope": "markup.underline.link.notr", "background": "chartreuse" },
         { "scope": "markup.strikethrough", "background": "lightgray" },
-        { "scope": "markup.heading.marker.notr", "background": "cyan", "font_style": "bold" },
         { "scope": "markup.heading.content.notr", "background": "aquamarine", "font_style": "bold" },
         { "scope": "markup.heading.tags.notr", "background": "bisque", "font_style": "italic" },
         { "scope": "markup.hrule.notr", "background": "mediumaquamarine" },
