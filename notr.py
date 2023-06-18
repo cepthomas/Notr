@@ -453,7 +453,7 @@ def _process_notr_file(fn):
     sections = []
     links = []
     refs = []
-    no_index - False
+    no_index = False
 
     try:
         with open(fn, 'r', encoding='utf-8') as file:
@@ -467,7 +467,7 @@ def _process_notr_file(fn):
             re_sections = re.compile(r'^(#+) +([^\[]+) *(?:\[(.*)\])?')
 
             for line in lines:
-                # Directives, aliases.
+                # First: directives, aliases.
                 matches = re_directives.findall(line)
                 for m in matches:
                     handled = False
@@ -479,8 +479,11 @@ def _process_notr_file(fn):
                             handled = True
 
                     elif len(parts) == 2:
-                        os.environ[parts[0].strip()] = parts[1].strip()
+                        alias = parts[0].strip()
+                        value = parts[1].strip()
+                        os.environ[alias] = value
                         handled = True
+                        sc.slog(sc.CAT_DBG, f'>>> alias {alias}={value}')
 
                     if not handled:
                         _user_error(fn, line_num, f'Invalid directive')
@@ -491,6 +494,10 @@ def _process_notr_file(fn):
                     if len(m) == 2:
                         name = m[0].strip()
                         target = os.path.expandvars(m[1].strip())
+                        # There may be nested vars.
+                        while '$' in target:
+                            target = os.path.expandvars(target)
+                        # sc.slog(sc.CAT_DBG, f'>>> target:{target} target2:{os.path.expandvars(target)}')
                         links.append(Link(fn, line_num, name, target))
                     else:
                         _user_error(fn, line_num, f'Invalid syntax')
