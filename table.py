@@ -14,10 +14,10 @@ from . import sbot_common as sc
 class TableValue:
     ''' One value in a TableMatrix row/col cell. '''
 
-    def __init__(self, text, first_char_index=0, last_char_index=0):
+    def __init__(self, text):#, first_char_index=0, last_char_index=0):
         self.text = text
-        self.first_char_index = first_char_index
-        self.last_char_index = last_char_index
+        # self.first_char_index = first_char_index
+        # self.last_char_index = last_char_index
 
     def as_float(self):
         try:
@@ -53,67 +53,38 @@ class TableMatrix:
 
     _delimiter = '|'
 
-    def __init__(self, view):
-        self.view = view
-        self.rows = []
+    def __init__(self, text):
+        # self.view = view
+        self.rows = []  # List of lists of row columns
         self.num_columns = 0
         self.valid = False
-        self.saved_selection = []
-        self.region = self.get_table_region()
+        #self.saved_selection = []
+        # self.region = self.get_table_region()
 
-        if self.region is not None:
-            text = view.substr(self.region)
+        # Parse the content into internal format.
+        # if self.region is not None:
+        #     text = view.substr(self.region)
+        # 
+        for line in text.split('\n'):
+            # row = self.parse_row(line)
 
-            for line in text.split('\n'):
-                row = self.parse_row(line)
-                self.rows.append(row)
+            cols = []
+            for val in line.split(self._delimiter):
+                cols.append(TableValue(val))
+            self.rows.append(cols)
+            # Calc col count.
+            if len(cols) > self.num_columns:
+                self.num_columns = len(cols)
 
-            if len(self.rows) > 0:
-                self.num_columns = 0
-                for row in self.rows:
-                    if len(row) > self.num_columns:
-                        self.num_columns = len(row)
-                self.valid = True
+        # if len(self.rows) > 0:
+        #     self.num_columns = 0
+        #     for row in self.rows:
+        #         if len(row) > self.num_columns:
+        #             self.num_columns = len(row)
+            self.valid = True
 
     def __repr__(self):
         return f'rows:{self.rows}'
-
-    def get_table_region(self):
-        ''' Get the region for the current selected table. None if it's not a table. '''
-
-        region = None
-        v = self.view
-
-        start_row = v.rowcol(v.sel()[0].a)[0]
-        end_row = -1
-        current_row = start_row
-
-        # Find the first row.
-        done = False
-        while not done:
-            point = v.text_point(current_row, 0)
-            if is_table(v, point):
-                start_row = current_row
-                current_row -= 1
-            else:
-                done = True
-
-        # Find the last row.
-        done = False
-        while not done:
-            point = v.text_point(current_row, 0)
-            if is_table(v, point):
-                end_row = current_row
-                current_row += 1
-            else:
-                done = True
-
-        if start_row != -1 and end_row != -1:
-            start_point = v.text_point(start_row, 0)
-            end_point = v.full_line(v.text_point(end_row, 0)).b
-            region = sublime.Region(start_point, end_point)
-
-        return region
 
     def sort_by_column(self, column_index, asc):
         ''' General row sorter. '''
@@ -140,37 +111,6 @@ class TableMatrix:
         for row in self.rows:
             if column_index < len(row):
                 row.pop(column_index)
-
-    def select_column(self, column_index):
-        v = self.view
-        v.sel().clear()
-
-        for row_index, row in enumerate(self.rows):
-            if column_index < len(row):
-                value = row[column_index]
-                a = v.text_point(row_index, value.first_char_index)
-                b = v.text_point(row_index, value.last_char_index)
-                region = sublime.Region(a, b)
-                v.sel().add(region)
-
-    def save_selection(self):
-        v = self.view
-        self.saved_selection.clear()
-
-        for region in v.sel():
-            a_row, a_col = v.rowcol(region.a)
-            b_row, b_col = v.rowcol(region.b)
-            rowcol_region = (a_row, a_col, b_row, b_col)
-            self.saved_selection.append(rowcol_region)
-
-    def restore_selection(self):
-        v = self.view
-        v.sel().clear()
-        for rowcol_region in self.saved_selection:
-            a = v.text_point(rowcol_region[0], rowcol_region[1])
-            b = v.text_point(rowcol_region[2], rowcol_region[3])
-            region = sublime.Region(a, b)
-            v.sel().add(region)
 
     def measure_columns(self):
         self.column_widths = [0] * self.num_columns
@@ -224,20 +164,6 @@ class TableMatrix:
         columns.append(TableValue(currentword, first_char_index, char_index))
         return columns
 
-    def get_column_index_from_cursor(self):
-        v = self.view
-        selection = v.sel()[0]
-        row_index, col_index = v.rowcol(selection.begin())
-
-        if row_index < len(self.rows):
-            row = self.rows[row_index]
-            for column_index, value in enumerate(row):
-                if value.first_char_index > col_index:
-                    return column_index - 1
-            return len(row) - 1
-        else:
-            return 0
-
 
 #-----------------------------------------------------------------------------------
 class TableCommand(sublime_plugin.TextCommand):
@@ -245,26 +171,121 @@ class TableCommand(sublime_plugin.TextCommand):
 
     def __init__(self, view):
         self.view = view
-        self.matrix = TableMatrix(view) # create matrix from table
+        self.region = self.get_table_region()
         self.column_index = -1
 
-    def start(self):
-        sc.slog(sc.CAT_DBG, f'{self.matrix}')
-        self.matrix.save_selection()  # push current selection
-        self.column_index = self.matrix.get_column_index_from_cursor()  # get current column
+        if self.region is not None:
+            text = self.view.substr(self.region)
+            self.matrix = TableMatrix(text)  # create matrix from table text
+
+
+            #selection = self.view.sel()[0]
+            #row, col = self.view.rowcol(selection.begin())
+            #self.column_index = self.matrix.get_column_index_from_pos(row, col)  # get current column
+
+
+            #if row_index < len(self.rows):
+            #    row = self.rows[row_index]
+            #    for column_index, value in enumerate(row):
+            #        if value.first_char_index > col_index:
+            #            return column_index - 1
+            #    return len(row) - 1
+            #else:
+            #    return 0
+
+
+    # def start(self):
+    #     sc.slog(sc.CAT_DBG, f'{self.matrix}')
+    #     #self.matrix.save_selection()  # push current selection
+    #     self.column_index = self.get_column_index_from_cursor()  # get current column
 
     def finish(self, edit):
-        output = self.matrix.format()  # render justified
-        self.view.replace(edit, self.matrix.region, output)
-        self.matrix.restore_selection()  # pop selection
+        if self.region is not None:
+            output = self.matrix.format()  # render justified
+            #self.matrix.restore_selection()  # pop selection
+            self.view.replace(edit, self.region, output)
 
     def is_visible(self):
         return is_table(self.view, self.view.sel()[-1].b)
+
+    def get_table_region(self):
+        ''' Get the region for the current selected table. None if it's not a table. '''
+
+        region = None
+        v = self.view
+
+        sel_row = v.rowcol(v.sel()[0].a)[0]
+        start_row = sel_row
+        end_row = -1
+        current_row = start_row
+
+        # Find the first row.
+        done = False
+        while not done:
+            point = v.text_point(current_row, 0)
+            if is_table(v, point):
+                start_row = current_row
+                current_row -= 1
+            else:
+                done = True
+
+        # Find the last row.
+        current_row = sel_row
+        done = False
+        while not done:
+            point = v.text_point(current_row, 0)
+            if is_table(v, point):
+                end_row = current_row
+                current_row += 1
+            else:
+                done = True
+
+        if start_row != -1 and end_row != -1:
+            start_point = v.text_point(start_row, 0)
+            end_point = v.full_line(v.text_point(end_row, 0)).b
+            region = sublime.Region(start_point, end_point)
+
+        return region
+
+    def select_column(self, column_index):
+        ''' View select specific column. '''
+        v = self.view
+        v.sel().clear()
+
+        for row_index, row in enumerate(self.rows):
+            if column_index < len(row):
+                value = row[column_index]
+                a = v.text_point(row_index, value.first_char_index)
+                b = v.text_point(row_index, value.last_char_index)
+                region = sublime.Region(a, b)
+                v.sel().add(region)
+
+    #def save_selection(self):
+    #    v = self.view
+    #    self.saved_selection.clear()
+
+    #    for region in v.sel():
+    #        a_row, a_col = v.rowcol(region.a)
+    #        b_row, b_col = v.rowcol(region.b)
+    #        rowcol_region = (a_row, a_col, b_row, b_col)
+    #        self.saved_selection.append(rowcol_region)
+
+    #def restore_selection(self):
+    #    v = self.view
+    #    v.sel().clear()
+    #    for rowcol_region in self.saved_selection:
+    #        a = v.text_point(rowcol_region[0], rowcol_region[1])
+    #        b = v.text_point(rowcol_region[2], rowcol_region[3])
+    #        #region = sublime.Region(a, b)
+    #        v.sel().add(region)
 
 
 #-----------------------------------------------------------------------------------
 class TableFitCommand(TableCommand):
     
+    def __init__(self, view):
+        super().__init__(view)
+
     def run(self, edit):
         super().start()
         # no work
@@ -319,7 +340,23 @@ class TableSelectColCommand(TableCommand):
     def run(self, edit):
         super().start()
         # do work
-        self.matrix.select_column(self.column_index)
+
+        selection = self.view.sel()[0]
+        row, col = self.view.rowcol(selection.begin())
+        column_index = self.matrix.get_column_index_from_pos(row, col)  # get current column
+        #def get_column_index_from_pos(self, row, col):
+        #    ''' !!! '''
+        #    if row_index < len(self.rows):
+        #        row = self.rows[row_index]
+        #        for column_index, value in enumerate(row):
+        #            if value.first_char_index > col_index:
+        #                return column_index - 1
+        #        return len(row) - 1
+        #    else:
+        #        return 0
+
+
+        self.select_column(column_index)
         super().finish(edit)
 
 

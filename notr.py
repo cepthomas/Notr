@@ -6,13 +6,33 @@ import sublime
 import sublime_plugin
 from . import sbot_common as sc
 
+
 # TODO Tables: insert table(w, h), autofit/justify, add/delete row(s)/col(s), sort by column. Probably existing csv plugin with streamlined menus.
 # TODO Publish notes to web for access from phone. Render html would need links.
+#   https://drive.google.com/file/d/1glF1s3u4vtKE8Ct9syhXdTaPeQxnAVm1/view?usp=drive_link
+#   https://1drv.ms/u/s!Ah3H5smt8XPUiv0uiDKNL2DImD6zKw?e=X2IJRH
+
 
 # TODO Folding by section.
 # TODO Block "comment/uncomment" useful? What would that mean - "hide" text? shade?
 # TODO Text attributes in links, refs in blocks, tables, lists, etc. Don't work right after comma.
 # TODO Make into package when it's cooked. https://packagecontrol.io/docs/submitting_a_package. Do something about demo/dump/etc.
+
+# TODO Need section hierarchy/nesting.
+
+# TODO Use popups for nav/links, like ST.
+# show_popup_menu(items: list[str], on_done: Callable[[int], None], flags=0)
+# Show a popup menu at the caret, for selecting an item in a list.
+# show_popup(content: str, flags=PopupFlags.NONE, location: Point = - 1, max_width: DIP = 320, max_height: DIP = 240, on_navigate: Optional[Callable[[str], None]] = None, on_hide: Optional[Callable[[], None]] = None)
+# Show a popup displaying HTML content.
+# class sublime.HoverZone
+# Bases: IntEnum
+# A zone in an open text sheet where the mouse may hover.
+# See EventListener.on_hover and ViewEventListener.on_hover.
+# on_hover(point: Point, hover_zone: HoverZone)
+# on_hover(view: View, point: Point, hover_zone: HoverZone)
+# Called when the user’s mouse hovers over the view for a short period.
+
 
 
 NOTR_SETTINGS_FILE = "Notr.sublime-settings"
@@ -429,29 +449,41 @@ def _process_notr_files():
 #-----------------------------------------------------------------------------------
 def _process_notr_file(fn):
     ''' Regex and process sections and links. This collects the text and checks syntax. Validity will be checked when all files processed. '''
+
+    sections = []
+    links = []
+    refs = []
+    no_index - False
+
     try:
         with open(fn, 'r', encoding='utf-8') as file:
             lines = file.read().splitlines()
             line_num = 1
 
             # Get the things of interest defined in the file.
-            re_aliases = re.compile(r'^\$(.*)')
+            re_directives = re.compile(r'^\$(.*)')
             re_links = re.compile(r'\[([^:]*): *([^\]]*)\]')
             re_refs = re.compile(r'\[\* *([^\]]*)\]')
             re_sections = re.compile(r'^(#+) +([^\[]+) *(?:\[(.*)\])?')
 
             for line in lines:
-                # Aliases
-                matches = re_aliases.findall(line)
+                # Directives, aliases.
+                matches = re_directives.findall(line)
                 for m in matches:
+                    handled = False
                     parts = m.strip().split('=')
-                    if len(parts) == 2:
-                        alias = parts[0].strip()
-                        value = os.path.expandvars(parts[1].strip())
-                        os.environ[alias] = value
-                    else:
-                        # sc.slog(sc.CAT_ERR, f'Invalid alias: {fn}({line_num})')
-                        _user_error(fn, line_num, f'Invalid alias')
+                    if len(parts) == 1:
+                        directive = parts[0].strip()
+                        if directive == 'NO_INDEX':
+                            no_index = True
+                            handled = True
+
+                    elif len(parts) == 2:
+                        os.environ[parts[0].strip()] = parts[1].strip()
+                        handled = True
+
+                    if not handled:
+                        _user_error(fn, line_num, f'Invalid directive')
 
                 # Links
                 matches = re_links.findall(line)
@@ -459,9 +491,8 @@ def _process_notr_file(fn):
                     if len(m) == 2:
                         name = m[0].strip()
                         target = os.path.expandvars(m[1].strip())
-                        _links.append(Link(fn, line_num, name, target))
+                        links.append(Link(fn, line_num, name, target))
                     else:
-                        # sc.slog(sc.CAT_ERR, f'Invalid syntax: {fn}({line_num})')
                         _user_error(fn, line_num, f'Invalid syntax')
 
                 # Refs
@@ -472,7 +503,7 @@ def _process_notr_file(fn):
                     if target.startswith('#'):
                         froot = _get_froot(fn)
                         target = froot + target
-                    _refs.append(Ref(fn, line_num, target))
+                    refs.append(Ref(fn, line_num, target))
 
                 # Sections
                 matches = re_sections.findall(line)
@@ -482,11 +513,10 @@ def _process_notr_file(fn):
                         name = m[1].strip()
                         tags = m[2].strip().split()
                         froot = _get_froot(fn)
-                        _sections.append(Section(fn, line_num, froot, len(hashes), name, tags))
+                        sections.append(Section(fn, line_num, froot, len(hashes), name, tags))
                         for tag in tags:
                             _tags[tag] = _tags[tag] + 1 if tag in _tags else 1
                     else:
-                        # sc.slog(sc.CAT_ERR, f'Invalid syntax: {fn}({line_num})')
                         _user_error(fn, line_num, f'Invalid syntax')
 
                 line_num += 1
@@ -494,6 +524,11 @@ def _process_notr_file(fn):
     except Exception as e:
         sc.slog(sc.CAT_ERR, f'Error processing {fn}: {e}')
         raise
+
+    if not no_index:
+        _sections.extend(sections)
+        _links.extend(links)
+        _refs.extend(refs)
 
 #-----------------------------------------------------------------------------------
 def _get_selection_for_scope(view, scope):
