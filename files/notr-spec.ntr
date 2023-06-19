@@ -2,14 +2,14 @@
 # section name [tag1 tag2]
 A section of content.
 Starts in first column with number of `#` indicates level.
-Tag(s) are used for categorizing and selecting sections..
-Right click to select from a list of all sections or tags to navigate to!
+Tag(s) are used for categorizing and selecting sections.
+Right click to select from a list of all sections or tags to navigate to.
 
 ## section no tags
 Another section but without tags.
 
 
-TODO remove this test table when table wrking.
+TODO remove this test table when table.py working.
 |State |Size| Color |
 |   ME   |  34|   Red     |
 |  IA   |  31  |Blue     |

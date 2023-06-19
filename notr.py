@@ -6,22 +6,11 @@ import sublime
 import sublime_plugin
 from . import sbot_common as sc
 
-# TODO Need section hierarchy/nesting.
+# TODO nav:
+# - Need section hierarchy/nesting.
+# - Organize/clean up context menu, remove some items.
 
-# TODO Use popups for nav/links, like ST.
-# show_popup_menu(items: list[str], on_done: Callable[[int], None], flags=0)
-# Show a popup menu at the caret, for selecting an item in a list.
-# show_popup(content: str, flags=PopupFlags.NONE, location: Point = - 1, max_width: DIP = 320, max_height: DIP = 240, on_navigate: Optional[Callable[[str], None]] = None, on_hide: Optional[Callable[[], None]] = None)
-# Show a popup displaying HTML content.
-# class sublime.HoverZone
-# Bases: IntEnum
-# A zone in an open text sheet where the mouse may hover.
-# See EventListener.on_hover and ViewEventListener.on_hover.
-# on_hover(point: Point, hover_zone: HoverZone)
-# on_hover(view: View, point: Point, hover_zone: HoverZone)
-# Called when the user’s mouse hovers over the view for a short period.
-
-# TODO Tables: insert table(w, h), autofit/justify, add/delete row(s)/col(s), sort by column. Probably existing csv plugin with streamlined menus.
+# TODO Table: insert table(w, h), autofit/justify, add/delete row(s)/col(s), sort by column.
 
 # TODO Publish notes to web for access from phone. Render html would need links.
 #   https://www.ecanarys.com/Blogs/ArticleID/135/How-to-Host-your-Webpages-on-Google-Drive#:~:text=You%20can%20use%20Google%20Drive,a%20folder%20in%20google%20drive.
@@ -30,18 +19,16 @@ from . import sbot_common as sc
 #   https://drive.google.com/file/d/1glF1s3u4vtKE8Ct9syhXdTaPeQxnAVm1/view?usp=drive_link
 #   https://1drv.ms/u/s!Ah3H5smt8XPUi5FpjzKWn2nlsSGKCw?e=IQ9K3M
 
-
 # ---------------------------------------------------------
-# TODO Folding by section.
-# TODO Block "comment/uncomment" useful? What would that mean - "hide" text? shade?
+# TODO Folding by section/hierarchy. Might be tricky: https://github.com/sublimehq/sublime_text/issues/5423.
+# TODO Block comment/uncomment useful? What would that mean - "hide" text? shade?
 # TODO Text attributes in links, refs in blocks, tables, lists, etc. Don't work right after comma.
 # TODO Make into package when it's cooked. https://packagecontrol.io/docs/submitting_a_package. Do something about demo/dump/etc.
-
-
+# TODO tweak autocomplete so it's less annoying.
 
 
 NOTR_SETTINGS_FILE = "Notr.sublime-settings"
-# NOTR_DEMO_FILE = "Notr_demo.sublime-settings"
+# NOTR_SETTINGS_FILE = "Notr_demo.sublime-settings"
 
 
 #--------------------------- Types -------------------------------------------------
@@ -59,7 +46,7 @@ Ref = collections.namedtuple('Ref', 'srcfile, line, target')
 #---------------------------- Globals -----------------------------------------------
 # Some could be multidict?
 
-# All Sections found in all ntr files.
+# All Sections found in all ntr files - in order to support hierarchy.
 _sections = []
 
 # All Links found in all ntr files.
@@ -113,10 +100,9 @@ class NotrEvent(sublime_plugin.EventListener):
         self._init_fixed_hl(view)
 
     def on_post_save(self, view):
-        ''' Called after a ntr view has been saved so reload ntr files. TODO now/here? '''
+        ''' Called after a ntr view has been saved so reload ntr files. TODO seems a bit brute forde but how else? '''
         if view.syntax().name == 'Notr':
-            # _process_notr_files()
-            pass
+            _process_notr_files()
 
     def _init_fixed_hl(self, view):
         ''' Add any highlights. '''
@@ -232,10 +218,10 @@ class NotrGotoRefCommand(sublime_plugin.TextCommand):
     ''' Open link or section from selected ref. '''
 
     def run(self, edit):
+        valid = True # default
         ref_text = _get_selection_for_scope(self.view, 'markup.link.refname.notr')
-        valid = True
 
-        if '#' in ref_text:  # Section ref like  [*#Links and Refs]  [* file_root#section_name]
+        if ref_text is not None and '#' in ref_text:  # Section ref like  [*#Links and Refs]  [* file_root#section_name]
             froot = None
             ref_name = None
             ref_parts = ref_text.split('#')
@@ -400,6 +386,8 @@ def _user_error(path, line, msg):
 #-----------------------------------------------------------------------------------
 def _process_notr_files():
     ''' Get all ntr files and grab their goodies. '''
+
+    sc.slog(sc.CAT_DBG, 'Processing notr files')
 
     _ntr_files.clear()
     _tags.clear()

@@ -21,11 +21,11 @@ Built for ST4 on Windows and Linux.
 ## Demo
 
 [The spec](files/notr-spec.ntr) provides an example of the features. If the plugin is installed it will look
-something  like this (excuse the colors...):
+something like this (excuse the colors...):
 
-![Some](files/ex1.jpg)
+![ex1](files/ex1.jpg)
 
-![More](files/ex2.jpg)
+![ex2](files/ex2.jpg)
 
 To run the demo:
 - Install the plugin.
