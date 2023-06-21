@@ -6,25 +6,21 @@ import sublime
 import sublime_plugin
 from . import sbot_common as sc
 
-# TODO nav:
-# - Need section hierarchy/nesting.
-# - Organize/clean up context menu, remove some items.
 
-# TODO Table: insert table(w, h), autofit/justify, add/delete row(s)/col(s), sort by column.
+'''
+TODO Table stuff: insert table(w, h), autofit/justify, add/delete row(s)/col(s), sort by column.
+TODO Publish notes somewhere for access from phone. Render html would need links. Android font needs to be monospace.
+TODO General cleanup of C:\\Users\\cepth\\OneDrive\\OneDrive Documents\\sublime
+TODO nav by section hierarchy/nesting?
 
-# TODO Publish notes to web for access from phone. Render html would need links.
-#   https://www.ecanarys.com/Blogs/ArticleID/135/How-to-Host-your-Webpages-on-Google-Drive#:~:text=You%20can%20use%20Google%20Drive,a%20folder%20in%20google%20drive.
-#   https://www.process.st/how-to-host-a-website-on-google-drive-for-free/
-# 
-#   https://drive.google.com/file/d/1glF1s3u4vtKE8Ct9syhXdTaPeQxnAVm1/view?usp=drive_link
-#   https://1drv.ms/u/s!Ah3H5smt8XPUi5FpjzKWn2nlsSGKCw?e=IQ9K3M
+---------------------------------------------------------
+TODO Folding by section/hierarchy. Might be tricky: https://github.com/sublimehq/sublime_text/issues/5423.
+TODO Block comment/uncomment useful? What would that mean - "hide" text? shade?
+TODO Text attributes in links, refs in blocks, tables, lists, etc. Don't work right after comma.
+TODO Make into package when it's cooked. https://packagecontrol.io/docs/submitting_a_package. Do something about demo/dump/etc.
+TODO tweak autocomplete so it's less annoying.
 
-# ---------------------------------------------------------
-# TODO Folding by section/hierarchy. Might be tricky: https://github.com/sublimehq/sublime_text/issues/5423.
-# TODO Block comment/uncomment useful? What would that mean - "hide" text? shade?
-# TODO Text attributes in links, refs in blocks, tables, lists, etc. Don't work right after comma.
-# TODO Make into package when it's cooked. https://packagecontrol.io/docs/submitting_a_package. Do something about demo/dump/etc.
-# TODO tweak autocomplete so it's less annoying.
+'''
 
 
 NOTR_SETTINGS_FILE = "Notr.sublime-settings"
@@ -100,7 +96,7 @@ class NotrEvent(sublime_plugin.EventListener):
         self._init_fixed_hl(view)
 
     def on_post_save(self, view):
-        ''' Called after a ntr view has been saved so reload ntr files. TODO seems a bit brute forde but how else? '''
+        ''' Called after a ntr view has been saved so reload ntr files. TODO seems a bit brute force, how else? '''
         if view.syntax().name == 'Notr':
             _process_notr_files()
 
@@ -445,6 +441,41 @@ def _process_notr_files():
         if ref.target not in _valid_ref_targets:
             _user_error(ref.srcfile, ref.line, f'Invalid ref target:{ref.target}')
 
+
+#-----------------------------------------------------------------------------------
+def _expand_vars(s: str):
+    ''' Smarter version of builtin. Returns expanded string or None if bad var name. '''
+
+    # _sin = s
+    done = False
+    count = 0
+    while not done:
+        if '$' in s:
+            sexp = os.path.expandvars(s)
+            if s == sexp:
+                # Invalid var.
+                # sc.slog(sc.CAT_DBG, f'>1> in:{s} out:{sexp}')
+                s = None
+                done = True
+            else:
+                # Go around again.
+                s = sexp
+        else:
+            # Done expanding.
+            done = True
+
+        # limit iterations
+        if done:
+            count = 9
+        else:
+            count += 1
+            if count >= 3:
+                done = True
+                s = None
+
+    # sc.slog(sc.CAT_DBG, f'>>> in:{_sin} out:{s}')
+    return s
+
 #-----------------------------------------------------------------------------------
 def _process_notr_file(fn):
     ''' Regex and process sections and links. This collects the text and checks syntax. Validity will be checked when all files processed. '''
@@ -477,7 +508,6 @@ def _process_notr_file(fn):
                         if directive == 'NO_INDEX':
                             no_index = True
                             handled = True
-
                     elif len(parts) == 2:
                         alias = parts[0].strip()
                         value = parts[1].strip()
@@ -493,12 +523,12 @@ def _process_notr_file(fn):
                 for m in matches:
                     if len(m) == 2:
                         name = m[0].strip()
-                        target = os.path.expandvars(m[1].strip())
-                        # There may be nested vars.
-                        while '$' in target:
-                            target = os.path.expandvars(target)
-                        # sc.slog(sc.CAT_DBG, f'>>> target:{target} target2:{os.path.expandvars(target)}')
-                        links.append(Link(fn, line_num, name, target))
+                        target = _expand_vars(m[1].strip())
+                        if target == None:
+                            # Bad env var.
+                            _user_error(fn, line_num, f'Bad env var')
+                        else:
+                            links.append(Link(fn, line_num, name, target))
                     else:
                         _user_error(fn, line_num, f'Invalid syntax')
 
