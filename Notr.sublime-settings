@@ -8,9 +8,7 @@
     "sort_tags_alpha": true,
 
     // Some cosmetics.
-    "visual_line_length": 100,
-    // Fill char for things like horizontal rules.
-    "fill_char": "-",
+    "visual_line_length": 80,
 
     // Tokens for highlighting 3 sets of user keywords. Scopes are markup.fixed_hl1-3.
     "fixed_hl": [ [], [], [] ],

@@ -52,14 +52,14 @@ To run the demo:
 
 ## Commands >>> add table ones
 
-| Command              | Type     | Description                             | Args                              |
-| :--------            | :-----   | :-------                                | :--------                         |
-| notr_insert_link     | Context  | Insert a link from clipboard            |                                   |
-| notr_insert_ref      | Context  | Insert a ref from selector              |                                   |
-| notr_insert_hrule    | Context  | Visual horizontal rule                  |                                   |
-| notr_goto_section    | Context  | Go to section from selector             | filter_by_tag = select tag first  |
-| notr_goto_ref        | Context  | Go to a reference from selector         |                                   |
-| notr_reload          | Context  | Reload after editing colors or settings |                                   |
+| Command              | Type     | Description                             | Args                                  |
+| :--------            | :-----   | :-------                                | :--------                             |
+| notr_insert_link     | Context  | Insert a link from clipboard            |                                       |
+| notr_insert_ref      | Context  | Insert a ref from selector              |                                       |
+| notr_insert_hrule    | Context  | Visual horizontal rule                  | fill_char: "-"                        |
+| notr_goto_section    | Context  | Go to section from selector             | filter_by_tag: true select tag first  |
+| notr_goto_ref        | Context  | Go to a reference from selector         |                                       |
+| notr_reload          | Context  | Reload after editing colors or settings |                                       |
 
 
 ## Settings
@@ -70,7 +70,6 @@ To run the demo:
 | notr_index          | Main notr file                             |                                            |
 | sort_tags_alpha     | Sort tags alphabetically or by frequency   | true/false                                 |
 | visual_line_length  | For horizontal rule                        |                                            |
-| fill_char           | For horizontal rule                        |                                            |
 | fixed_hl            | Three sets of user keywords                |                                            |
 | fixed_hl_whole_word | User highlights option                     | true/false                                 |
 

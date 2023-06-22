@@ -9,8 +9,7 @@ from . import sbot_common as sc
 
 '''
 TODO Table stuff: insert table(w, h), autofit/justify, add/delete row(s)/col(s), sort by column.
-TODO Publish notes somewhere for access from phone. Render html would need links. Android font needs to be monospace.
-TODO General cleanup of C:\\Users\\cepth\\OneDrive\\OneDrive Documents\\sublime
+TODO Publish notes somewhere for access from phone. Links? Nothing confidential.
 TODO nav by section hierarchy/nesting?
 
 ---------------------------------------------------------
@@ -96,7 +95,7 @@ class NotrEvent(sublime_plugin.EventListener):
         self._init_fixed_hl(view)
 
     def on_post_save(self, view):
-        ''' Called after a ntr view has been saved so reload ntr files. TODO seems a bit brute force, how else? '''
+        ''' Called after a ntr view has been saved so reload all ntr files. TODO seems a bit brute force, how else? '''
         if view.syntax().name == 'Notr':
             _process_notr_files()
 
