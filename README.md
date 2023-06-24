@@ -59,6 +59,7 @@ To run the demo:
 | notr_insert_hrule    | Context  | Visual horizontal rule                  | fill_char: "-"                        |
 | notr_goto_section    | Context  | Go to section from selector             | filter_by_tag: true select tag first  |
 | notr_goto_ref        | Context  | Go to a reference from selector         |                                       |
+| notr_publish         | Context  | ..............                          |                                       |
 | notr_reload          | Context  | Reload after editing colors or settings |                                       |
 
 
@@ -68,7 +69,7 @@ To run the demo:
 | :--------           | :-------                                   | :------                                    |
 | notr_paths          | List of where notr files live              |                                            |
 | notr_index          | Main notr file                             |                                            |
-| sort_tags_alpha     | Sort tags alphabetically or by frequency   | true/false                                 |
+| sort_tags_alpha     | Sort tags alphabetically else by frequency | true/false                                 |
 | visual_line_length  | For horizontal rule                        |                                            |
 | fixed_hl            | Three sets of user keywords                |                                            |
 | fixed_hl_whole_word | User highlights option                     | true/false                                 |

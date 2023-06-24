@@ -9,15 +9,6 @@ from . import sbot_common as sc
 
 '''
 TODO Table stuff: insert table(w, h), autofit/justify, add/delete row(s)/col(s), sort by column.
-TODO Publish notes somewhere for access from phone. Links? Nothing confidential.
-TODO nav by section hierarchy/nesting?
-
----------------------------------------------------------
-TODO Folding by section/hierarchy. Might be tricky: https://github.com/sublimehq/sublime_text/issues/5423.
-TODO Block comment/uncomment useful? What would that mean - "hide" text? shade?
-TODO Text attributes in links, refs in blocks, tables, lists, etc. Don't work right after comma.
-TODO Make into package when it's cooked. https://packagecontrol.io/docs/submitting_a_package. Do something about demo/dump/etc.
-TODO tweak autocomplete so it's less annoying.
 
 '''
 
@@ -132,14 +123,28 @@ class NotrEvent(sublime_plugin.EventListener):
 
 
 #-----------------------------------------------------------------------------------
-class NotrGotoSectionCommand(sublime_plugin.TextCommand):
+class NotrPublishCommand(sublime_plugin.WindowCommand):
+    ''' TODO Publish notes somewhere for access from phone. Links? Nothing confidential! '''
+
+    def run(self):
+        # Render notr files.
+        # Render for android target.
+        # self.window.active_view().run_command('sbot_render_to_html', {'font_face':'monospace', 'font_size':'1.2em' } )  
+        pass
+
+    def is_visible(self):
+        return True
+
+
+#-----------------------------------------------------------------------------------
+class NotrGotoSectionCommand(sublime_plugin.WindowCommand):
     ''' List all the tag(s) and/or sections(s) for user selection then open corresponding file. '''
 
     # Prepared lists for quick panel.
     _sorted_tags = []
     _sorted_sec_names = []
 
-    def run(self, edit, filter_by_tag):
+    def run(self, filter_by_tag):
         self._sorted_tags.clear()
         self._sorted_sec_names.clear()
         panel_items = []
@@ -154,7 +159,7 @@ class NotrGotoSectionCommand(sublime_plugin.TextCommand):
 
             for tag in self._sorted_tags:
                 panel_items.append(sublime.QuickPanelItem(trigger=tag, annotation=f"qty:{_tags[tag]}", kind=sublime.KIND_AMBIGUOUS))
-            self.view.window().show_quick_panel(panel_items, on_select=self.on_sel_tag)
+            self.window.show_quick_panel(panel_items, on_select=self.on_sel_tag)
         else:  # all sections
             n = []
             for section in _sections:
@@ -162,7 +167,7 @@ class NotrGotoSectionCommand(sublime_plugin.TextCommand):
             self._sorted_sec_names = sorted(n)
             for sec_name in self._sorted_sec_names:
                 panel_items.append(sublime.QuickPanelItem(trigger=sec_name, kind=sublime.KIND_AMBIGUOUS))
-            self.view.window().show_quick_panel(panel_items, on_select=self.on_sel_section)
+            self.window.show_quick_panel(panel_items, on_select=self.on_sel_section)
 
     def on_sel_tag(self, *args, **kwargs):
         sel = args[0]
@@ -178,11 +183,11 @@ class NotrGotoSectionCommand(sublime_plugin.TextCommand):
             if len(n) > 0:
                 self._sorted_sec_names = sorted(n)
                 # Hide current quick panel.
-                self.view.window().run_command("hide_overlay")
+                self.window.run_command("hide_overlay")
                 panel_items = []
                 for sec_name in self._sorted_sec_names:
                     panel_items.append(sublime.QuickPanelItem(trigger=sec_name, kind=sublime.KIND_AMBIGUOUS))
-                self.view.window().show_quick_panel(panel_items, on_select=self.on_sel_section)
+                self.window.show_quick_panel(panel_items, on_select=self.on_sel_section)
             else:
                 sublime.status_message('No sections with that tag')
         else:
@@ -198,7 +203,7 @@ class NotrGotoSectionCommand(sublime_plugin.TextCommand):
             for section in _sections:
                 if f'{section.froot}#{section.name}' == sel_secname:
                     # Open the section in a new view.
-                    vnew = sc.wait_load_file(self.view.window(), section.srcfile, section.line)
+                    vnew = sc.wait_load_file(self.window, section.srcfile, section.line)
                     break
         else:
             # Stick them in the clipboard.
@@ -212,7 +217,7 @@ class NotrGotoSectionCommand(sublime_plugin.TextCommand):
 class NotrGotoRefCommand(sublime_plugin.TextCommand):
     ''' Open link or section from selected ref. '''
 
-    def run(self, edit):
+    def run(self):
         valid = True # default
         ref_text = _get_selection_for_scope(self.view, 'markup.link.refname.notr')
 
@@ -313,25 +318,25 @@ class NotrInsertRefCommand(sublime_plugin.TextCommand):
 
 
 #-----------------------------------------------------------------------------------
-class NotrReloadCommand(sublime_plugin.TextCommand):
+class NotrReloadCommand(sublime_plugin.WindowCommand):
     ''' Reload after editing. '''
 
-    def run(self, edit):
+    def run(self):
         # Open and process notr files.
         _process_notr_files()
 
         if len(_parse_errors) > 0:
-            sc.create_new_view(self.view.window(), '\n'.join(_parse_errors))
+            sc.create_new_view(self.window, '\n'.join(_parse_errors))
 
     def is_visible(self):
         return True
 
 
 #-----------------------------------------------------------------------------------
-class NotrDumpCommand(sublime_plugin.TextCommand):
+class NotrDumpCommand(sublime_plugin.WindowCommand):
     ''' Diagnostic. '''
 
-    def run(self, edit):
+    def run(self):
         text = []
         text.append('=== _sections ===')
         for x in _sections:
@@ -367,7 +372,7 @@ class NotrDumpCommand(sublime_plugin.TextCommand):
         for x in _parse_errors:
             text.append(f'{x}')
 
-        sc.create_new_view(self.view.window(), '\n'.join(text))
+        sc.create_new_view(self.window, '\n'.join(text))
 
     def is_visible(self):
         return True

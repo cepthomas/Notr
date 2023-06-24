@@ -58,29 +58,15 @@ class TableMatrix:
         self.rows = []  # List of lists of row columns
         self.num_columns = 0
         self.valid = False
-        #self.saved_selection = []
-        # self.region = self.get_table_region()
 
-        # Parse the content into internal format.
-        # if self.region is not None:
-        #     text = view.substr(self.region)
-        # 
         for line in text.split('\n'):
-            # row = self.parse_row(line)
-
             cols = []
             for val in line.split(self._delimiter):
-                cols.append(TableValue(val))
+                cols.append(TableValue(val.strip()))
             self.rows.append(cols)
             # Calc col count.
             if len(cols) > self.num_columns:
                 self.num_columns = len(cols)
-
-        # if len(self.rows) > 0:
-        #     self.num_columns = 0
-        #     for row in self.rows:
-        #         if len(row) > self.num_columns:
-        #             self.num_columns = len(row)
             self.valid = True
 
     def __repr__(self):
@@ -178,31 +164,12 @@ class TableCommand(sublime_plugin.TextCommand):
             text = self.view.substr(self.region)
             self.matrix = TableMatrix(text)  # create matrix from table text
 
-
-            #selection = self.view.sel()[0]
-            #row, col = self.view.rowcol(selection.begin())
-            #self.column_index = self.matrix.get_column_index_from_pos(row, col)  # get current column
-
-
-            #if row_index < len(self.rows):
-            #    row = self.rows[row_index]
-            #    for column_index, value in enumerate(row):
-            #        if value.first_char_index > col_index:
-            #            return column_index - 1
-            #    return len(row) - 1
-            #else:
-            #    return 0
-
-
-    # def start(self):
-    #     sc.slog(sc.CAT_DBG, f'{self.matrix}')
-    #     #self.matrix.save_selection()  # push current selection
-    #     self.column_index = self.get_column_index_from_cursor()  # get current column
+    def start(self):
+         sc.slog(sc.CAT_DBG, f'{self}')
 
     def finish(self, edit):
         if self.region is not None:
             output = self.matrix.format()  # render justified
-            #self.matrix.restore_selection()  # pop selection
             self.view.replace(edit, self.region, output)
 
     def is_visible(self):
@@ -259,25 +226,6 @@ class TableCommand(sublime_plugin.TextCommand):
                 b = v.text_point(row_index, value.last_char_index)
                 region = sublime.Region(a, b)
                 v.sel().add(region)
-
-    #def save_selection(self):
-    #    v = self.view
-    #    self.saved_selection.clear()
-
-    #    for region in v.sel():
-    #        a_row, a_col = v.rowcol(region.a)
-    #        b_row, b_col = v.rowcol(region.b)
-    #        rowcol_region = (a_row, a_col, b_row, b_col)
-    #        self.saved_selection.append(rowcol_region)
-
-    #def restore_selection(self):
-    #    v = self.view
-    #    v.sel().clear()
-    #    for rowcol_region in self.saved_selection:
-    #        a = v.text_point(rowcol_region[0], rowcol_region[1])
-    #        b = v.text_point(rowcol_region[2], rowcol_region[3])
-    #        #region = sublime.Region(a, b)
-    #        v.sel().add(region)
 
 
 #-----------------------------------------------------------------------------------
@@ -340,22 +288,9 @@ class TableSelectColCommand(TableCommand):
     def run(self, edit):
         super().start()
         # do work
-
         selection = self.view.sel()[0]
         row, col = self.view.rowcol(selection.begin())
         column_index = self.matrix.get_column_index_from_pos(row, col)  # get current column
-        #def get_column_index_from_pos(self, row, col):
-        #    ''' !!! '''
-        #    if row_index < len(self.rows):
-        #        row = self.rows[row_index]
-        #        for column_index, value in enumerate(row):
-        #            if value.first_char_index > col_index:
-        #                return column_index - 1
-        #        return len(row) - 1
-        #    else:
-        #        return 0
-
-
         self.select_column(column_index)
         super().finish(edit)
 
