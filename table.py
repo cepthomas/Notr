@@ -14,10 +14,8 @@ from . import sbot_common as sc
 class TableValue:
     ''' One value in a TableMatrix row/col cell. '''
 
-    def __init__(self, text):#, first_char_index=0, last_char_index=0):
+    def __init__(self, text):
         self.text = text
-        # self.first_char_index = first_char_index
-        # self.last_char_index = last_char_index
 
     def as_float(self):
         try:
@@ -59,15 +57,17 @@ class TableMatrix:
         self.num_columns = 0
         self.valid = False
 
-        for line in text.split('\n'):
+        for line in text.splitlines():
             cols = []
-            for val in line.split(self._delimiter):
-                cols.append(TableValue(val.strip()))
+            parts = line.split(self._delimiter)
+            # Remove first and last.
+            for i in range(1, len(parts) - 1):
+                cols.append(TableValue(parts[i].strip()))
             self.rows.append(cols)
             # Calc col count.
             if len(cols) > self.num_columns:
                 self.num_columns = len(cols)
-            self.valid = True
+        self.valid = True
 
     def __repr__(self):
         return f'rows:{self.rows}'
@@ -111,44 +111,20 @@ class TableMatrix:
 
     def format(self):
         ''' Format the output for display. '''
-        output = ''
+        output = []
 
         self.measure_columns()
 
         for row_index, row in enumerate(self.rows):
-            row_text = ''
+            row_text = []
 
             for column_index, value in enumerate(row):
-                column_width = self.column_widths[column_index]
-                text = value.text.ljust(column_width)
-                row_text += text
-                row_text += self._delimiter
-            output += row_text
+                column_width = self.column_widths[column_index] + 2  # add lead/trail space
+                text = (' ' + value.text).ljust(column_width)
+                row_text.append(text)
+            output.append(self._delimiter + self._delimiter.join(row_text) + self._delimiter)
 
-            if row_index < len(self.rows) - 1:
-                output += '\n'
-
-        return output
-
-    def parse_row(self, row):
-        columns = []
-
-        currentword = ''
-        first_char_index = 0
-        char_index = 0
-
-        while char_index < len(row):
-            char = row[char_index]
-            if char == self._delimiter:
-                columns.append(TableValue(currentword, first_char_index, char_index))
-                currentword = ''
-                first_char_index = char_index + 1
-            else:
-                currentword += char
-            char_index += 1
-
-        columns.append(TableValue(currentword, first_char_index, char_index))
-        return columns
+        return '\n'.join(output) + '\n'
 
 
 #-----------------------------------------------------------------------------------
@@ -165,11 +141,11 @@ class TableCommand(sublime_plugin.TextCommand):
             self.matrix = TableMatrix(text)  # create matrix from table text
 
     def start(self):
-         sc.slog(sc.CAT_DBG, f'{self}')
+        sc.slog(sc.CAT_DBG, f'{self}')
 
     def finish(self, edit):
         if self.region is not None:
-            output = self.matrix.format()  # render justified
+            output = self.matrix.format()
             self.view.replace(edit, self.region, output)
 
     def is_visible(self):

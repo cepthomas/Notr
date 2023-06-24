@@ -85,7 +85,6 @@ contexts:
     - include: raw-block-end
 
   raw-block-end:
-    # The block is broken at the first empty line, or beginning of another block-level structure
     - match: '```'
       scope: markup.raw.block.notr
       pop: 1
@@ -107,7 +106,6 @@ contexts:
     - include: table-end
 
   table-end:
-    # The table is broken at the first empty line, or beginning of another block-level structure
     - match: '(?x)^(?= \s*$)'
       pop: 1
 

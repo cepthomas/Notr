@@ -10,6 +10,9 @@ from . import sbot_common as sc
 '''
 TODO Table stuff: insert table(w, h), autofit/justify, add/delete row(s)/col(s), sort by column.
 
+#### Render for android target.
+# self.window.active_view().run_command('sbot_render_to_html', {'font_face':'monospace', 'font_size':'1.2em' } )  
+
 '''
 
 
