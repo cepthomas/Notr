@@ -140,16 +140,17 @@ class TableCommand(sublime_plugin.TextCommand):
             text = self.view.substr(self.region)
             self.matrix = TableMatrix(text)  # create matrix from table text
 
+    def is_visible(self):
+        caret = sc.get_single_caret(self.view)
+        return is_table(self.view, caret)
+
     def start(self):
-        sc.slog(sc.CAT_DBG, f'{self}')
+        sc.slog(sc.CAT_DBG, f'{self.view}')
 
     def finish(self, edit):
         if self.region is not None:
             output = self.matrix.format()
             self.view.replace(edit, self.region, output)
-
-    def is_visible(self):
-        return is_table(self.view, self.view.sel()[-1].b)
 
     def get_table_region(self):
         ''' Get the region for the current selected table. None if it's not a table. '''
@@ -157,7 +158,8 @@ class TableCommand(sublime_plugin.TextCommand):
         region = None
         v = self.view
 
-        sel_row = v.rowcol(v.sel()[0].a)[0]
+        caret = sc.get_single_caret(v)
+        sel_row = v.rowcol(caret)[0]
         start_row = sel_row
         end_row = -1
         current_row = start_row

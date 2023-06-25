@@ -274,7 +274,8 @@ class NotrInsertHruleCommand(sublime_plugin.TextCommand):
         visual_line_length = settings.get('visual_line_length')
 
         # Start of current line.
-        lst = v.line(v.sel()[0].a)
+        caret = sc.get_single_caret(v)
+        lst = v.line(caret)
 
         s = fill_char * visual_line_length + '\n'
         v.insert(edit, lst.a, s)
@@ -289,7 +290,8 @@ class NotrInsertLinkCommand(sublime_plugin.TextCommand):
 
     def run(self, edit):
         s = f'[name?: {sublime.get_clipboard()}]'
-        self.view.insert(edit, self.view.sel()[0].a, s)
+        caret = sc.get_single_caret(self.view)
+        self.view.insert(edit, caret, s)
 
     def is_visible(self):
         return self.view.syntax() is not None and self.view.syntax().name == 'Notr'
@@ -453,7 +455,6 @@ def _process_notr_files():
 def _expand_vars(s: str):
     ''' Smarter version of builtin. Returns expanded string or None if bad var name. '''
 
-    # _sin = s
     done = False
     count = 0
     while not done:
@@ -461,7 +462,6 @@ def _expand_vars(s: str):
             sexp = os.path.expandvars(s)
             if s == sexp:
                 # Invalid var.
-                # sc.slog(sc.CAT_DBG, f'>1> in:{s} out:{sexp}')
                 s = None
                 done = True
             else:
@@ -472,15 +472,12 @@ def _expand_vars(s: str):
             done = True
 
         # limit iterations
-        if done:
-            count = 9
-        else:
+        if not done:
             count += 1
             if count >= 3:
                 done = True
                 s = None
 
-    # sc.slog(sc.CAT_DBG, f'>>> in:{_sin} out:{s}')
     return s
 
 #-----------------------------------------------------------------------------------
@@ -604,9 +601,10 @@ def _get_selection_for_scope(view, scope):
     ''' If the current region includes the scope return it otherwise None. '''
 
     sel_text = None
-    scopes = view.scope_name(view.sel()[-1].b).rstrip().split()
+    caret = sc.get_single_caret(self.view)
+    scopes = view.scope_name(caret).rstrip().split()
     if scope in scopes:
-        reg = view.expand_to_scope(view.sel()[-1].b, scope)
+        reg = view.expand_to_scope(caret, scope)
         if reg is not None:
             sel_text = view.substr(reg).strip()
 
