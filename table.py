@@ -1,9 +1,5 @@
-# The guts of this is based on https://github.com/wadetb/Sublime-Text-Advanced-CSV.
-# Basically the raw matrix manipulation without formatting, expressions, quoting, optional header, compact, ...
-# Source license is MIT so all is good. I invite others to steal this also.
-# 
-# Originally written by Eric Martel (emartel@gmail.com / www.ericmartel.com)
-# Improved by Wade Brainerd (wadetb@gmail.com / www.wadeb.com)
+# Some of this is borrowed from https://github.com/wadetb/Sublime-Text-Advanced-CSV.
+# Source licenses are MIT so all is good. Steal This Code.
 
 import sublime
 import sublime_plugin
@@ -145,7 +141,8 @@ class TableCommand(sublime_plugin.TextCommand):
         return is_table(self.view, caret)
 
     def start(self):
-        sc.slog(sc.CAT_DBG, f'{self.view}')
+        # sc.slog(sc.CAT_DBG, f'{self.view}')
+        pass
 
     def finish(self, edit):
         if self.region is not None:

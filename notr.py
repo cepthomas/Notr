@@ -9,10 +9,6 @@ from . import sbot_common as sc
 
 '''
 TODO Table stuff: insert table(w, h), autofit/justify, add/delete row(s)/col(s), sort by column.
-
-#### Render for android target.
-# self.window.active_view().run_command('sbot_render_to_html', {'font_face':'monospace', 'font_size':'1.2em' } )  
-
 '''
 
 
@@ -129,6 +125,10 @@ class NotrEvent(sublime_plugin.EventListener):
 class NotrPublishCommand(sublime_plugin.WindowCommand):
     ''' TODO Publish notes somewhere for access from phone. Links? Nothing confidential! '''
 
+#### Render for android target.
+# self.window.active_view().run_command('sbot_render_to_html', {'font_face':'monospace', 'font_size':'1.2em' } )  
+
+
     def run(self):
         # Render notr files.
         # Render for android target.
@@ -220,7 +220,7 @@ class NotrGotoSectionCommand(sublime_plugin.WindowCommand):
 class NotrGotoRefCommand(sublime_plugin.TextCommand):
     ''' Open link or section from selected ref. '''
 
-    def run(self):
+    def run(self, edit):
         valid = True # default
         ref_text = _get_selection_for_scope(self.view, 'markup.link.refname.notr')
 
@@ -392,7 +392,7 @@ def _user_error(path, line, msg):
 def _process_notr_files():
     ''' Get all ntr files and grab their goodies. '''
 
-    sc.slog(sc.CAT_DBG, 'Processing notr files')
+    # sc.slog(sc.CAT_DBG, 'Processing notr files')
 
     _ntr_files.clear()
     _tags.clear()
@@ -564,18 +564,6 @@ def _process_notr_file(fn):
                     else:
                         valid = False
 
-
-                    # if len(m) == 3:
-                    #     hashes = m[0].strip()
-                    #     name = m[1].strip()
-                    #     tags = m[2].strip().split()
-                    #     froot = _get_froot(fn)
-                    #     sections.append(Section(fn, line_num, froot, len(hashes), name, tags))
-                    #     for tag in tags:
-                    #         _tags[tag] = _tags[tag] + 1 if tag in _tags else 1
-                    # else:
-                    #     _user_error(fn, line_num, f'Invalid syntax')
-
                     if valid:
                         froot = _get_froot(fn)
                         sections.append(Section(fn, line_num, froot, len(hashes), name, tags))
@@ -601,7 +589,7 @@ def _get_selection_for_scope(view, scope):
     ''' If the current region includes the scope return it otherwise None. '''
 
     sel_text = None
-    caret = sc.get_single_caret(self.view)
+    caret = sc.get_single_caret(view)
     scopes = view.scope_name(caret).rstrip().split()
     if scope in scopes:
         reg = view.expand_to_scope(caret, scope)
