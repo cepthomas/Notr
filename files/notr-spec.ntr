@@ -9,17 +9,6 @@ Right click to select from a list of all sections or tags to navigate to.
 Another section but without tags.
 
 
-TODO remove this test table when table.py working.
-|State |Size| Color |
-|   ME   |  34|   Red     |
-|  IA   |  31  |Blue     |
-| CO  | 15  | Brown    |
-| NY| 4  | Yellow    |
-| TX  | 2  | Green    |
-|WY  | 45  | White    |
-
-
-
 ### subject text [tag2 tag3]
 
 

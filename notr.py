@@ -7,11 +7,6 @@ import sublime_plugin
 from . import sbot_common as sc
 
 
-'''
-TODO Table stuff: insert table(w, h), autofit/justify, add/delete row(s)/col(s), sort by column.
-'''
-
-
 NOTR_SETTINGS_FILE = "Notr.sublime-settings"
 # NOTR_SETTINGS_FILE = "Notr_demo.sublime-settings"
 

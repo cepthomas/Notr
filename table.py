@@ -6,12 +6,18 @@ import sublime_plugin
 from . import sbot_common as sc
 
 
+DELIM = '|'
+
+
 #-----------------------------------------------------------------------------------
 class TableValue:
     ''' One value in a TableMatrix row/col cell. '''
 
     def __init__(self, text):
         self.text = text
+
+    def __repr__(self):
+        return f'{self.text}'
 
     def as_float(self):
         try:
@@ -20,19 +26,16 @@ class TableValue:
             return False, None
 
     def compare(self, other):
-        ret = 0
+        self_is_float, self_float = self.as_float()
+        other_is_float, other_float = other.as_float()
 
-        a_is_float, a_float = self.as_float()
-        b_is_float, b_float = other.as_float()
-
-        if a_is_float and b_is_float:
-            ret = a_float - b_float
+        if self_is_float and other_is_float:
+            return self_float - other_float
         if self.text > other.text:
-            ret = 1
+            return 1
         if self.text < other.text:
-            ret = -1
-
-        return ret
+            return -1
+        return 0
 
     def __lt__(self, other):
         return self.compare(other) < 0
@@ -45,35 +48,44 @@ class TableValue:
 class TableMatrix:
     ''' Container for the TableValues in the cells. '''
 
-    _delimiter = '|'
-
     def __init__(self, text):
-        # self.view = view
         self.rows = []  # List of lists of row columns
-        self.num_columns = 0
         self.valid = False
 
+        # Split each line into table rows.
         for line in text.splitlines():
             cols = []
-            parts = line.split(self._delimiter)
-            # Remove first and last.
-            for i in range(1, len(parts) - 1):
-                cols.append(TableValue(parts[i].strip()))
+            parts = line.split(DELIM)
+
+            # Process the cells.
+            # Rows honor empty cells except for the last one. Whitespace cells are converted to empty.
+            for i in range(1, len(parts)):
+                s = parts[i].strip()
+                if i < len(parts) - 1 or len(s) > 0:
+                    cols.append(TableValue(s))
             self.rows.append(cols)
-            # Calc col count.
-            if len(cols) > self.num_columns:
-                self.num_columns = len(cols)
+
+        # Make the collection square.
+        num_columns = self.count_columns()
+        for r in self.rows:
+            while len(r) < num_columns:
+                r.append(TableValue(''))
+
         self.valid = True
 
     def __repr__(self):
         return f'rows:{self.rows}'
 
-    def sort_by_column(self, column_index, asc):
-        ''' General row sorter. '''
+    def validate_col_sel(self, table_col):
+        valid = True
+        num_cols = self.count_columns()
+        return table_col >= 0 and table_col < num_cols
 
+    def sort_column(self, table_col, asc):
+        ''' General row sorter. '''
         class Compare:
             def __init__(self, row):
-                self.value = row[column_index] if len(self.rows) > 0 else TableValue('') 
+                self.value = row[table_col] # if len(self.rows) > 0 else TableValue('') 
 
             def __lt__(self, other):
                 return self.value < other.value
@@ -81,44 +93,63 @@ class TableMatrix:
             def __eq__(self, other):
                 return self.value == other.value
 
-        # Assume header always.
-        self.rows[1:] = sorted(self.rows[1:], key=lambda row: Compare(row), reverse=not asc)
+        if self.validate_col_sel(table_col):
+            # Assume header always.
+            self.rows[1:] = sorted(self.rows[1:], key=lambda row: Compare(row), reverse=not asc)
 
-    def insert_column(self, column_index):
-        for row in self.rows:
-            if column_index <= len(row):
-                row.insert(column_index, TableValue(''))
+    def insert_column(self, table_col):
+        if table_col >= self.count_columns():
+            for row in self.rows:
+                row.append(TableValue(''))
+        elif table_col < 0:
+            for row in self.rows:
+                row.insert(0, TableValue(''))
+        else:
+            for row in self.rows:
+                row.insert(table_col, TableValue(''))
 
-    def delete_column(self, column_index):
-        for row in self.rows:
-            if column_index < len(row):
-                row.pop(column_index)
+    def delete_column(self, table_col):
+        if self.validate_col_sel(table_col):
+            for row in self.rows:
+                row.pop(table_col)
 
     def measure_columns(self):
-        self.column_widths = [0] * self.num_columns
-
         for row in self.rows:
-            for column_index, value in enumerate(row):
+            for icol, value in enumerate(row):
                 text = value.text
                 # text = self.QuoteText(value.text)
                 width = len(text)
-                if width > self.column_widths[column_index]:
-                    self.column_widths[column_index] = width
+                if width > self.column_widths[icol]:
+                    self.column_widths[icol] = width
+
+    def count_columns(self):
+        num_columns = 0
+        for row in self.rows:
+            num_columns = max(num_columns, len(row))
+        return num_columns
 
     def format(self):
         ''' Format the output for display. '''
         output = []
 
-        self.measure_columns()
+        # Measure all columns.
+        column_widths = [0] * self.count_columns()
+        for row in self.rows:
+            for icol, value in enumerate(row):
+                text = value.text
+                # text = self.QuoteText(value.text)
+                width = len(text)
+                if width > column_widths[icol]:
+                    column_widths[icol] = width
 
+        # Generate the output text.
         for row_index, row in enumerate(self.rows):
             row_text = []
-
-            for column_index, value in enumerate(row):
-                column_width = self.column_widths[column_index] + 2  # add lead/trail space
+            for icol, value in enumerate(row):
+                column_width = column_widths[icol] + 2  # add pad
                 text = (' ' + value.text).ljust(column_width)
                 row_text.append(text)
-            output.append(self._delimiter + self._delimiter.join(row_text) + self._delimiter)
+            output.append(DELIM + DELIM.join(row_text) + DELIM)
 
         return '\n'.join(output) + '\n'
 
@@ -129,78 +160,92 @@ class TableCommand(sublime_plugin.TextCommand):
 
     def __init__(self, view):
         self.view = view
-        self.region = self.get_table_region()
-        self.column_index = -1
-
-        if self.region is not None:
-            text = self.view.substr(self.region)
-            self.matrix = TableMatrix(text)  # create matrix from table text
+        # 0-based row where the caret is.
+        self.table_row_sel = None
+        # 0-based column where the caret is. -1 is before the first column and >= num columns is at end.
+        self.table_col_sel = None
 
     def is_visible(self):
+        ''' Show this? '''
         caret = sc.get_single_caret(self.view)
-        return is_table(self.view, caret)
+        vis = self.is_table(caret)
+        if vis:
+            pass #TODO sort and delete should check valid column selected here
+        return vis 
 
     def start(self):
-        # sc.slog(sc.CAT_DBG, f'{self.view}')
-        pass
+        ''' Collect the table the caret is in. '''
+        self.region = self.get_table_region()
+        text = self.view.substr(self.region) if self.region is not None else ''
+        self.matrix = TableMatrix(text)  # create matrix from table text
 
     def finish(self, edit):
+        ''' Display the table. '''
         if self.region is not None:
             output = self.matrix.format()
             self.view.replace(edit, self.region, output)
 
-    def get_table_region(self):
-        ''' Get the region for the current selected table. None if it's not a table. '''
+    def is_table(self, point):
+        ''' True if the point is in a table. '''
+        scope = self.view.scope_name(point).rstrip()
+        scopes = scope.split()
+        is_hdr = "meta.table.header" in scopes
+        is_table = "meta.table" in scopes
+        return is_table or is_hdr
 
+    def get_table_region(self):
+        ''' Get the region for the current selected table, including the header.
+            Returns None if it's not a table. Also finds row/column in the table.
+        '''
         region = None
         v = self.view
 
         caret = sc.get_single_caret(v)
-        sel_row = v.rowcol(caret)[0]
-        start_row = sel_row
-        end_row = -1
-        current_row = start_row
+        caret_row = v.rowcol(caret)[0]
+        caret_col = v.rowcol(caret)[1]
 
         # Find the first row.
+        start_row = caret_row
+        end_row = -1
+        current_row = start_row
         done = False
         while not done:
             point = v.text_point(current_row, 0)
-            if is_table(v, point):
+            if self.is_table(point):
                 start_row = current_row
                 current_row -= 1
             else:
                 done = True
 
         # Find the last row.
-        current_row = sel_row
+        current_row = caret_row
         done = False
         while not done:
             point = v.text_point(current_row, 0)
-            if is_table(v, point):
+            if self.is_table(point):
                 end_row = current_row
                 current_row += 1
             else:
                 done = True
 
+        # Get the region and table row/col selected.
         if start_row != -1 and end_row != -1:
             start_point = v.text_point(start_row, 0)
             end_point = v.full_line(v.text_point(end_row, 0)).b
             region = sublime.Region(start_point, end_point)
 
+            # Calc the table row.
+            self.table_row_sel = caret_row - start_row
+
+            # Calc the table column by counting delimiters between start and caret.
+            sel_line_text = v.substr(v.full_line(caret))
+            self.table_col_sel = sel_line_text.count(DELIM, 0, caret_col) - 1 # correct count to columns
+        else:
+            region = None
+            self.table_row_sel = None
+            self.table_col_sel = None
+
         return region
-
-    def select_column(self, column_index):
-        ''' View select specific column. '''
-        v = self.view
-        v.sel().clear()
-
-        for row_index, row in enumerate(self.rows):
-            if column_index < len(row):
-                value = row[column_index]
-                a = v.text_point(row_index, value.first_char_index)
-                b = v.text_point(row_index, value.last_char_index)
-                region = sublime.Region(a, b)
-                v.sel().add(region)
 
 
 #-----------------------------------------------------------------------------------
@@ -211,20 +256,25 @@ class TableFitCommand(TableCommand):
 
     def run(self, edit):
         super().start()
-        # no work
+        # do work
+        # -> no work other than formatting
+        # finish
         super().finish(edit)
 
 
 #-----------------------------------------------------------------------------------
-class TableSortByColCommand(TableCommand):
+class TableSortColCommand(TableCommand):
 
     def __init__(self, view):
+        self.sort_asc = True
         super().__init__(view)
 
-    def run(self, edit, asc):
+    def run(self, edit):
         super().start()
         # do work
-        self.matrix.sort_by_column(self.column_index, asc)
+        self.matrix.sort_column(self.table_col_sel, self.sort_asc)
+        self.sort_asc = not self.sort_asc
+        # finish
         super().finish(edit)
         
 
@@ -237,7 +287,8 @@ class TableInsertColCommand(TableCommand):
     def run(self, edit):
         super().start()
         # do work
-        self.matrix.insert_column(self.column_index)
+        self.matrix.insert_column(self.table_col_sel)
+        # finish
         super().finish(edit)
 
 
@@ -250,31 +301,6 @@ class TableDeleteColCommand(TableCommand):
     def run(self, edit):
         super().start()
         # do work
-        self.matrix.delete_column(self.column_index)
+        self.matrix.delete_column(self.table_col_sel)
+        # finish
         super().finish(edit)
-
-
-#-----------------------------------------------------------------------------------
-class TableSelectColCommand(TableCommand):
-
-    def __init__(self, view):
-        super().__init__(view)
-
-    def run(self, edit):
-        super().start()
-        # do work
-        selection = self.view.sel()[0]
-        row, col = self.view.rowcol(selection.begin())
-        column_index = self.matrix.get_column_index_from_pos(row, col)  # get current column
-        self.select_column(column_index)
-        super().finish(edit)
-
-
-#-----------------------------------------------------------------------------------
-def is_table(view, point):
-    ''' True if the point is in a table. '''
-    scope = view.scope_name(point).rstrip()
-    scopes = scope.split()
-    is_hdr = "meta.table.header" in scopes
-    is_table = "meta.table" in scopes
-    return is_table or is_hdr
