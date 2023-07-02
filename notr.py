@@ -80,7 +80,7 @@ class NotrEvent(sublime_plugin.EventListener):
         self._init_fixed_hl(view)
 
     def on_post_save(self, view):
-        ''' Called after a ntr view has been saved so reload all ntr files. TODO seems a bit brute force, how else? '''
+        ''' Called after a ntr view has been saved so reload all ntr files. Seems a bit brute force, how else? '''
         if view.syntax().name == 'Notr':
             _process_notr_files()
 
@@ -114,23 +114,6 @@ class NotrEvent(sublime_plugin.EventListener):
                     if len(hl_regions) > 0:
                         view.add_regions(key=hl.region_name, regions=hl_regions, scope=hl.scope_name,
                                          flags=sublime.RegionFlags.DRAW_STIPPLED_UNDERLINE)
-
-
-#-----------------------------------------------------------------------------------
-class NotrPublishCommand(sublime_plugin.WindowCommand):
-    ''' TODO Publish notes somewhere for access from phone. Links? Nothing confidential! '''
-
-    #### Render for android target.
-    # self.window.active_view().run_command('sbot_render_to_html', {'font_face':'monospace', 'font_size':'1.2em' } )  
-
-    def run(self):
-        # Render notr files.
-        # Render for android target.
-        # self.window.active_view().run_command('sbot_render_to_html', {'font_face':'monospace', 'font_size':'1.2em' } )  
-        pass
-
-    def is_visible(self):
-        return True
 
 
 #-----------------------------------------------------------------------------------
