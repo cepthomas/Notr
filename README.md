@@ -13,7 +13,7 @@ Built for ST4 on Windows and Linux.
 - Various text decorations
 - Links and references
 - Lists
-- Tables --- https://github.com/wadetb/Sublime-Text-Advanced-CSV
+- Tables - fit, sort, etc (could be ported for general purpose md use)
 - Auto highlight - supplements [SbotHighlight](https://github.com/cepthomas/SbotHighlight)
 - Render to html with [SbotRender](https://github.com/cepthomas/SbotRender)
 
@@ -50,17 +50,20 @@ To run the demo:
 - Now open `files/notr-spec.ntr` and be amazed.
 
 
-## Commands >>> add table ones
+## Commands
 
-| Command              | Type     | Description                             | Args                                  |
-| :--------            | :-----   | :-------                                | :--------                             |
-| notr_insert_link     | Context  | Insert a link from clipboard            |                                       |
-| notr_insert_ref      | Context  | Insert a ref from selector              |                                       |
-| notr_insert_hrule    | Context  | Visual horizontal rule                  | fill_char: "-"                        |
-| notr_goto_section    | Context  | Go to section from selector             | filter_by_tag: true select tag first  |
-| notr_goto_ref        | Context  | Go to a reference from selector         |                                       |
-| notr_publish         | Context  | ..............                          |                                       |
-| notr_reload          | Context  | Reload after editing colors or settings |                                       |
+| Command              | Type     | Description                                | Args                                  |
+| :--------            | :-----   | :-------                                   | :--------                             |
+| notr_insert_link     | Context  | Insert a link from clipboard               |                                       |
+| notr_insert_ref      | Context  | Insert a ref from selector                 |                                       |
+| notr_insert_hrule    | Context  | Visual horizontal rule                     | fill_char: "-"                        |
+| notr_goto_section    | Context  | Go to section from selector                | filter_by_tag: true select tag first  |
+| notr_goto_ref        | Context  | Go to a reference from selector            |                                       |
+| notr_reload          | Context  | Reload after editing colors or settings    |                                       |
+| table_fit            | Context  | Fit table contents to columns              |                                       |
+| table_insert_col     | Context  | Insert column at caret                     |                                       |
+| table_delete_col     | Context  | Remove column at caret                     |                                       |
+| table_sort_col       | Context  | Sort column at caret - direction toggles   | explicit asc/desc arg?                |
 
 
 ## Settings
@@ -84,15 +87,3 @@ To run the demo:
   Also RegionFlags doesn't work in add_regions().
 - view.add_regions() apparently only supports colors, annotations, and icon. It does not support font style and region flags.
   Also they are not available via extract_scope().
-
-
-## Future
-Things to consider.
-
-- Unicode menu/picker to insert and view at caret.
-- Toggle syntax coloring (distraction free). Maybe just set to Plain Text.
-- File/section navigator, drag/drop/cut/copy/paste section.
-- Use icons, style, annotations, phantoms for something? See mdpopups for generating tooltip popups.
-- Show image file as phantom or hover, maybe thumbnail.
-- Auto/manual Indent/dedent lists with bullets. Probably not possible as ST controls this.
-- syntax_test_notr.ntr.

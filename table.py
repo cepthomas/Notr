@@ -1,4 +1,4 @@
-# Some of this is borrowed from https://github.com/wadetb/Sublime-Text-Advanced-CSV.
+# Some of this is loosely based on https://github.com/wadetb/Sublime-Text-Advanced-CSV.
 # Source licenses are MIT so all is good. Steal This Code.
 
 import sublime

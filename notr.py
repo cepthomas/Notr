@@ -120,9 +120,8 @@ class NotrEvent(sublime_plugin.EventListener):
 class NotrPublishCommand(sublime_plugin.WindowCommand):
     ''' TODO Publish notes somewhere for access from phone. Links? Nothing confidential! '''
 
-#### Render for android target.
-# self.window.active_view().run_command('sbot_render_to_html', {'font_face':'monospace', 'font_size':'1.2em' } )  
-
+    #### Render for android target.
+    # self.window.active_view().run_command('sbot_render_to_html', {'font_face':'monospace', 'font_size':'1.2em' } )  
 
     def run(self):
         # Render notr files.
@@ -402,15 +401,20 @@ def _process_notr_files():
 
     # Index first.
     notr_index = settings.get('notr_index')
-    if os.path.exists(notr_index):
-        _ntr_files.append(notr_index)
+    if notr_index is not None:
+        index_path = sc.expand_vars(notr_index)
+        if index_path is not None and os.path.exists(index_path):
+            _ntr_files.append(index_path)
+        else:
+            _user_error(NOTR_SETTINGS_FILE, -1, f'Invalid path in settings {notr_index}')
 
     # Paths.
     notr_paths = settings.get('notr_paths')
     for npath in notr_paths:
-        if os.path.exists(npath):
-            for nfile in glob.glob(os.path.join(npath, '*.ntr')):
-                if nfile != notr_index:
+        expath = sc.expand_vars(npath)
+        if expath is not None and os.path.exists(expath):
+            for nfile in glob.glob(os.path.join(expath, '*.ntr')):
+                if nfile != index_path:
                     _ntr_files.append(nfile)
         else:
             _user_error(NOTR_SETTINGS_FILE, -1, f'Invalid path in settings {npath}')
@@ -445,35 +449,6 @@ def _process_notr_files():
         if ref.target not in _valid_ref_targets:
             _user_error(ref.srcfile, ref.line, f'Invalid ref target:{ref.target}')
 
-
-#-----------------------------------------------------------------------------------
-def _expand_vars(s: str):
-    ''' Smarter version of builtin. Returns expanded string or None if bad var name. '''
-
-    done = False
-    count = 0
-    while not done:
-        if '$' in s:
-            sexp = os.path.expandvars(s)
-            if s == sexp:
-                # Invalid var.
-                s = None
-                done = True
-            else:
-                # Go around again.
-                s = sexp
-        else:
-            # Done expanding.
-            done = True
-
-        # limit iterations
-        if not done:
-            count += 1
-            if count >= 3:
-                done = True
-                s = None
-
-    return s
 
 #-----------------------------------------------------------------------------------
 def _process_notr_file(fn):
@@ -522,7 +497,7 @@ def _process_notr_file(fn):
                 for m in matches:
                     if len(m) == 2:
                         name = m[0].strip()
-                        target = _expand_vars(m[1].strip())
+                        target = sc.expand_vars(m[1].strip())
                         if target == None:
                             # Bad env var.
                             _user_error(fn, line_num, f'Bad env var')
