@@ -220,11 +220,14 @@ class TableCommand(sublime_plugin.TextCommand):
         done = False
         while not done:
             point = v.text_point(current_row, 0)
-            if self.is_table(point):
-                end_row = current_row
-                current_row += 1
-            else:
+            if point >= len(v):
                 done = True
+            else:
+                if self.is_table(point):
+                    end_row = current_row
+                    current_row += 1
+                else:
+                    done = True
 
         # Get the region and table row/col selected.
         if start_row != -1 and end_row != -1:
