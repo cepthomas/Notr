@@ -169,8 +169,6 @@ class TableCommand(sublime_plugin.TextCommand):
         ''' Show this? '''
         caret = sc.get_single_caret(self.view)
         vis = self.is_table(caret)
-        if vis:
-            pass #TODO sort and delete should check valid column selected here
         return vis 
 
     def start(self):
@@ -257,7 +255,7 @@ class TableFitCommand(TableCommand):
     def run(self, edit):
         super().start()
         # do work
-        # -> no work other than formatting
+        # ... no work other than formatting
         # finish
         super().finish(edit)
 

@@ -45,7 +45,7 @@ To run the demo:
 }
 ```
 
-- Color schemes require new and edited scopes to support this tool. They are specified in `file/NotrOverlay.sublime-color-scheme`.
+- Color schemes require new and edited scopes to support this tool. They are identified in `file/NotrOverlay.sublime-color-scheme`.
   Implement your unique version of this per [Color customization](https://www.sublimetext.com/docs/color_schemes.html#customization).
 - Now open `files/notr-spec.ntr` and be amazed.
 
@@ -59,7 +59,7 @@ To run the demo:
 | notr_insert_hrule    | Context  | Visual horizontal rule                     | fill_char: "-"                        |
 | notr_goto_section    | Context  | Go to section from selector                | filter_by_tag: true select tag first  |
 | notr_goto_ref        | Context  | Go to a reference from selector            |                                       |
-| notr_reload          | Context  | Reload after editing colors or settings    |                                       |
+| notr_reload          | Context  | Reload after editing colors                |                                       |
 | table_fit            | Context  | Fit table contents to columns              |                                       |
 | table_insert_col     | Context  | Insert column at caret                     |                                       |
 | table_delete_col     | Context  | Remove column at caret                     |                                       |
