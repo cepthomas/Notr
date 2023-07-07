@@ -122,12 +122,11 @@ class NotrGotoSectionCommand(sublime_plugin.WindowCommand):
 
     # Prepared lists for quick panel.
     _sorted_tags = []
-    _sorted_sec_names = []
+    _sorted_sections = []
 
     def run(self, filter_by_tag):
         self._sorted_tags.clear()
-        self._sorted_sec_names.clear()
-        panel_items = []
+        self._sorted_sections.clear()
 
         if filter_by_tag:
             settings = sublime.load_settings(NOTR_SETTINGS_FILE)
@@ -136,58 +135,68 @@ class NotrGotoSectionCommand(sublime_plugin.WindowCommand):
                 self._sorted_tags = sorted(_tags)
             else:  # Sort by frequency.
                 self._sorted_tags = [x[0] for x in sorted(_tags.items(), key=lambda x:x[1], reverse=True)]
-
             for tag in self._sorted_tags:
                 panel_items.append(sublime.QuickPanelItem(trigger=tag, annotation=f"qty:{_tags[tag]}", kind=sublime.KIND_AMBIGUOUS))
             self.window.show_quick_panel(panel_items, on_select=self.on_sel_tag)
-        else:  # all sections
-            n = []
-            for section in _sections:
-                n.append(f'{section.froot}#{section.name}')
-            self._sorted_sec_names = sorted(n)
-            for sec_name in self._sorted_sec_names:
-                panel_items.append(sublime.QuickPanelItem(trigger=sec_name, kind=sublime.KIND_AMBIGUOUS))
-            self.window.show_quick_panel(panel_items, on_select=self.on_sel_section)
+        else:
+            self.show_sections(_sections)
 
     def on_sel_tag(self, *args, **kwargs):
         sel = args[0]
 
         if sel >= 0:
-            # Make a selector with sorted section names.
+            # Make a selector with sorted section names, current file's first.
             sel_tag = self._sorted_tags[sel]
 
-            n = []
+            # Hide current quick panel.
+            self.window.run_command("hide_overlay")
+
+            # Filter per tag selection.
+            filtered_sections = []
             for section in _sections:
                 if sel_tag in section.tags:
-                    n.append(f'{section.froot}#{section.name}')
-            if len(n) > 0:
-                self._sorted_sec_names = sorted(n)
-                # Hide current quick panel.
-                self.window.run_command("hide_overlay")
-                panel_items = []
-                for sec_name in self._sorted_sec_names:
-                    panel_items.append(sublime.QuickPanelItem(trigger=sec_name, kind=sublime.KIND_AMBIGUOUS))
-                self.window.show_quick_panel(panel_items, on_select=self.on_sel_section)
+                    filtered_sections.append(section)
+
+            if len(filtered_sections) > 0:
+                self.show_sections(filtered_sections)
             else:
                 sublime.status_message('No sections with that tag')
-        else:
-            # Stick them in the clipboard.
-            sublime.set_clipboard('\n'.join(self._sorted_tags))
 
     def on_sel_section(self, *args, **kwargs):
         sel = args[0]
 
         if sel >= 0:
             # Locate the section record.
-            sel_secname = self._sorted_sec_names[sel]
-            for section in _sections:
-                if f'{section.froot}#{section.name}' == sel_secname:
-                    # Open the section in a new view.
-                    vnew = sc.wait_load_file(self.window, section.srcfile, section.line)
-                    break
-        else:
-            # Stick them in the clipboard.
-            sublime.set_clipboard('\n'.join(self._sorted_sec_names))
+            section = self._sorted_sections[sel]
+            # Open the section in a new view.
+            vnew = sc.wait_load_file(self.window, section.srcfile, section.line)
+
+    def show_sections(self, sections):
+        ''' Present section options to user. '''
+
+        current_file_sections = []
+        other_sections = []
+        panel_items = []
+        current_file = self.window.active_view().file_name()
+
+        for section in sections:
+            if section.srcfile == current_file:
+                current_file_sections.append(section)
+            else:
+                other_sections.append(section)
+        # Sort them all.
+        current_file_sections = sorted(current_file_sections)
+        other_sections = sorted(other_sections)
+
+        # Make readable names.
+        for section in current_file_sections:
+            panel_items.append(sublime.QuickPanelItem(trigger=f'#{section.name}', kind=sublime.KIND_AMBIGUOUS))
+        for section in other_sections:
+            panel_items.append(sublime.QuickPanelItem(trigger=f'{section.froot}#{section.name}', kind=sublime.KIND_AMBIGUOUS))
+        # Combine the two.
+        self._sorted_sections = current_file_sections + other_sections
+
+        self.window.show_quick_panel(panel_items, on_select=self.on_sel_section)
 
     def is_visible(self):
         return True
@@ -258,7 +267,8 @@ class NotrInsertHruleCommand(sublime_plugin.TextCommand):
         v.insert(edit, lst.a, s)
 
     def is_visible(self):
-        return self.view.syntax() is not None and self.view.syntax().name == 'Notr'
+        v = self.view
+        return v.syntax() is not None and v.syntax().name == 'Notr' and sc.get_single_caret(v) is not None
 
 
 #-----------------------------------------------------------------------------------
@@ -271,7 +281,8 @@ class NotrInsertLinkCommand(sublime_plugin.TextCommand):
         self.view.insert(edit, caret, s)
 
     def is_visible(self):
-        return self.view.syntax() is not None and self.view.syntax().name == 'Notr'
+        v = self.view
+        return v.syntax() is not None and v.syntax().name == 'Notr' and sc.get_single_caret(v) is not None
 
 
 #-----------------------------------------------------------------------------------
@@ -320,39 +331,18 @@ class NotrDumpCommand(sublime_plugin.WindowCommand):
 
     def run(self):
         text = []
-        text.append('=== _sections ===')
-        for x in _sections:
-            text.append(str(x))
 
-        text.append('')
-        text.append('=== _links ===')
-        for x in _links:
-            text.append(str(x))
+        def do_one(name, coll):
+            text.append(f'\n===== {name} =====')
+            text.extend([str(x) for x in coll])
 
-        text.append('')
-        text.append('=== _refs ===')
-        for x in _refs:
-            text.append(str(x))
-
-        text.append('')
-        text.append('=== _valid_ref_targets ===')
-        for x in _valid_ref_targets:
-            text.append(f'{x}')
-
-        text.append('')
-        text.append('=== _tags ===')
-        for x in _tags:
-            text.append(f'{x}:{_tags[x]}')
-
-        text.append('')
-        text.append('=== _ntr_files ===')
-        for x in _ntr_files:
-            text.append(f'{x}')
-
-        text.append('')
-        text.append('=== _parse_errors ===')
-        for x in _parse_errors:
-            text.append(f'{x}')
+        do_one('sections', _sections)
+        do_one('links', _links)
+        do_one('refs', _refs)
+        do_one('valid_ref_targets', _valid_ref_targets)
+        do_one('tags', _tags) # text.append(f'{x}:{_tags[x]}')
+        do_one('ntr_files', _ntr_files)
+        do_one('parse_errors', _parse_errors)
 
         sc.create_new_view(self.window, '\n'.join(text))
 
@@ -543,11 +533,12 @@ def _get_selection_for_scope(view, scope):
 
     sel_text = None
     caret = sc.get_single_caret(view)
-    scopes = view.scope_name(caret).rstrip().split()
-    if scope in scopes:
-        reg = view.expand_to_scope(caret, scope)
-        if reg is not None:
-            sel_text = view.substr(reg).strip()
+    if caret is not None:
+        scopes = view.scope_name(caret).rstrip().split()
+        if scope in scopes:
+            reg = view.expand_to_scope(caret, scope)
+            if reg is not None:
+                sel_text = view.substr(reg).strip()
 
     return sel_text
 

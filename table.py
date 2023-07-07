@@ -168,7 +168,7 @@ class TableCommand(sublime_plugin.TextCommand):
     def is_visible(self):
         ''' Show this? '''
         caret = sc.get_single_caret(self.view)
-        vis = self.is_table(caret)
+        vis = caret is not None and self.is_table(caret)
         return vis 
 
     def start(self):
