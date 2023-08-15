@@ -6,6 +6,7 @@ import sublime
 import sublime_plugin
 from . import sbot_common as sc
 
+# TODO highlight links in lists.
 
 NOTR_SETTINGS_FILE = "Notr.sublime-settings"
 # NOTR_SETTINGS_FILE = "Notr_demo.sublime-settings"
@@ -402,18 +403,18 @@ def _process_notr_files():
     for section in _sections:
         target = f'{section.froot}#{section.name}'
         if target not in _valid_ref_targets:
-            _valid_ref_targets[target] = 0
+            _valid_ref_targets[target] = f'{section.srcfile}({section.line})'
         else:
-            _user_error(section.srcfile, section.line, f'Duplicate section name:{section.name}')
+            _user_error(section.srcfile, section.line, f'Duplicate section name:{section.name} see:{_valid_ref_targets[target]}')
 
     # Check all links are valid 'http(s)://' or file, no dupe names.
     for link in _links:
         if link.name in _valid_ref_targets:
-            _user_error(link.srcfile, link.line, f'Duplicate link name:{link.name}')
+            _user_error(link.srcfile, link.line, f'Duplicate link name:{link.name} see:{_valid_ref_targets[link.name]}')
         else:
             if link.target.startswith('http') or os.path.exists(link.target):
                 # Assume a valid uri or path
-                _valid_ref_targets[link.name] = 0
+                _valid_ref_targets[link.name] = f'{link.srcfile}({link.line})'
             else:
                 _user_error(link.srcfile, link.line, f'Invalid link target:{link.target}')
 
