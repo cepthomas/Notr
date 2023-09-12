@@ -110,13 +110,18 @@ contexts:
         1: markup.list.indent.notr
         2: markup.list.marker.notr
         3: markup.list.content.notr
+    # - include: link
 
 
   #################### link ###########################################
 
+  # See C:\Users\cepth\OneDrive\OneDrive Documents\tech\sublime\md\Markdown.sublime-syntax  link-inline
   link:
-    # link def
-    - match: '\[([^:]*): *([^\]]*)\]'
+    # link def  [ggg](https://www.reddit.com)
+    # - match: '\[([^:]*): *([^\]]*)\]'
+    # - match: '\[([0-9a-zA-Z]*)\]\(([0-9a-zA-Z\/\\:._-]*)\)'
+    # - match: '\[([0-9a-zA-Z_-]*)\]\((.*)\)'
+    - match: '\[(.*)\]\((.*)\)'
       captures:
         1: markup.link.name.notr
         2: markup.underline.link.notr

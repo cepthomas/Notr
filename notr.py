@@ -1,7 +1,9 @@
 import os
+import platform
 import re
 import glob
 import collections
+import random
 import sublime
 import sublime_plugin
 from . import sbot_common as sc
@@ -132,6 +134,8 @@ class NotrGotoSectionCommand(sublime_plugin.WindowCommand):
         if filter_by_tag:
             settings = sublime.load_settings(NOTR_SETTINGS_FILE)
             sort_tags_alpha = settings.get('sort_tags_alpha')
+            panel_items = []
+
             if sort_tags_alpha:
                 self._sorted_tags = sorted(_tags)
             else:  # Sort by frequency.
@@ -208,7 +212,7 @@ class NotrGotoRefCommand(sublime_plugin.TextCommand):
     ''' Open link or section from selected ref. '''
 
     def run(self, edit):
-        valid = True # default
+        valid = True  # default
         ref_text = _get_selection_for_scope(self.view, 'markup.link.refname.notr')
 
         if ref_text is not None and '#' in ref_text:  # Section ref like  [*#Links and Refs]  [* file_root#section_name]
@@ -243,8 +247,18 @@ class NotrGotoRefCommand(sublime_plugin.TextCommand):
             # Get the Link spec.
             for link in _links:
                 if link.name == ref_text:
-                    if os.path.exists(link.target) or link.target.startswith('http'):
-                        sc.start_file(link.target)
+                    try:
+                        if platform.system() == 'Darwin':
+                            ret = subprocess.call(('open', link.target))
+                        elif platform.system() == 'Windows':
+                            os.startfile(link.target)
+                        else:  # linux variants
+                            ret = subprocess.call(('xdg-open', link.target))
+                    except Exception as e:
+                        if e is None:
+                            sc.slog(sc.CAT_ERR, "???")
+                        else:
+                            sc.slog(sc.CAT_ERR, e)
                     break
 
     def is_visible(self):
@@ -277,13 +291,17 @@ class NotrInsertLinkCommand(sublime_plugin.TextCommand):
     ''' Insert link from clipboard. Assumes user clipped appropriate string. '''
 
     def run(self, edit):
-        s = f'[name?: {sublime.get_clipboard()}]'
+        random.seed()
+        s = f'[TODO{random.randrange(10000)}]({sublime.get_clipboard()})'
         caret = sc.get_single_caret(self.view)
         self.view.insert(edit, caret, s)
 
     def is_visible(self):
         v = self.view
-        return v.syntax() is not None and v.syntax().name == 'Notr' and sc.get_single_caret(v) is not None
+        return v.syntax() is not None and \
+            v.syntax().name == 'Notr' and \
+            sc.get_single_caret(v) is not None and \
+            sublime.get_clipboard() != ''
 
 
 #-----------------------------------------------------------------------------------
@@ -341,7 +359,7 @@ class NotrDumpCommand(sublime_plugin.WindowCommand):
         do_one('links', _links)
         do_one('refs', _refs)
         do_one('valid_ref_targets', _valid_ref_targets)
-        do_one('tags', _tags) # text.append(f'{x}:{_tags[x]}')
+        do_one('tags', _tags)  # text.append(f'{x}:{_tags[x]}')
         do_one('ntr_files', _ntr_files)
         do_one('parse_errors', _parse_errors)
 
@@ -440,7 +458,8 @@ def _process_notr_file(fn):
 
             # Get the things of interest defined in the file.
             re_directives = re.compile(r'^\$(.*)')
-            re_links = re.compile(r'\[([^:]*): *([^\]]*)\]')
+            re_links = re.compile(r'\[(.*)\]\((.*)\)')
+            # re_links = re.compile(r'\[([^:]*): *([^\]]*)\]')
             re_refs = re.compile(r'\[\* *([^\]]*)\]')
             re_sections = re.compile(r'^(#+ +[^\[]+) *(?:\[(.*)\])?')
             # re_sections = re.compile(r'^(#+) +([^\[]+) *(?:\[(.*)\])?')
@@ -464,7 +483,7 @@ def _process_notr_file(fn):
                         # sc.slog(sc.CAT_DBG, f'>>> alias {alias}={value}')
 
                     if not handled:
-                        _user_error(fn, line_num, f'Invalid directive')
+                        _user_error(fn, line_num, 'Invalid directive')
 
                 # Links
                 matches = re_links.findall(line)
@@ -472,13 +491,13 @@ def _process_notr_file(fn):
                     if len(m) == 2:
                         name = m[0].strip()
                         target = sc.expand_vars(m[1].strip())
-                        if target == None:
+                        if target is None:
                             # Bad env var.
-                            _user_error(fn, line_num, f'Bad env var')
+                            _user_error(fn, line_num, 'Bad env var')
                         else:
                             links.append(Link(fn, line_num, name, target))
                     else:
-                        _user_error(fn, line_num, f'Invalid syntax')
+                        _user_error(fn, line_num, 'Invalid syntax')
 
                 # Refs
                 matches = re_refs.findall(line)
@@ -514,7 +533,7 @@ def _process_notr_file(fn):
                         for tag in tags:
                             _tags[tag] = _tags[tag] + 1 if tag in _tags else 1
                     else:
-                        _user_error(fn, line_num, f'Invalid syntax')
+                        _user_error(fn, line_num, 'Invalid syntax')
 
 
                 line_num += 1
