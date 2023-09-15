@@ -101,16 +101,15 @@ contexts:
     - match: '(?x)^(?= \s*$)'
       pop: 1
 
-
   #################### list ###########################################
 
   list:
+    # - include: link
     - match: '^([ ]*)([-X\?!\*])[ ]+(.*)'
       captures:
         1: markup.list.indent.notr
         2: markup.list.marker.notr
         3: markup.list.content.notr
-    # - include: link
 
 
   #################### link ###########################################
@@ -135,3 +134,9 @@ contexts:
     - match: '^\$(.*)\n'
       captures:
         1: markup.link.alias.notr
+
+
+
+# prototype:
+#   - include: link
+

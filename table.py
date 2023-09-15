@@ -267,14 +267,12 @@ class TableFitCommand(TableCommand):
 class TableSortColCommand(TableCommand):
 
     def __init__(self, view):
-        self.sort_asc = True
         super().__init__(view)
 
-    def run(self, edit):
+    def run(self, edit, asc):
         super().start()
         # do work
-        self.matrix.sort_column(self.table_col_sel, self.sort_asc)
-        self.sort_asc = not self.sort_asc
+        self.matrix.sort_column(self.table_col_sel, asc)
         # finish
         super().finish(edit)
         

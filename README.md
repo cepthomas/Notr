@@ -63,7 +63,7 @@ To run the demo:
 | table_fit            | Context  | Fit table contents to columns              |                                       |
 | table_insert_col     | Context  | Insert column at caret                     |                                       |
 | table_delete_col     | Context  | Remove column at caret                     |                                       |
-| table_sort_col       | Context  | Sort column at caret - direction toggles   | explicit asc/desc arg?                |
+| table_sort_col       | Context  | Sort column at caret - direction toggles   | asc: true/false                       |
 
 
 ## Settings
