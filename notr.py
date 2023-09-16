@@ -8,7 +8,6 @@ import sublime
 import sublime_plugin
 from . import sbot_common as sc
 
-# TODO highlight links in lists => [booga](.\README.md). Maybe also general text like '>'. https://www.sublimetext.com/docs/syntax.html#include-patterns
 # TODO PublishCommand() Publish notes somewhere for access from phone.
 # ? Nav and folding by section/hierarchy. Might be tricky: https://github.com/sublimehq/sublime_text/issues/5423.
 # ? Block comment/uncomment useful? What would that mean - "hide" text? shade?

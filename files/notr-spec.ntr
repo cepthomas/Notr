@@ -75,6 +75,10 @@ Define a link and its ref name like [image felix le chat]($NOTR_PATH\files\felix
    [other type of file]($NOTR_PATH\notr.py)
 or... [nyt](https://nytimes.com)
 
+
+- TODO highlight links in lists like [nyt](https://nytimes.com).
+> Also [See](https://www.sublimetext.com/docs/syntax.html#include-patterns).
+
 Define things like `$NOTR_PATH` before being referenced, usually in your `notr_index` file.
 
 Use `*` to identify references defined beforehand - above or in `notr_index` file. Right click to navigate to the ref.
