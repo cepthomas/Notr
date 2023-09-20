@@ -8,7 +8,9 @@ import sublime
 import sublime_plugin
 from . import sbot_common as sc
 
-# TODO PublishCommand() Publish notes somewhere for access from phone.
+# TODO2 PublishCommand() Publish notes somewhere for access from phone. Android onenote can't process .ntr files.
+# TODO1 autogen links to files in dirs of interest? html, doc, pdf, ...
+# TODO2 Do something about demo/dump/etc.
 # ? Nav and folding by section/hierarchy. Might be tricky: https://github.com/sublimehq/sublime_text/issues/5423.
 # ? Block comment/uncomment useful? What would that mean - "hide" text? shade?
 
@@ -254,7 +256,7 @@ class NotrGotoRefCommand(sublime_plugin.TextCommand):
                             ret = subprocess.call(('open', link.target))
                         elif platform.system() == 'Windows':
                             os.startfile(link.target)
-                        else:  # linux variants
+                        else:  # linux variants #TODOL
                             ret = subprocess.call(('xdg-open', link.target))
                     except Exception as e:
                         if e is None:

@@ -83,7 +83,7 @@ To run the demo:
 - ST regex is a line-oriented version of [Oniguruma Regular Expressions Version 6.8.0](https://github.com/kkos/oniguruma).
   Some things pertaining to normal line endings don't quite work as expected.
 - Note that coloring *should* stop at the right edge of a table. This is also how ST renders MD tables...
-- Coloring for the markup.user_hls and markup.fixed_hls only supports fore and back colors, but not font_style.
-  Also RegionFlags doesn't work in add_regions().
+- Coloring for the markup.user_hls and markup.fixed_hls only supports fore and back colors, not font_style.
 - view.add_regions() apparently only supports colors, annotations, and icon. It does not support font style and region flags.
   Also they are not available via extract_scope().
+- After editing color-scheme, close and reopen affected views.
