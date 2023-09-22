@@ -21,7 +21,7 @@ Built for ST4 on Windows and Linux.
 ## Demo
 
 [The spec](files/notr-spec.ntr) provides an example of the features. If the plugin is installed it will look
-something like this (excuse the colors...):
+something like this (note uses my color scheme):
 
 ![ex1](files/ex1.jpg)
 
@@ -56,14 +56,14 @@ To run the demo:
 | :--------            | :-----   | :-------                                   | :--------                             |
 | notr_insert_link     | Context  | Insert a link from clipboard               |                                       |
 | notr_insert_ref      | Context  | Insert a ref from selector                 |                                       |
-| notr_insert_hrule    | Context  | Visual horizontal rule                     | fill_char: "-"                        |
 | notr_goto_section    | Context  | Go to section from selector                | filter_by_tag: true select tag first  |
 | notr_goto_ref        | Context  | Go to a reference from selector            |                                       |
-| notr_reload          | Context  | Reload after editing colors                |                                       |
 | table_fit            | Context  | Fit table contents to columns              |                                       |
 | table_insert_col     | Context  | Insert column at caret                     |                                       |
 | table_delete_col     | Context  | Remove column at caret                     |                                       |
 | table_sort_col       | Context  | Sort column at caret - direction toggles   | asc: true/false                       |
+| notr_dump            | Context  | Show the internal info                     |                                       |
+| notr_reload          | Context  | Force reload after editing colors          |                                       |
 
 
 ## Settings

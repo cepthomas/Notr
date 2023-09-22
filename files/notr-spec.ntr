@@ -76,7 +76,7 @@ Define a link and its ref name like [image felix le chat]($NOTR_PATH\files\felix
 or... [nyt](https://nytimes.com)
 
 
-- TODO1 highlight links in lists like [nyt](https://nytimes.com).
+- Highlight links in lists like [nyt](https://nytimes.com).
 > Also [See](https://www.sublimetext.com/docs/syntax.html#include-patterns).
 
 Define things like `$NOTR_PATH` before being referenced, usually in your `notr_index` file.

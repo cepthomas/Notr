@@ -8,11 +8,12 @@ import sublime
 import sublime_plugin
 from . import sbot_common as sc
 
-# TODO2 PublishCommand() Publish notes somewhere for access from phone. Android onenote can't process .ntr files.
-# TODO1 autogen links to files in dirs of interest? html, doc, pdf, ...
-# TODO2 Do something about demo/dump/etc.
-# ? Nav and folding by section/hierarchy. Might be tricky: https://github.com/sublimehq/sublime_text/issues/5423.
-# ? Block comment/uncomment useful? What would that mean - "hide" text? shade?
+# TODO PublishCommand() Publish notes somewhere for access from phone - raw or rendered. Android OneDrive can't process .ntr files.
+# TODO Autogen links to files in dirs of interest? html, doc, pdf, ...
+# TODO Insert TOC at top of ntr files. Includes non-indexed files - dynamically parse on demand
+# TODO highlight links in lists like [nyt](https://nytimes.com).
+# Nav and folding by section/hierarchy. Might be tricky: https://github.com/sublimehq/sublime_text/issues/5423.
+# Block comment/uncomment useful? What would that mean - "hide" text? shade?
 
 
 NOTR_SETTINGS_FILE = "Notr.sublime-settings"
@@ -256,7 +257,7 @@ class NotrGotoRefCommand(sublime_plugin.TextCommand):
                             ret = subprocess.call(('open', link.target))
                         elif platform.system() == 'Windows':
                             os.startfile(link.target)
-                        else:  # linux variants #TODOL
+                        else:  # linux variants
                             ret = subprocess.call(('xdg-open', link.target))
                     except Exception as e:
                         if e is None:
