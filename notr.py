@@ -461,8 +461,9 @@ def _process_notr_file(fn):
             lines = file.read().splitlines()
             line_num = 1
 
-            # Get the things of interest defined in the file.
-            re_directives = re.compile(r'^\$(.*)')
+            # Get the things of interest defined in the file. Grep escape these .^$*+?()[{\|  syntax uses X?!*
+            re_directives = re.compile(r'^:(.*)')
+            # re_directives = re.compile(r'^\$(.*)')
             re_links = re.compile(r'\[(.*)\]\((.*)\)')
             # re_links = re.compile(r'\[([^:]*): *([^\]]*)\]')
             re_refs = re.compile(r'\[\* *([^\]]*)\]')
@@ -498,7 +499,7 @@ def _process_notr_file(fn):
                         target = sc.expand_vars(m[1].strip())
                         if target is None:
                             # Bad env var.
-                            _user_error(fn, line_num, 'Bad env var')
+                            _user_error(fn, line_num, f'Bad env var: {m[1]}')
                         else:
                             links.append(Link(fn, line_num, name, target))
                     else:

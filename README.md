@@ -34,9 +34,9 @@ To run the demo:
 ```
 {
     "notr_paths": [
-        "<$LOCALAPPDATA>\Sublime Text\Packages\Notr\files",
+        "${packages}/Notr/files",
     ],
-    "notr_index": "<$LOCALAPPDATA>\Sublime Text\Packages\Notr\files\test-index.ntr",
+    "notr_index": "${packages}/Notr/files/test-index.ntr",
     "fixed_hl": [
         ["2DO", "and_a"],
         ["user", "and_b"],

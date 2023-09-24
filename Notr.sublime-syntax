@@ -114,7 +114,6 @@ contexts:
 
   #################### link ###########################################
 
-  # See C:\Users\cepth\OneDrive\OneDrive Documents\tech\sublime\md\Markdown.sublime-syntax  link-inline
   link:
     # link def  [ggg](https://www.reddit.com)
     # - match: '\[([^:]*): *([^\]]*)\]'
@@ -130,8 +129,8 @@ contexts:
       captures:
         1: markup.link.refname.notr
 
-    # link alias
-    - match: '^\$(.*)\n'
+    # directive or alias
+    - match: '^\:(.*)\n'
       captures:
         1: markup.link.alias.notr
 

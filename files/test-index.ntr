@@ -2,21 +2,22 @@
 This file gets loaded first.
 Put stuff like path aliases and common links here.
 
-Directives start with `$`.
+Directives start with `:`.
 
-Aliases for paths. They go into env and can be used in your links along with the builtins like APPDATA, HOME, LOCALAPPDATA etc.
-$NOTR_PATH=$APPDATA\Sublime Text\Packages\Notr
+Aliases for paths. They go into env and can be used in your links along with any other env var.
+:NOTR_PATH=${packages}/Notr
+Note: use forward slash separator if compatibility with linux is important.
 
-Don't add this file to the index.
-`$NO_INDEX`
+This means don't add this file to the index.
+`:NO_INDEX`
 
 
 # Common Links [tag2 tag9]
 
 [yer news](https://nytimes.com)
-[another felix]($NOTR_PATH\files\felix2.jpg)
+[another felix]($NOTR_PATH/files/felix2.jpg)
 
 
 # Other Files of Interest [tag4]
-[another ntr]($NOTR_PATH\files\page2.ntr)
+[another ntr]($NOTR_PATH/files/page2.ntr)
 
