@@ -34,9 +34,10 @@ To run the demo:
 ```
 {
     "notr_paths": [
-        "${packages}/Notr/files",
+        "one/path/to/your/files",
+        "another/path/to/your/files",
     ],
-    "notr_index": "${packages}/Notr/files/test-index.ntr",
+    "notr_index": "one/path/to/your/files/test-index.ntr",
     "fixed_hl": [
         ["2DO", "and_a"],
         ["user", "and_b"],

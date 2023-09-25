@@ -8,13 +8,6 @@ import sublime
 import sublime_plugin
 from . import sbot_common as sc
 
-# TODO PublishCommand() Publish notes somewhere for access from phone - raw or rendered. Android OneDrive can't process .ntr files.
-# TODO Autogen links to files in dirs of interest? html, doc, pdf, ...
-# TODO Insert TOC at top of ntr files. Includes non-indexed files - dynamically parse on demand
-# TODO highlight links in lists like [nyt](https://nytimes.com).
-# Nav and folding by section/hierarchy. Might be tricky: https://github.com/sublimehq/sublime_text/issues/5423.
-# Block comment/uncomment useful? What would that mean - "hide" text? shade?
-
 
 NOTR_SETTINGS_FILE = "Notr.sublime-settings"
 
@@ -74,10 +67,7 @@ class NotrEvent(sublime_plugin.EventListener):
         ''' First thing that happens when plugin/window created. Initialize everything. '''
 
         # Open and process notr files.
-        _process_notr_files()
-
-        if len(_parse_errors) > 0:
-            sc.create_new_view(views[0].window(), '\n'.join(_parse_errors))
+        _process_notr_files(views[0].window())
 
         # Views are all valid now so init them.
         for view in views:
@@ -90,7 +80,7 @@ class NotrEvent(sublime_plugin.EventListener):
     def on_post_save(self, view):
         ''' Called after a ntr view has been saved so reload all ntr files. Seems a bit brute force, how else? '''
         if view.syntax().name == 'Notr':
-            _process_notr_files()
+            _process_notr_files(views[0].window())
 
     def _init_fixed_hl(self, view):
         ''' Add any highlights. '''
@@ -335,15 +325,29 @@ class NotrInsertRefCommand(sublime_plugin.TextCommand):
 
 
 #-----------------------------------------------------------------------------------
+# class NotrPublishCommand(sublime_plugin.WindowCommand):
+#     ''' Publish notes somewhere for access from phone. Links? Nothing confidential! '''
+
+#     #### Render for android target.
+#     # self.window.active_view().run_command('sbot_render_to_html', {'font_face':'monospace', 'font_size':'1.2em' } )  
+
+#     def run(self):
+#         # Render notr files.
+#         # Render for android target.
+#         # self.window.active_view().run_command('sbot_render_to_html', {'font_face':'monospace', 'font_size':'1.2em' } )  
+#         pass
+
+#     def is_visible(self):
+#         return True
+
+
+#-----------------------------------------------------------------------------------
 class NotrReloadCommand(sublime_plugin.WindowCommand):
     ''' Reload after editing. '''
 
     def run(self):
         # Open and process notr files.
-        _process_notr_files()
-
-        if len(_parse_errors) > 0:
-            sc.create_new_view(self.window, '\n'.join(_parse_errors))
+        _process_notr_files(self.window)
 
     def is_visible(self):
         return True
@@ -380,10 +384,8 @@ def _user_error(path, line, msg):
     _parse_errors.append(f'{path}({line}): {msg}')
 
 #-----------------------------------------------------------------------------------
-def _process_notr_files():
+def _process_notr_files(window):
     ''' Get all ntr files and grab their goodies. '''
-
-    # sc.slog(sc.CAT_DBG, 'Processing notr files')
 
     _ntr_files.clear()
     _tags.clear()
@@ -411,7 +413,7 @@ def _process_notr_files():
         expath = sc.expand_vars(npath)
         if expath is not None and os.path.exists(expath):
             for nfile in glob.glob(os.path.join(expath, '*.ntr')):
-                if nfile != index_path:
+                if not os.path.samefile(nfile, index_path):  # don't do index twide
                     _ntr_files.append(nfile)
         else:
             _user_error(NOTR_SETTINGS_FILE, -1, f'Invalid path in settings {npath}')
@@ -446,6 +448,9 @@ def _process_notr_files():
         if ref.target not in _valid_ref_targets:
             _user_error(ref.srcfile, ref.line, f'Invalid ref target:{ref.target}')
 
+    if len(_parse_errors) > 0:
+        _parse_errors.insert(0, "Errors in your configuration:")
+        sc.create_new_view(window, '\n'.join(_parse_errors))
 
 #-----------------------------------------------------------------------------------
 def _process_notr_file(fn):
