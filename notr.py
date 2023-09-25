@@ -180,7 +180,7 @@ class NotrGotoSectionCommand(sublime_plugin.WindowCommand):
         current_file = self.window.active_view().file_name()
 
         for section in sections:
-            if section.srcfile == current_file:
+            if os.path.samefile(section.srcfile, current_file):
                 current_file_sections.append(section)
             else:
                 other_sections.append(section)
@@ -229,7 +229,7 @@ class NotrGotoRefCommand(sublime_plugin.TextCommand):
             if valid:
                 valid = False
                 for section in _sections:
-                    if section.froot == froot and section.name == ref_name:
+                    if os.path.samefile(section.froot, froot) and section.name == ref_name:
                         # Open the file and position it.
                         sc.wait_load_file(self.view.window(), section.srcfile, section.line)
                         valid = True
