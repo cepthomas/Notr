@@ -11,7 +11,7 @@
             // { "caption": "Dump", "command": "notr_dump" },
             // { "caption": "Reload", "command": "notr_reload" },
             { "caption": "-" },
-            { "caption": "Fit", "command": "table_fit" },
+            { "caption": "Fit Table", "command": "table_fit" },
             { "caption": "Insert Column", "command": "table_insert_col" },
             { "caption": "Delete Column", "command": "table_delete_col" },
             { "caption": "Sort Asc", "command": "table_sort_col", "args" : {"asc" : true} },

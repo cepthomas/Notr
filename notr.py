@@ -180,10 +180,11 @@ class NotrGotoSectionCommand(sublime_plugin.WindowCommand):
         current_file = self.window.active_view().file_name()
 
         for section in sections:
-            if os.path.samefile(section.srcfile, current_file):
+            if current_file is not None and os.path.samefile(section.srcfile, current_file):
                 current_file_sections.append(section)
             else:
                 other_sections.append(section)
+
         # Sort them all.
         current_file_sections = sorted(current_file_sections)
         other_sections = sorted(other_sections)
@@ -326,7 +327,7 @@ class NotrInsertRefCommand(sublime_plugin.TextCommand):
 
 #-----------------------------------------------------------------------------------
 # class NotrPublishCommand(sublime_plugin.WindowCommand):
-#     ''' Publish notes somewhere for access from phone. Links? Nothing confidential! '''
+#     ''' Publish notes somewhere for access from internet/phone. Links? Nothing confidential! '''
 
 #     #### Render for android target.
 #     # self.window.active_view().run_command('sbot_render_to_html', {'font_face':'monospace', 'font_size':'1.2em' } )  
@@ -370,7 +371,8 @@ class NotrDumpCommand(sublime_plugin.WindowCommand):
         do_one('valid_ref_targets', _valid_ref_targets)
         do_one('tags', _tags)  # text.append(f'{x}:{_tags[x]}')
         do_one('ntr_files', _ntr_files)
-        do_one('parse_errors', _parse_errors)
+        if len(_parse_errors) > 0:
+            do_one('parse_errors', _parse_errors)
 
         sc.create_new_view(self.window, '\n'.join(text))
 
@@ -413,7 +415,7 @@ def _process_notr_files(window):
         expath = sc.expand_vars(npath)
         if expath is not None and os.path.exists(expath):
             for nfile in glob.glob(os.path.join(expath, '*.ntr')):
-                if not os.path.samefile(nfile, index_path):  # don't do index twide
+                if index_path is None or not os.path.samefile(nfile, index_path):  # don't do index twice
                     _ntr_files.append(nfile)
         else:
             _user_error(NOTR_SETTINGS_FILE, -1, f'Invalid path in settings {npath}')
@@ -424,7 +426,7 @@ def _process_notr_files(window):
 
     ### Check sanity of collected material.
 
-    # Get valid ref targets.
+    # Add sections to list.
     for section in _sections:
         target = f'{section.froot}#{section.name}'
         if target not in _valid_ref_targets:
@@ -432,7 +434,7 @@ def _process_notr_files(window):
         else:
             _user_error(section.srcfile, section.line, f'Duplicate section name:{section.name} see:{_valid_ref_targets[target]}')
 
-    # Check all links are valid 'http(s)://' or file, no dupe names.
+    # Add links to list. Check valid 'http(s)://' or file, no dupe names.
     for link in _links:
         if link.name in _valid_ref_targets:
             _user_error(link.srcfile, link.line, f'Duplicate link name:{link.name} see:{_valid_ref_targets[link.name]}')
