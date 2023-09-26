@@ -12,16 +12,53 @@ from . import sbot_common as sc
 NOTR_SETTINGS_FILE = "Notr.sublime-settings"
 
 
+# TODO highlight links in lists like [nyt](https://nytimes.com). See \sublime\md\Markdown.sublime-syntax  link-inline
+# TODO Block comment/uncomment - Use quote '>'
+# FUTURE PublishCommand() Publish notes somewhere for access from phone - raw or rendered. Android OneDrive can't process .ntr files.
+# FUTURE Make into package when it's cooked. Maybe others. https://packagecontrol.io/docs/submitting_a_package.
+# FUTURE Nav and folding by section/hierarchy. Might be tricky: https://github.com/sublimehq/sublime_text/issues/5423.
+# FUTURE Unicode menu/picker to insert and view at caret.
+# FUTURE Toggle syntax coloring (distraction free). Maybe just set to Plain Text.
+# FUTURE Use icons, style, annotations, phantoms for something? See mdpopups for generating tooltip popups.
+# FUTURE Show image file as phantom or hover, maybe thumbnail.
+# FUTURE Auto/manual Indent/dedent lists with bullets. Probably not possible as ST controls this.
+# FUTURE Make a syntax_test_notr.ntr.
+
+
 #--------------------------- Types -------------------------------------------------
 
-# One section: srcfile=ntr file path, line=ntr file line, froot=ntr file name root, level=1-N, name=section title, tags[]
+# One section:
+# srcfile=ntr file path
+# line=ntr file line
+# froot=ntr file name root
+# level=1-N (not used now)
+# name=section title
+# tags[]
 Section = collections.namedtuple('Section', 'srcfile, line, froot, level, name, tags')
 
-# One link: srcfile=ntr file path, line=ntr file line, name=unique desc text, target=clickable uri or file
+# One link:
+# srcfile=ntr file path
+# line=ntr file line
+# name=desc text
+# target=clickable uri or file
 Link = collections.namedtuple('Link', 'srcfile, line, name, target')
 
-# One reference: srcfile=ntr file path, line=ntr file line, target=section or link
+# One reference:
+# srcfile=ntr file path
+# line=ntr file line
+# target=section or link name
 Ref = collections.namedtuple('Ref', 'srcfile, line, target')
+
+
+# Target = collections.namedtuple('Target', 'type, srcfile, line, froot, level, name, tags')
+# type: section, uri, image?, other/file
+# srcfile=ntr file path
+# line=ntr file line
+# froot=ntr file name root
+# level: section only
+# name=section title
+# tags[]  tags for links?
+# _targets = []
 
 
 #---------------------------- Globals -----------------------------------------------
@@ -39,7 +76,7 @@ _refs = []
 # All valid ref targets in _sections and _links.
 _valid_ref_targets = {}
 
-# All tags found in all ntr files. Value is count.
+# All tags found in all ntr files. Key is tag text, value is count.
 _tags = {}
 
 # All processed ntr files, fully qualified paths.
@@ -80,7 +117,7 @@ class NotrEvent(sublime_plugin.EventListener):
     def on_post_save(self, view):
         ''' Called after a ntr view has been saved so reload all ntr files. Seems a bit brute force, how else? '''
         if view.syntax().name == 'Notr':
-            _process_notr_files(views[0].window())
+            _process_notr_files(view.window())
 
     def _init_fixed_hl(self, view):
         ''' Add any highlights. '''
@@ -115,7 +152,7 @@ class NotrEvent(sublime_plugin.EventListener):
 
 
 #-----------------------------------------------------------------------------------
-class NotrGotoSectionCommand(sublime_plugin.WindowCommand):
+class NotrGotoSectionCommand(sublime_plugin.WindowCommand): #XXX rename GotoTarget()?
     ''' List all the tag(s) and/or sections(s) for user selection then open corresponding file. '''
 
     # Prepared lists for quick panel.
@@ -230,7 +267,7 @@ class NotrGotoRefCommand(sublime_plugin.TextCommand):
             if valid:
                 valid = False
                 for section in _sections:
-                    if os.path.samefile(section.froot, froot) and section.name == ref_name:
+                    if section.froot == froot and section.name == ref_name:
                         # Open the file and position it.
                         sc.wait_load_file(self.view.window(), section.srcfile, section.line)
                         valid = True
@@ -258,7 +295,7 @@ class NotrGotoRefCommand(sublime_plugin.TextCommand):
                     break
 
     def is_visible(self):
-        return _get_selection_for_scope(self.view, 'markup.link.refname.notr') is not None
+        return _get_selection_for_scope(self.view, 'markup.link.refname.notr') is not None # TODO only if scope is _ref else show _valid_ref_targets like notr_insert_ref. Or combine with notr_goto_section.
 
 
 #-----------------------------------------------------------------------------------

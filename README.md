@@ -59,6 +59,7 @@ To run the demo:
 | notr_insert_ref      | Context  | Insert a ref from selector                 |                                       |
 | notr_goto_section    | Context  | Go to section from selector                | filter_by_tag: true select tag first  |
 | notr_goto_ref        | Context  | Go to a reference from selector            |                                       |
+| notr_insert_hrule    | Context  | Make a line                                | fill_char: "="                        |
 | table_fit            | Context  | Fit table contents to columns              |                                       |
 | table_insert_col     | Context  | Insert column at caret                     |                                       |
 | table_delete_col     | Context  | Remove column at caret                     |                                       |

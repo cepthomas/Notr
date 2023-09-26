@@ -6,8 +6,7 @@
         [
             { "caption": "Insert Link", "command": "notr_insert_link" },
             { "caption": "Insert Ref", "command": "notr_insert_ref" },
-            // { "caption": "Insert HRule Thin", "command": "notr_insert_hrule", "args" : {"fill_char" : "="} },
-            // { "caption": "Insert HRule Thick", "command": "notr_insert_hrule", "args" : {"fill_char" : "I"} },
+            { "caption": "Insert HRule", "command": "notr_insert_hrule", "args" : {"fill_char" : "="} },
             // { "caption": "Dump", "command": "notr_dump" },
             // { "caption": "Reload", "command": "notr_reload" },
             { "caption": "-" },
@@ -17,7 +16,7 @@
             { "caption": "Sort Asc", "command": "table_sort_col", "args" : {"asc" : true} },
             { "caption": "Sort Desc", "command": "table_sort_col", "args" : {"asc" : false} },
             { "caption": "-" },
-            { "caption": "Goto Tag Section", "command": "notr_goto_section", "args" : {"filter_by_tag" : true} },
+            { "caption": "Goto Section with Tag", "command": "notr_goto_section", "args" : {"filter_by_tag" : true} },
         ]
     },
     { "caption": "Goto Section", "command": "notr_goto_section", "args" : {"filter_by_tag" : false} },

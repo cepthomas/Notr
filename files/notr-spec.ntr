@@ -84,10 +84,9 @@ Define things like `$NOTR_PATH` before being referenced, usually in your `notr_i
 :AN_ALIAS="abcde"
 
 Use `*` to identify references defined beforehand - above or in `notr_index` file. Right click to navigate to the ref.
-
 Ref to other file. [* image felix le chat] or [* other type of file] or [* another felix].
 Ref to URI. [* nyt]
-Ref section in this ntr file: [*#section no tags] end.
+Ref section in this ntr file: [* #section no tags] end.
 Ref section in another ntr file: [*page2#P2 section 2]. `page2` is the pathless root of the ntr filename. Must be unique in all ntr files!
 
 ## Tables [tag2]
