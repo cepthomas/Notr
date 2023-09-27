@@ -71,7 +71,7 @@ item states (in settings)
 ## Links and References [tag3 tag4 tag9]
 
 
-Define a link and its ref name like [image felix le chat]($NOTR_PATH/files/felix1.jpg) or
+Define a link and its ref name like [image felix le chat]($NOTR_PATH/test_files/felix1.jpg) or
    [other type of file]($NOTR_PATH/notr.py)
 or... [nyt](https://nytimes.com)
 Note: use forward slash separator if compatibility with linux is important.

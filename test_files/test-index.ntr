@@ -16,9 +16,9 @@ This means don't add this file to the index.
 # Common Links [tag2 tag9]
 
 [yer news](https://nytimes.com)
-[another felix]($NOTR_PATH/files/felix2.jpg)
+[another felix]($NOTR_PATH/test_files/felix2.jpg)
 
 
 # Other Files of Interest [tag4]
-[another ntr]($NOTR_PATH/files/page2.ntr)
+[another ntr]($NOTR_PATH/test_files/page2.ntr)
 

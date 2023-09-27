@@ -20,12 +20,12 @@ Built for ST4 on Windows and Linux.
 
 ## Demo
 
-[The spec](files/notr-spec.ntr) provides an example of the features. If the plugin is installed it will look
+[The spec](test_files/notr-spec.ntr) provides an example of the features. If the plugin is installed it will look
 something like this (note uses my color scheme):
 
-![ex1](files/ex1.jpg)
+![ex1](test_files/ex1.jpg)
 
-![ex2](files/ex2.jpg)
+![ex2](test_files/ex2.jpg)
 
 To run the demo:
 - Install the plugin.
@@ -48,7 +48,7 @@ To run the demo:
 
 - Color schemes require new and edited scopes to support this tool. They are identified in `file/NotrOverlay.sublime-color-scheme`.
   Implement your unique version of this per [Color customization](https://www.sublimetext.com/docs/color_schemes.html#customization).
-- Now open `files/notr-spec.ntr` and be amazed.
+- Now open `test_files/notr-spec.ntr` and be amazed.
 
 
 ## Commands
@@ -89,3 +89,12 @@ To run the demo:
 - view.add_regions() apparently only supports colors, annotations, and icon. It does not support font style and region flags.
   Also they are not available via extract_scope().
 - After editing color-scheme, close and reopen affected views.
+
+## Future Considerations
+- Block comment/uncomment with char/string from settings.
+- Nav and folding by section/hierarchy. Might be tricky: https://github.com/sublimehq/sublime_text/issues/5423.
+- Unicode menu/picker to insert/view at caret.
+- Toggle syntax coloring (distraction free). Or just set syntax to Plain Text.
+- Show image file as phantom or hover, maybe thumbnail. Annotations, popups (mdpopups)?
+- Indent/dedent lists with bullets.
+- Make a syntax_test_notr.ntr.
