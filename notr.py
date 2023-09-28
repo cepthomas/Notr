@@ -17,68 +17,34 @@ IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 
 # TODO highlight links in lists like [nyt](https://nytimes.com). See \sublime\md\Markdown.sublime-syntax  link-inline
 # TODO Make into package when it's cooked. Maybe others. https://packagecontrol.io/docs/submitting_a_package.
-# TODO Parse md files too?
 
 
 #--------------------------- Types -------------------------------------------------
 
-# One section:
-# srcfile=ntr file path
-# line=ntr file line
-# froot=ntr file name root
-# level=1-N (not used now)
-# name=section title
-# tags[]
-# Section = collections.namedtuple('Section', 'srcfile, line, froot, level, name, tags')
-
-# One link:
-# srcfile=ntr file path
-# line=ntr file line
-# name=desc text
-# target=clickable uri or file
-# Link = collections.namedtuple('Link', 'srcfile, line, name, target')
-
-# One reference:
-# name=section or link name
-# srcfile=ntr file path
-# line=ntr file line
 Ref = collections.namedtuple('Ref', 'name, srcfile, line')
+# One reference:
+# name: section or link name
+# srcfile: ntr file path
+# line: ntr file line
 
-########### new ##############
-# Target = collections.namedtuple('Target', 'type, name, froot, level, tags, srcfile, line')
 Target = collections.namedtuple('Target', 'type, name, resource, level, tags, srcfile, line')
-# type: section, uri, image?, other/file
-# srcfile=ntr file path
-# line=ntr file line
-# froot=ntr file name root
+# type: section, uri, image, file
+# name: section title
+# resource: what type points to
 # level: section only
-# name=section title
-# tags[]  tags for links?
-
-
-# name = froot#section_title | #section_title | user_assigned
-# resource = fn | uri | ???
-
-
-
-# All Targets found in all ntr files.
-_targets = []
+# tags[] TODO tags for links
+# srcfile: ntr file path
+# line: ntr file line
 
 
 #---------------------------- Globals -----------------------------------------------
 # Some could be multidict?
 
-# All Sections found in all ntr files - in order to support hierarchy.
-# _sections = []
-
-# All Links found in all ntr files.
-# _links = []
+# All Targets found in all ntr files.
+_targets = []
 
 # All Refs found in all ntr files.
 _refs = []
-
-# All valid ref targets in _sections and _links.
-# _valid_ref_targets = {}
 
 # All tags found in all ntr files. Key is tag text, value is count.
 _tags = {}
@@ -125,7 +91,6 @@ class NotrEvent(sublime_plugin.EventListener):
 
     def _init_fixed_hl(self, view):
         ''' Add any highlights. '''
-
         if view.is_scratch() is False and view.file_name() is not None and view.syntax().name == 'Notr':
             settings = sublime.load_settings(NOTR_SETTINGS_FILE)
             fixed_hl = settings.get('fixed_hl')
@@ -233,7 +198,7 @@ class NotrGotoTargetCommand(sublime_plugin.WindowCommand):
         for target in current_file_targets:
             panel_items.append(sublime.QuickPanelItem(trigger=f'#{target.name}', kind=sublime.KIND_AMBIGUOUS))
         for target in other_targets:
-            panel_items.append(sublime.QuickPanelItem(trigger=f'{target.froot}#{target.name}', kind=sublime.KIND_AMBIGUOUS))
+            panel_items.append(sublime.QuickPanelItem(trigger=f'{target.name}', kind=sublime.KIND_AMBIGUOUS))
         # Combine the two.
         self._sorted_targets = current_file_targets + other_targets
 
@@ -255,8 +220,8 @@ class NotrFollowRefCommand(sublime_plugin.TextCommand):
 
         tref = _get_selection_for_scope(self.view, 'markup.link.refname.notr')
 
-        if tref is not None:  # explicit ref.
-            # Get the corresponding target spec. TODO should be a dict?
+        if tref is not None:  # explicit ref to selected element. do immediate.
+            # Get the corresponding target spec. TODO could be a dict?
             for target in _targets:
                 valid = False
                 if target.name == tref:
@@ -270,10 +235,10 @@ class NotrFollowRefCommand(sublime_plugin.TextCommand):
                             tname = target.name
                         elif target.type == "uri":
                             tname = target.name
-                        elif target.type == "other":
+                        elif target.type == "file":
                             tname = target.name
 
-                        if tname is not None:
+                        if tname is not None:  # TODO dupe with notr_goto_target
                             if platform.system() == 'Darwin':
                                 ret = subprocess.call(('open', target.resource))
                             elif platform.system() == 'Windows':
@@ -289,19 +254,15 @@ class NotrFollowRefCommand(sublime_plugin.TextCommand):
                     break
 
             if not valid:
-                sc.slog(sc.CAT_ERR, f'Invalid reference: {self.view.file_name()} :{ref_name}')
+                sc.slog(sc.CAT_ERR, f'Invalid reference: {self.view.file_name()} :{tref}')
 
         else:
-
-            # TODO only if scope is _ref else show _valid_ref_targets like notr_insert_ref. Or combine with notr_goto_target.
-
+            # Show a quickpanel of all target names. TODO finish - lot of overlap with notr_goto_target.
             self.refs = _get_valid_refs(True)
             panel_items = []
             for sec_name in self.refs:
                 panel_items.append(sublime.QuickPanelItem(trigger=sec_name, kind=sublime.KIND_AMBIGUOUS))
             self.view.window().show_quick_panel(panel_items, on_select=self.on_sel_ref)
-
-
 
     def on_sel_ref(self, *args, **kwargs):
         sel = args[0]
@@ -309,7 +270,7 @@ class NotrFollowRefCommand(sublime_plugin.TextCommand):
             tref = self.refs[sel]            
             for target in _targets:
                 valid = False
-                if target.name == tref: #TODO dupe code - refactor, maybe common
+                if target.name == tref:  # TODO dupe code - refactor, maybe common
                     try:
                         tname = None
                         if target.type == "section":
@@ -320,7 +281,7 @@ class NotrFollowRefCommand(sublime_plugin.TextCommand):
                             tname = target.name
                         elif target.type == "uri":
                             tname = target.name
-                        elif target.type == "other":
+                        elif target.type == "file":
                             tname = target.name
 
                         if tname is not None:
@@ -338,53 +299,6 @@ class NotrFollowRefCommand(sublime_plugin.TextCommand):
                             sc.slog(sc.CAT_ERR, e)
                     break
 
-
-        # if ref_text is not None and '#' in ref_text:  # TODO Section ref like  [*#Links and Refs]  [* file_root#section_name]
-        #     froot = None
-        #     ref_name = None
-        #     ref_parts = ref_text.split('#')
-
-        #     if len(ref_parts) == 2:
-        #         froot = ref_parts[0].strip()
-        #         ref_name = ref_parts[1].strip()
-
-        #         if len(froot) == 0:
-        #             # It's this file.
-        #             froot = _get_froot(self.view.file_name())
-        #     else:
-        #         valid = False
-
-        #     # Get the Section spec.
-        #     if valid:
-        #         valid = False
-        #         for target in _targets:
-        #             if target.froot == froot and target.name == ref_name:
-        #                 # Open the file and position it.
-        #                 sc.wait_load_file(self.view.window(), target.srcfile, target.line)
-        #                 valid = True
-        #                 break
-
-        #     if not valid:
-        #         sc.slog(sc.CAT_ERR, f'Invalid reference: {self.view.file_name()} :{ref_name}')
-
-        # else:  # Link ref
-        #     # Get the Link spec.
-        #     for target in _targets:  # links: TODO
-        #         if target.name == ref_text:
-        #             try:
-        #                 if platform.system() == 'Darwin':
-        #                     ret = subprocess.call(('open', target.target))
-        #                 elif platform.system() == 'Windows':
-        #                     os.startfile(target.target)
-        #                 else:  # linux variants
-        #                     ret = subprocess.call(('xdg-open', target.target))
-        #             except Exception as e:
-        #                 if e is None:
-        #                     sc.slog(sc.CAT_ERR, "???")
-        #                 else:
-        #                     sc.slog(sc.CAT_ERR, e)
-        #             break
-
     # def is_visible(self):
     #     return _get_selection_for_scope(self.view, 'markup.link.refname.notr') is not None
 
@@ -395,7 +309,7 @@ class NotrInsertRefCommand(sublime_plugin.TextCommand):
     refs = []
 
     def run(self, edit):
-        self.refs = _get_valid_refs(True)
+        self.refs = _get_valid_refs(True)  # TODO dupe code with above.
         panel_items = []
         for sec_name in self.refs:
             panel_items.append(sublime.QuickPanelItem(trigger=sec_name, kind=sublime.KIND_AMBIGUOUS))
@@ -490,14 +404,11 @@ class NotrDumpCommand(sublime_plugin.WindowCommand):
         text = []
 
         def do_one(name, coll):
-            text.append(f'\n===== {name} =====')
+            text.append(f'\n========== {name} ==========')
             text.extend([str(x) for x in coll])
 
-        # do_one('sections', _sections)
-        # do_one('links', _links)
         do_one('targets', _targets)
         do_one('refs', _refs)
-        # do_one('valid_ref_targets', _valid_ref_targets)
         do_one('tags', _tags)  # text.append(f'{x}:{_tags[x]}')
         do_one('ntr_files', _ntr_files)
         if len(_parse_errors) > 0:
@@ -523,13 +434,9 @@ def _process_notr_files(window):
     _targets.clear()
     _refs.clear()
     _tags.clear()
-
-    # _sections.clear()
-    # _links.clear()
-    # _valid_ref_targets.clear()
     _parse_errors.clear()
 
-    ### Open and process all notr files.
+    # Open and process all notr files.
     settings = sublime.load_settings(NOTR_SETTINGS_FILE)
 
     # Index first.
@@ -556,17 +463,17 @@ def _process_notr_files(window):
     for nfile in _ntr_files:
         _process_notr_file(nfile)
 
-    # Check all user refs are valid -> (froot)#target or link.name, no dupes.
+    # Check all user refs are valid ->            (froot)#target or link.name, no dupes.
     valid_refs = _get_valid_refs(False)
     for ref in _refs:
-        if ref.target not in valid_refs:
-            _user_error(ref.srcfile, ref.line, f'Invalid ref target:{ref.target}')
+        if ref.name not in valid_refs:
+            _user_error(ref.srcfile, ref.line, f'Invalid ref name:{ref.name}')
 
     if len(_parse_errors) > 0:
         _parse_errors.insert(0, "Errors in your configuration:")
         sc.create_new_view(window, '\n'.join(_parse_errors))
 
-    # ### Check sanity of collected material.
+    # Check sanity of collected material. TODO needed now?
 
     # # Add sections to list.
     # for section in _sections:
@@ -598,37 +505,9 @@ def _process_notr_files(window):
 
 
 #-----------------------------------------------------------------------------------
-def _get_valid_refs(sort):
-    ''' Get all valid target for generating refs. '''
-
-    # All valid ref targets.
-    ref_targets = {}
-
-    for target in _targets:
-        tname = None
-
-        if target.type == "section":
-            tname = f'{target.froot}#{target.name}'
-        elif target.type == "image":
-            tname = target.name
-        elif target.type == "uri":
-            tname = target.name
-        elif target.type == "other":
-            tname = target.name
-        else:
-            pass # never happen
-
-        if tname not in ref_targets:
-            ref_targets[tname] = tname #f'{target.srcfile}({target.line})'
-        else:
-            _user_error(target.srcfile, target.line, f'Duplicate target name:{target.name} see:{ref_targets[tname]}')
-
-    return sorted(ref_targets) if sort else ref_targets
-
-
-#-----------------------------------------------------------------------------------
-def _process_notr_file(fn):
-    ''' Regex and process sections and links. This collects the text and checks syntax. Validity will be checked when all files processed. '''
+def _process_notr_file(ntr_fn):
+    ''' Regex and process sections and links. This collects the text and checks syntax.
+    Validity will be checked when all files processed. '''
 
     sections = []
     links = []
@@ -636,7 +515,7 @@ def _process_notr_file(fn):
     no_index = False
 
     try:
-        with open(fn, 'r', encoding='utf-8') as file:
+        with open(ntr_fn, 'r', encoding='utf-8') as file:
             lines = file.read().splitlines()
             line_num = 1
 
@@ -650,7 +529,10 @@ def _process_notr_file(fn):
             # re_sections = re.compile(r'^(#+) +([^\[]+) *(?:\[(.*)\])?')
 
             for line in lines:
+
                 # First: directives, aliases.
+                # :NOTES_PATH=$OneDrive/OneDriveDocuments/notes
+                # :NO_INDEX
                 matches = re_directives.findall(line)
                 for m in matches:
                     handled = False
@@ -664,52 +546,60 @@ def _process_notr_file(fn):
                         alias = parts[0].strip()
                         value = parts[1].strip()
                         os.environ[alias] = value
-                        handled = True
-                        # sc.slog(sc.CAT_DBG, f'>>> alias {alias}={value}')
+                        handled = True  # so far
 
                     if not handled:
-                        _user_error(fn, line_num, 'Invalid directive')
+                        _user_error(ntr_fn, line_num, 'Invalid directive')
 
                 # Links - also checks validity.
+                # [yer news](https://nytimes.com)
+                # [some felix]($NOTES_PATH/felix9.jpg)
                 matches = re_links.findall(line)
                 for m in matches:
                     if len(m) == 2:
                         name = m[0].strip()
                         res = sc.expand_vars(m[1].strip())
+
                         if res is None:
                             # Bad env var.
-                            _user_error(fn, line_num, f'Bad env var: {m[1]}')
+                            _user_error(ntr_fn, line_num, f'Bad env var: {m[1]}')
                         else:
-                            _, ext = os.path.splitext(fn)
-
                             ttype = None
+                            _, ext = os.path.splitext(res)
+
                             if ext in IMAGE_TYPES:
                                 ttype = "image"
-                            elif fn.startswith('http'):
+                            elif res.startswith('http'):
                                 ttype = "uri"
-                            elif os.path.exists(fn):
-                                ttype = "other"
+                            elif os.path.exists(res):
+                                ttype = "file"
                             else:
-                                _user_error(fn, line_num, f'Invalid target resource: {fn}')
+                                _user_error(ntr_fn, line_num, f'Invalid target resource: {res}')
 
                             if ttype is not None:
-                                # froot = _get_froot(fn)
                                 tags = []  # TODO? Support tags in links.
-                                links.append(Target(ttype, name, res, 0, tags, fn, line_num))
+                                links.append(Target(ttype, name, res, 0, tags, ntr_fn, line_num))
                     else:
-                        _user_error(fn, line_num, 'Invalid syntax')
+                        _user_error(ntr_fn, line_num, 'Invalid syntax')
 
-                # Refs
+                # Refs - will be validated at end.
+                # [*some felix]
+                # [*yer news]
+                # [*ST executable dir]
+                # [* #section no tags].
+                # [*page2#P2 section 2]
                 matches = re_refs.findall(line)
                 for m in matches:
                     name = m.strip()
                     # If it's local section insert the froot.
                     if name.startswith('#'):
-                        froot = _get_froot(fn)
+                        froot = _get_froot(ntr_fn)
                         name = froot + name
-                    refs.append(Ref(name, fn, line_num))
+                    refs.append(Ref(name, ntr_fn, line_num))
 
                 # Sections
+                # # Some name
+                # # Another name
                 matches = re_sections.findall(line)
                 for m in matches:
                     valid = True
@@ -717,7 +607,7 @@ def _process_notr_file(fn):
                         content = m[0].strip().split(None, 1)
                         if len(content) == 2:
                             hashes = content[0].strip()
-                            name = f'{_get_froot(fn)}#{content[1].strip()}'
+                            name = f'{_get_froot(ntr_fn)}#{content[1].strip()}'
                         else:
                             valid = False
 
@@ -727,25 +617,51 @@ def _process_notr_file(fn):
                         valid = False
 
                     if valid:
-                        # sections.append(Section(fn, line_num, froot, len(hashes), name, tags))
-                        sections.append(Target("section", name, "", len(hashes), tags, fn, line_num))
+                        sections.append(Target("section", name, "", len(hashes), tags, ntr_fn, line_num))
                         for tag in tags:
                             _tags[tag] = _tags[tag] + 1 if tag in _tags else 1
                     else:
-                        _user_error(fn, line_num, 'Invalid syntax')
+                        _user_error(ntr_fn, line_num, 'Invalid syntax')
 
                 line_num += 1
 
     except Exception as e:
-        sc.slog(sc.CAT_ERR, f'Error processing {fn}: {e}')
+        sc.slog(sc.CAT_ERR, f'Error processing {ntr_fn}: {e}')
         raise
 
     if not no_index:
-        # _sections.extend(sections)
-        # _links.extend(links)
-        _targets.extend(sections)
+        _targets.extend(sections)  # TODO manage order of these two please
         _targets.extend(links)
         _refs.extend(refs)
+
+
+#-----------------------------------------------------------------------------------
+def _get_valid_refs(sort):
+    ''' Get all valid target for generating refs. '''
+
+    # All valid ref targets.
+    ref_targets = {}
+
+    for target in _targets:
+        tname = None
+
+        if target.type == "section":
+            tname = target.name
+        elif target.type == "image":
+            tname = target.name
+        elif target.type == "uri":
+            tname = target.name
+        elif target.type == "file":
+            tname = target.name
+        else:
+            pass  # never happen
+
+        if tname not in ref_targets:
+            ref_targets[tname] = tname  # f'{target.srcfile}({target.line})'
+        else:
+            _user_error(target.srcfile, target.line, f'Duplicate target name:{target.name} see:{ref_targets[tname]}')
+
+    return sorted(ref_targets) if sort else ref_targets
 
 
 #-----------------------------------------------------------------------------------
