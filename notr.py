@@ -28,17 +28,16 @@ Ref = collections.namedtuple('Ref', 'name, srcfile, line')
 # line: ntr file line
 
 Target = collections.namedtuple('Target', 'type, name, resource, level, tags, srcfile, line')
-# type: section, uri, image, file
+# type: section, uri, image, path
 # name: section title
 # resource: what type points to
-# level: section only
-# tags[] TODO tags for links
+# level: for section only
+# tags[] tags for links TODO?
 # srcfile: ntr file path
 # line: ntr file line
 
 
 #---------------------------- Globals -----------------------------------------------
-# Some could be multidict?
 
 # All Targets found in all ntr files.
 _targets = []
@@ -120,14 +119,14 @@ class NotrEvent(sublime_plugin.EventListener):
 
 
 #-----------------------------------------------------------------------------------
-class NotrGotoTargetCommand(sublime_plugin.WindowCommand):
+class NotrGotoTargetCommand(sublime_plugin.TextCommand):
     ''' List all the tag(s) and/or target(s) for user selection then open corresponding file. '''
 
     # Prepared lists for quick panel.
     _sorted_tags = []
     _sorted_targets = []
 
-    def run(self, filter_by_tag):
+    def run(self, edit, filter_by_tag):
         self._sorted_tags.clear()
         self._sorted_targets.clear()
 
@@ -142,7 +141,7 @@ class NotrGotoTargetCommand(sublime_plugin.WindowCommand):
                 self._sorted_tags = [x[0] for x in sorted(_tags.items(), key=lambda x:x[1], reverse=True)]
             for tag in self._sorted_tags:
                 panel_items.append(sublime.QuickPanelItem(trigger=tag, annotation=f"qty:{_tags[tag]}", kind=sublime.KIND_AMBIGUOUS))
-            self.window.show_quick_panel(panel_items, on_select=self.on_sel_tag)
+            self.view.window().show_quick_panel(panel_items, on_select=self.on_sel_tag)
         else:
             self.show_targets(_targets)
 
@@ -154,7 +153,7 @@ class NotrGotoTargetCommand(sublime_plugin.WindowCommand):
             sel_tag = self._sorted_tags[sel]
 
             # Hide current quick panel.
-            self.window.run_command("hide_overlay")
+            self.view.window().run_command("hide_overlay")
 
             # Filter per tag selection.
             filtered_targets = []
@@ -167,42 +166,44 @@ class NotrGotoTargetCommand(sublime_plugin.WindowCommand):
             else:
                 sublime.status_message('No targets with that tag')
 
+    def show_targets(self, targets):
+        ''' Present target options to user. '''
+
+        main_targets = []
+        other_targets = []
+        panel_items = []
+        current_file = self.view.file_name()
+
+        for target in targets:
+            if current_file is not None and os.path.samefile(target.srcfile, current_file):
+                main_targets.append(target)
+            else:
+                other_targets.append(target)
+
+        # Sort them all.
+        # main_targets = sorted(main_targets)
+        # other_targets = sorted(other_targets)
+        main_targets.extend(other_targets)
+
+        for target in main_targets:
+            panel_items.append(sublime.QuickPanelItem(trigger=f'{target.name}', kind=sublime.KIND_AMBIGUOUS))
+        # Combine the two.
+        self._sorted_targets = main_targets
+
+        self.view.window().show_quick_panel(panel_items, on_select=self.on_sel_target)
+
     def on_sel_target(self, *args, **kwargs):
         sel = args[0]
 
         if sel >= 0:
             # Locate the target record.
             target = self._sorted_targets[sel]
-            # Open the target in a new view.
-            sc.wait_load_file(self.window, target.srcfile, target.line)
-
-    def show_targets(self, targets):
-        ''' Present target options to user. '''
-
-        current_file_targets = []
-        other_targets = []
-        panel_items = []
-        current_file = self.window.active_view().file_name()
-
-        for target in targets:
-            if current_file is not None and os.path.samefile(target.srcfile, current_file):
-                current_file_targets.append(target)
+            if target.type == "section":
+                # Open the notr file and position it.
+                sc.wait_load_file(self.view.window(), target.srcfile, target.line)
+                valid = True
             else:
-                other_targets.append(target)
-
-        # Sort them all.
-        current_file_targets = sorted(current_file_targets)
-        other_targets = sorted(other_targets)
-
-        # Make readable names.
-        for target in current_file_targets:
-            panel_items.append(sublime.QuickPanelItem(trigger=f'#{target.name}', kind=sublime.KIND_AMBIGUOUS))
-        for target in other_targets:
-            panel_items.append(sublime.QuickPanelItem(trigger=f'{target.name}', kind=sublime.KIND_AMBIGUOUS))
-        # Combine the two.
-        self._sorted_targets = current_file_targets + other_targets
-
-        self.window.show_quick_panel(panel_items, on_select=self.on_sel_target)
+                valid = sc.open_file(target.resource)
 
     def is_visible(self):
         return True
@@ -221,44 +222,24 @@ class NotrFollowRefCommand(sublime_plugin.TextCommand):
         tref = _get_selection_for_scope(self.view, 'markup.link.refname.notr')
 
         if tref is not None:  # explicit ref to selected element. do immediate.
-            # Get the corresponding target spec. TODO could be a dict?
+            # Get the corresponding target spec. Could be a dict?
             for target in _targets:
                 valid = False
                 if target.name == tref:
-                    try:
-                        tname = None
-                        if target.type == "section":
-                            # Open the notr file and position it.
-                            sc.wait_load_file(self.view.window(), target.srcfile, target.line)
-                            valid = True
-                        elif target.type == "image":
-                            tname = target.name
-                        elif target.type == "uri":
-                            tname = target.name
-                        elif target.type == "file":
-                            tname = target.name
-
-                        if tname is not None:  # TODO dupe with notr_goto_target
-                            if platform.system() == 'Darwin':
-                                ret = subprocess.call(('open', target.resource))
-                            elif platform.system() == 'Windows':
-                                os.startfile(target.resource)
-                            else:  # linux variants
-                                ret = subprocess.call(('xdg-open', target.resource))
-                            valid = True
-                    except Exception as e:
-                        if e is None:
-                            sc.slog(sc.CAT_ERR, "???")
-                        else:
-                            sc.slog(sc.CAT_ERR, e)
+                    if target.type == "section":
+                        # Open the notr file and position it.
+                        sc.wait_load_file(self.view.window(), target.srcfile, target.line)
+                        valid = True
+                    else:
+                        valid = sc.open_file(target.resource)
                     break
 
             if not valid:
                 sc.slog(sc.CAT_ERR, f'Invalid reference: {self.view.file_name()} :{tref}')
 
         else:
-            # Show a quickpanel of all target names. TODO finish - lot of overlap with notr_goto_target.
-            self.refs = _get_valid_refs(True)
+            # Show a quickpanel of all target names.
+            self.refs = _get_valid_refs(True)  # sorted
             panel_items = []
             for sec_name in self.refs:
                 panel_items.append(sublime.QuickPanelItem(trigger=sec_name, kind=sublime.KIND_AMBIGUOUS))
@@ -270,33 +251,13 @@ class NotrFollowRefCommand(sublime_plugin.TextCommand):
             tref = self.refs[sel]            
             for target in _targets:
                 valid = False
-                if target.name == tref:  # TODO dupe code - refactor, maybe common
-                    try:
-                        tname = None
-                        if target.type == "section":
-                            # Open the notr file and position it.
-                            sc.wait_load_file(self.view.window(), target.srcfile, target.line)
-                            valid = True
-                        elif target.type == "image":
-                            tname = target.name
-                        elif target.type == "uri":
-                            tname = target.name
-                        elif target.type == "file":
-                            tname = target.name
-
-                        if tname is not None:
-                            if platform.system() == 'Darwin':
-                                ret = subprocess.call(('open', target.resource))
-                            elif platform.system() == 'Windows':
-                                os.startfile(target.resource)
-                            else:  # linux variants
-                                ret = subprocess.call(('xdg-open', target.resource))
-                            valid = True
-                    except Exception as e:
-                        if e is None:
-                            sc.slog(sc.CAT_ERR, "???")
-                        else:
-                            sc.slog(sc.CAT_ERR, e)
+                if target.name == tref:
+                    if target.type == "section":
+                        # Open the notr file and position it.
+                        sc.wait_load_file(self.view.window(), target.srcfile, target.line)
+                        valid = True
+                    else:
+                        valid = sc.open_file(target.resource)
                     break
 
     # def is_visible(self):
@@ -309,7 +270,7 @@ class NotrInsertRefCommand(sublime_plugin.TextCommand):
     refs = []
 
     def run(self, edit):
-        self.refs = _get_valid_refs(True)  # TODO dupe code with above.
+        self.refs = _get_valid_refs(True)  # sorted
         panel_items = []
         for sec_name in self.refs:
             panel_items.append(sublime.QuickPanelItem(trigger=sec_name, kind=sublime.KIND_AMBIGUOUS))
@@ -368,20 +329,16 @@ class NotrInsertLinkCommand(sublime_plugin.TextCommand):
 
 
 #-----------------------------------------------------------------------------------
-# class NotrPublishCommand(sublime_plugin.WindowCommand):
-#     ''' TODO Publish notes somewhere for access from internet/phone - raw or rendered. refs should be Links. Nothing confidential! Android OneDrive doesn't recognize .ntr files'''
+class NotrPublishCommand(sublime_plugin.WindowCommand):
+    ''' TODO Publish notes somewhere for access from internet/phone - raw or rendered. refs should be Links. Nothing confidential! Android OneDrive doesn't recognize .ntr files'''
 
-#     #### Render for android target.
-#     # self.window.active_view().run_command('sbot_render_to_html', {'font_face':'monospace', 'font_size':'1.2em' } )  
+    def run(self):
+        # Render notr files for android target.
+        # self.window.active_view().run_command('sbot_render_to_html', {'font_face':'monospace', 'font_size':'1.2em' } )  
+        pass
 
-#     def run(self):
-#         # Render notr files.
-#         # Render for android target.
-#         # self.window.active_view().run_command('sbot_render_to_html', {'font_face':'monospace', 'font_size':'1.2em' } )  
-#         pass
-
-#     def is_visible(self):
-#         return True
+    def is_visible(self):
+        return True
 
 
 #-----------------------------------------------------------------------------------
@@ -459,12 +416,20 @@ def _process_notr_files(window):
         else:
             _user_error(NOTR_SETTINGS_FILE, -1, f'Invalid path in settings {npath}')
 
-    # Process the files.
+    # Process the files. Targets are ordered by sections then links.
+    s = []
+    l = []
     for nfile in _ntr_files:
-        _process_notr_file(nfile)
+        fparts = _process_notr_file(nfile)
+        if fparts is not None:
+            s.extend(fparts[0])
+            l.extend(fparts[1])
+            _refs.extend(fparts[2])
+    _targets.extend(s)
+    _targets.extend(l)
 
-    # Check all user refs are valid ->            (froot)#target or link.name, no dupes.
-    valid_refs = _get_valid_refs(False)
+    # Check all user refs are valid.
+    valid_refs = _get_valid_refs(False)  # unsorted
     for ref in _refs:
         if ref.name not in valid_refs:
             _user_error(ref.srcfile, ref.line, f'Invalid ref name:{ref.name}')
@@ -473,41 +438,13 @@ def _process_notr_files(window):
         _parse_errors.insert(0, "Errors in your configuration:")
         sc.create_new_view(window, '\n'.join(_parse_errors))
 
-    # Check sanity of collected material. TODO needed now?
-
-    # # Add sections to list.
-    # for section in _sections:
-    #     target = f'{section.froot}#{section.name}'
-    #     if target not in _valid_ref_targets:
-    #         _valid_ref_targets[target] = f'{section.srcfile}({section.line})'
-    #     else:
-    #         _user_error(section.srcfile, section.line, f'Duplicate section name:{section.name} see:{_valid_ref_targets[target]}')
-
-    # # Add links to list. Check valid 'http(s)://' or file, no dupe names.
-    # for link in _links:
-    #     if link.name in _valid_ref_targets:
-    #         _user_error(link.srcfile, link.line, f'Duplicate link name:{link.name} see:{_valid_ref_targets[link.name]}')
-    #     else:
-    #         if link.target.startswith('http') or os.path.exists(link.target):
-    #             # Assume a valid uri or path
-    #             _valid_ref_targets[link.name] = f'{link.srcfile}({link.line})'
-    #         else:
-    #             _user_error(link.srcfile, link.line, f'Invalid link target:{link.target}')
-
-    # # Check all user refs are valid -> (froot)#section or link.name, no dupes.
-    # for ref in _refs:
-    #     if ref.target not in _valid_ref_targets:
-    #         _user_error(ref.srcfile, ref.line, f'Invalid ref target:{ref.target}')
-
-    # if len(_parse_errors) > 0:
-    #     _parse_errors.insert(0, "Errors in your configuration:")
-    #     sc.create_new_view(window, '\n'.join(_parse_errors))
-
 
 #-----------------------------------------------------------------------------------
 def _process_notr_file(ntr_fn):
     ''' Regex and process sections and links. This collects the text and checks syntax.
-    Validity will be checked when all files processed. '''
+    Validity will be checked when all files processed.
+    Returns (sections, links,refs)
+    '''
 
     sections = []
     links = []
@@ -572,12 +509,12 @@ def _process_notr_file(ntr_fn):
                             elif res.startswith('http'):
                                 ttype = "uri"
                             elif os.path.exists(res):
-                                ttype = "file"
+                                ttype = "path"
                             else:
                                 _user_error(ntr_fn, line_num, f'Invalid target resource: {res}')
 
                             if ttype is not None:
-                                tags = []  # TODO? Support tags in links.
+                                tags = []
                                 links.append(Target(ttype, name, res, 0, tags, ntr_fn, line_num))
                     else:
                         _user_error(ntr_fn, line_num, 'Invalid syntax')
@@ -629,10 +566,7 @@ def _process_notr_file(ntr_fn):
         sc.slog(sc.CAT_ERR, f'Error processing {ntr_fn}: {e}')
         raise
 
-    if not no_index:
-        _targets.extend(sections)  # TODO manage order of these two please
-        _targets.extend(links)
-        _refs.extend(refs)
+    return None if no_index else (sections, links,refs)
 
 
 #-----------------------------------------------------------------------------------
@@ -643,18 +577,18 @@ def _get_valid_refs(sort):
     ref_targets = {}
 
     for target in _targets:
-        tname = None
+        tname = target.name
 
-        if target.type == "section":
-            tname = target.name
-        elif target.type == "image":
-            tname = target.name
-        elif target.type == "uri":
-            tname = target.name
-        elif target.type == "file":
-            tname = target.name
-        else:
-            pass  # never happen
+        # if target.type == "section":
+        #     tname = target.name
+        # elif target.type == "image":
+        #     tname = target.name
+        # elif target.type == "uri":
+        #     tname = target.name
+        # elif target.type == "path":
+        #     tname = target.name
+        # else:
+        #     pass  # never happen
 
         if tname not in ref_targets:
             ref_targets[tname] = tname  # f'{target.srcfile}({target.line})'

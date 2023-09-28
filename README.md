@@ -57,8 +57,8 @@ To run the demo:
 | :--------            | :-----   | :-------                                   | :--------                             |
 | notr_insert_link     | Context  | Insert a link from clipboard               |                                       |
 | notr_insert_ref      | Context  | Insert a ref from selector                 |                                       |
-| notr_goto_section    | Context  | Go to section from selector                | filter_by_tag: true select tag first  |
-| notr_goto_ref        | Context  | Go to a reference from selector            |                                       |
+| notr_goto_target     | Context  | Go to section or file/uri from selector    | filter_by_tag: true select tag first  |
+| notr_follow_ref      | Context  | Go to a reference from selector            |                                       |
 | notr_insert_hrule    | Context  | Make a line                                | fill_char: "="                        |
 | table_fit            | Context  | Fit table contents to columns              |                                       |
 | table_insert_col     | Context  | Insert column at caret                     |                                       |
@@ -90,7 +90,7 @@ To run the demo:
   Also they are not available via extract_scope().
 - After editing color-scheme, close and reopen affected views.
 
-## Future Considerations
+# Future Features Consideration
 - Block comment/uncomment with char/string from settings.
 - Nav and folding by section/hierarchy. Might be tricky: https://github.com/sublimehq/sublime_text/issues/5423.
 - Unicode menu/picker to insert/view at caret.

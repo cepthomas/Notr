@@ -16,12 +16,9 @@
             { "caption": "Sort Asc", "command": "table_sort_col", "args" : {"asc" : true} },
             { "caption": "Sort Desc", "command": "table_sort_col", "args" : {"asc" : false} },
             { "caption": "-" },
-            // { "caption": "Goto Section with Tag", "command": "notr_goto_section", "args" : {"filter_by_tag" : true} },
             { "caption": "Goto Target by Tag", "command": "notr_goto_target", "args" : {"filter_by_tag" : true} },
         ]
     },
     { "caption": "Goto Target", "command": "notr_goto_target", "args" : {"filter_by_tag" : false} },
     { "caption": "Follow Ref", "command": "notr_follow_ref" },
-    // { "caption": "Goto Section", "command": "notr_goto_section", "args" : {"filter_by_tag" : false} },
-    // { "caption": "Goto Ref", "command": "notr_goto_ref" },
 ]
