@@ -27,7 +27,7 @@
         { "scope": "markup.list.content.notr", "background": "lightyellow" },
         { "scope": "markup.link.name.notr", "background": "lemonchiffon", "font_style": "italic" },
         { "scope": "markup.link.refname.notr", "background": "lavender", "font_style": "bold" },
-        { "scope": "markup.link.alias.notr", "background": "lightsalmon" },
+        { "scope": "markup.directive.notr", "background": "lightsalmon" },
 
         // Fixed highlighting.
         { "scope": "markup.fixed_hl1", "background": "gainsboro", "foreground": "red" },

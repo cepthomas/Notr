@@ -21,38 +21,32 @@ contexts:
     - include: link
     - include: list
     - include: raw-block
+    - include: directive
 
 
 #################### simple text formatting ###########################################
 
   simple-text:
     - match: '(?:^|\s)(\*[^\*]+\*)(?:[\s,.:;-])'
-      captures:
-        1: markup.bold
+      scope: markup.bold
 
     - match: '(?:^|\s)(/[^/]+/)(?:[\s,.:;-])'
-      captures:
-        1: markup.italic
+      scope: markup.italic
 
     - match: '(?:^|\s)(_[^_]+_)(?:[\s,.:;-])'
-      captures:
-        1: markup.underline
+      scope: markup.underline
 
     - match: '(?:^|\s)(~[^~]+~)(?:[\s,.:;-])'
-      captures:
-        1: markup.strikethrough
+      scope: markup.strikethrough
 
     - match: '(`[^`]+`)'
-      captures:
-        0: markup.raw.inline.notr
+      scope: markup.raw.inline.notr
 
     - match: '^( *> +)(.*)'
-      captures:
-        0: markup.quote.notr
+      scope: markup.quote.notr
 
     - match: '^(?:[-=\+IXx]{5,}.*)$'
-      captures:
-        0: markup.hrule.notr
+      scope: markup.hrule.notr
 
 
 #################### headings ###########################################
@@ -104,38 +98,36 @@ contexts:
   #################### list ###########################################
 
   list:
-    # - include: link
-    - match: '^([ ]*)([-X\?!\*])[ ]+(.*)'
+    - match: '^([ ]*)([-X\?!\*])[ ]+'
       captures:
         1: markup.list.indent.notr
         2: markup.list.marker.notr
-        3: markup.list.content.notr
+      push: list-content
 
+  list-content:
+    - include: link
+      # scope: markup.list.content.notr
+    - match: '\n'
+      pop: 1
 
   #################### link ###########################################
 
   link:
-    # link def  [ggg](https://www.reddit.com)
-    # - match: '\[([^:]*): *([^\]]*)\]'
-    # - match: '\[([0-9a-zA-Z]*)\]\(([0-9a-zA-Z\/\\:._-]*)\)'
-    # - match: '\[([0-9a-zA-Z_-]*)\]\((.*)\)'
+    # link def  [ggg](https://www.reddit.com) Also supports file and general targets.
     - match: '\[(.*)\]\((.*)\)'
       captures:
         1: markup.link.name.notr
         2: markup.underline.link.notr
 
-    # link ref
+    # ref to a link
     - match: '\[\* *([^\]]*)\]'
       captures:
         1: markup.link.refname.notr
 
+  #################### directive #######################################
+
+  directive:
     # directive or alias
     - match: '^\:(.*)\n'
       captures:
-        1: markup.link.alias.notr
-
-
-
-# prototype:
-#   - include: link
-
+        1: markup.directive.notr

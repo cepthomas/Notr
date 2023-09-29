@@ -15,9 +15,9 @@ NOTR_SETTINGS_FILE = "Notr.sublime-settings"
 # Known file types.
 IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 
-# TODO highlight targets in lists like [nyt](https://nytimes.com). See \sublime\md\Markdown.sublime-syntax  link-inline
 # TODO Make into package when it's cooked. Maybe others. https://packagecontrol.io/docs/submitting_a_package.
-
+# TODO Publish notes somewhere for access from internet/phone - raw or rendered. refs should be html links. Nothing confidential! Android OneDrive doesn't recognize .ntr files.
+# TODO tags for targets?
 
 #--------------------------- Types -------------------------------------------------
 
@@ -26,7 +26,7 @@ IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 # name: section title
 # resource: what type points to
 # level: for section only
-# tags[] tags for targets TODO?
+# tags[] tags for targets
 # srcfile: ntr file path
 # line: ntr file line
 Target = collections.namedtuple('Target', 'type, name, resource, level, tags, srcfile, line')
@@ -330,7 +330,7 @@ class NotrInsertTargetFromClipCommand(sublime_plugin.TextCommand):
 
 #-----------------------------------------------------------------------------------
 class NotrPublishCommand(sublime_plugin.WindowCommand):
-    ''' TODO Publish notes somewhere for access from internet/phone - raw or rendered. refs should be html links. Nothing confidential! Android OneDrive doesn't recognize .ntr files'''
+    ''' Publish notes somewhere... '''
 
     def run(self):
         # Render notr files for android target.
