@@ -52,20 +52,20 @@ To run the demo:
 
 ## Commands
 
-| Command              | Type     | Description                                       | Args                                  |
-| :--------            | :-----   | :-------                                          | :--------                             |
-| notr_insert_target   | Context  | Insert a target from clipboard                    |                                       |
-| notr_insert_ref      | Context  | Insert a ref from selector                        |                                       |
-| notr_goto_target     | Context  | Go to a target from selector                      | filter_by_tag: true select tag first  |
-| notr_follow_ref      | Context  | Go to a reference from selector                   |                                       |
-| notr_insert_hrule    | Context  | Make a line                                       | fill_char: "="                        |
-| table_fit            | Context  | Fit table contents to columns                     |                                       |
-| table_insert_col     | Context  | Insert column at caret                            |                                       |
-| table_delete_col     | Context  | Remove column at caret                            |                                       |
-| table_sort_col       | Context  | Sort column at caret - direction toggles          | asc: true/false                       |
-| notr_dump            | Context  | Diagnostic to show the internal info              |                                       |
-| notr_reload          | Context  | Diagnostid to force reload after editing colors   |                                       |
-
+| Command                        | Type     | Description                                       | Args                                  |
+| :--------                      | :-----   | :-------                                          | :--------                             |
+| notr_insert_target_from_clip   | Context  | Insert a target from clipboard                    |                                       |
+| notr_insert_ref                | Context  | Insert a ref from selector                        |                                       |
+| notr_goto_target               | Context  | Go to a target from selector                      | filter_by_tag: true select tag first  |
+| notr_follow_ref                | Context  | Go to a reference from selector                   |                                       |
+| notr_insert_hrule              | Context  | Make a line                                       | fill_char: "="                        |
+| table_fit                      | Context  | Fit table contents to columns                     |                                       |
+| table_insert_col               | Context  | Insert column at caret                            |                                       |
+| table_delete_col               | Context  | Remove column at caret                            |                                       |
+| table_sort_col                 | Context  | Sort column at caret - direction toggles          | asc: true/false                       |
+| notr_dump                      | Context  | Diagnostic to show the internal info              |                                       |
+| notr_reload                    | Context  | Diagnostid to force reload after editing colors   |                                       |
+    
 
 ## Settings
 

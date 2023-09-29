@@ -4,7 +4,7 @@
         "caption": "Notr",
         "children":
         [
-            { "caption": "Insert Target", "command": "notr_insert_target" },
+            { "caption": "Insert Target From Clipboard", "command": "notr_insert_target_from_clip" },
             { "caption": "Insert Ref", "command": "notr_insert_ref" },
             { "caption": "Insert HRule", "command": "notr_insert_hrule", "args" : {"fill_char" : "="} },
             // { "caption": "Dump", "command": "notr_dump" },

@@ -15,27 +15,27 @@ NOTR_SETTINGS_FILE = "Notr.sublime-settings"
 # Known file types.
 IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 
-# TODO highlight links in lists like [nyt](https://nytimes.com). See \sublime\md\Markdown.sublime-syntax  link-inline
+# TODO highlight targets in lists like [nyt](https://nytimes.com). See \sublime\md\Markdown.sublime-syntax  link-inline
 # TODO Make into package when it's cooked. Maybe others. https://packagecontrol.io/docs/submitting_a_package.
 
 
 #--------------------------- Types -------------------------------------------------
 
-# One reference:
-# name: section or link name
-# srcfile: ntr file path
-# line: ntr file line
-Ref = collections.namedtuple('Ref', 'name, srcfile, line')
-
+# One target of section or file/uri.
 # type: section, uri, image, path
 # name: section title
 # resource: what type points to
 # level: for section only
-# tags[] tags for links TODO?
+# tags[] tags for targets TODO?
 # srcfile: ntr file path
 # line: ntr file line
 Target = collections.namedtuple('Target', 'type, name, resource, level, tags, srcfile, line')
 
+# A reference to a Target.
+# name: target name
+# srcfile: ntr file path
+# line: ntr file line
+Ref = collections.namedtuple('Ref', 'name, srcfile, line')
 
 #---------------------------- Globals -----------------------------------------------
 
@@ -311,8 +311,8 @@ class NotrInsertHruleCommand(sublime_plugin.TextCommand):
 
 
 #-----------------------------------------------------------------------------------
-class NotrInsertLinkCommand(sublime_plugin.TextCommand):
-    ''' Insert link from clipboard. Assumes user clipped appropriate string. '''
+class NotrInsertTargetFromClipCommand(sublime_plugin.TextCommand):
+    ''' Insert target from clipboard. Assumes user clipped appropriate string. '''
 
     def run(self, edit):
         random.seed()
@@ -330,7 +330,7 @@ class NotrInsertLinkCommand(sublime_plugin.TextCommand):
 
 #-----------------------------------------------------------------------------------
 class NotrPublishCommand(sublime_plugin.WindowCommand):
-    ''' TODO Publish notes somewhere for access from internet/phone - raw or rendered. refs should be Links. Nothing confidential! Android OneDrive doesn't recognize .ntr files'''
+    ''' TODO Publish notes somewhere for access from internet/phone - raw or rendered. refs should be html links. Nothing confidential! Android OneDrive doesn't recognize .ntr files'''
 
     def run(self):
         # Render notr files for android target.
@@ -416,7 +416,7 @@ def _process_notr_files(window):
         else:
             _user_error(NOTR_SETTINGS_FILE, -1, f'Invalid path in settings {npath}')
 
-    # Process the files. Targets are ordered by sections then links.
+    # Process the files. Targets are ordered by sections then files/uris.
     s = []
     l = []
     for nfile in _ntr_files:
@@ -578,18 +578,6 @@ def _get_valid_refs(sort):
 
     for target in _targets:
         tname = target.name
-
-        # if target.type == "section":
-        #     tname = target.name
-        # elif target.type == "image":
-        #     tname = target.name
-        # elif target.type == "uri":
-        #     tname = target.name
-        # elif target.type == "path":
-        #     tname = target.name
-        # else:
-        #     pass  # never happen
-
         if tname not in ref_targets:
             ref_targets[tname] = tname  # f'{target.srcfile}({target.line})'
         else:
