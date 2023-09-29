@@ -11,7 +11,7 @@ Built for ST4 on Windows and Linux.
 
 - Sections with tags
 - Various text decorations
-- Links and references
+- Targets and references - targets can be section, file (image or other), uri
 - Lists
 - Tables - fit, sort, etc (could be ported for general purpose md use)
 - Auto highlight - supplements [SbotHighlight](https://github.com/cepthomas/SbotHighlight)
@@ -21,7 +21,7 @@ Built for ST4 on Windows and Linux.
 ## Demo
 
 [The spec](test_files/notr-spec.ntr) provides an example of the features. If the plugin is installed it will look
-something like this (note uses my color scheme):
+something like this (uses my color scheme):
 
 ![ex1](test_files/ex1.jpg)
 
@@ -34,10 +34,9 @@ To run the demo:
 ```
 {
     "notr_paths": [
-        "one/path/to/your/files",
-        "another/path/to/your/files",
+        ".../Sublime Text/Packages/Notr/test_files",
     ],
-    "notr_index": "one/path/to/your/files/test-index.ntr",
+    "notr_index": ".../Sublime Text/Packages/Notr/test_files/test-index.ntr",
     "fixed_hl": [
         ["2DO", "and_a"],
         ["user", "and_b"],
@@ -46,26 +45,26 @@ To run the demo:
 }
 ```
 
-- Color schemes require new and edited scopes to support this tool. They are identified in `file/NotrOverlay.sublime-color-scheme`.
+- Color schemes require new and edited scopes to support this tool. They are identified in `test_files/NotrOverlay.sublime-color-scheme`.
   Implement your unique version of this per [Color customization](https://www.sublimetext.com/docs/color_schemes.html#customization).
 - Now open `test_files/notr-spec.ntr` and be amazed.
 
 
 ## Commands
 
-| Command              | Type     | Description                                | Args                                  |
-| :--------            | :-----   | :-------                                   | :--------                             |
-| notr_insert_link     | Context  | Insert a link from clipboard               |                                       |
-| notr_insert_ref      | Context  | Insert a ref from selector                 |                                       |
-| notr_goto_target     | Context  | Go to section or file/uri from selector    | filter_by_tag: true select tag first  |
-| notr_follow_ref      | Context  | Go to a reference from selector            |                                       |
-| notr_insert_hrule    | Context  | Make a line                                | fill_char: "="                        |
-| table_fit            | Context  | Fit table contents to columns              |                                       |
-| table_insert_col     | Context  | Insert column at caret                     |                                       |
-| table_delete_col     | Context  | Remove column at caret                     |                                       |
-| table_sort_col       | Context  | Sort column at caret - direction toggles   | asc: true/false                       |
-| notr_dump            | Context  | Show the internal info                     |                                       |
-| notr_reload          | Context  | Force reload after editing colors          |                                       |
+| Command              | Type     | Description                                       | Args                                  |
+| :--------            | :-----   | :-------                                          | :--------                             |
+| notr_insert_target   | Context  | Insert a target from clipboard                    |                                       |
+| notr_insert_ref      | Context  | Insert a ref from selector                        |                                       |
+| notr_goto_target     | Context  | Go to a target from selector                      | filter_by_tag: true select tag first  |
+| notr_follow_ref      | Context  | Go to a reference from selector                   |                                       |
+| notr_insert_hrule    | Context  | Make a line                                       | fill_char: "="                        |
+| table_fit            | Context  | Fit table contents to columns                     |                                       |
+| table_insert_col     | Context  | Insert column at caret                            |                                       |
+| table_delete_col     | Context  | Remove column at caret                            |                                       |
+| table_sort_col       | Context  | Sort column at caret - direction toggles          | asc: true/false                       |
+| notr_dump            | Context  | Diagnostic to show the internal info              |                                       |
+| notr_reload          | Context  | Diagnostid to force reload after editing colors   |                                       |
 
 
 ## Settings
@@ -97,4 +96,5 @@ To run the demo:
 - Toggle syntax coloring (distraction free). Or just set syntax to Plain Text.
 - Show image file as phantom or hover, maybe thumbnail. Annotations, popups (mdpopups)?
 - Indent/dedent lists with bullets.
+- Table filters.
 - Make a syntax_test_notr.ntr.

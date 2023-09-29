@@ -21,13 +21,12 @@ IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 
 #--------------------------- Types -------------------------------------------------
 
-Ref = collections.namedtuple('Ref', 'name, srcfile, line')
 # One reference:
 # name: section or link name
 # srcfile: ntr file path
 # line: ntr file line
+Ref = collections.namedtuple('Ref', 'name, srcfile, line')
 
-Target = collections.namedtuple('Target', 'type, name, resource, level, tags, srcfile, line')
 # type: section, uri, image, path
 # name: section title
 # resource: what type points to
@@ -35,6 +34,7 @@ Target = collections.namedtuple('Target', 'type, name, resource, level, tags, sr
 # tags[] tags for links TODO?
 # srcfile: ntr file path
 # line: ntr file line
+Target = collections.namedtuple('Target', 'type, name, resource, level, tags, srcfile, line')
 
 
 #---------------------------- Globals -----------------------------------------------

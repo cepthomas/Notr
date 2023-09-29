@@ -41,9 +41,5 @@
         { "scope": "markup.user_hl4", "background": "yellow", "foreground": "black" },
         { "scope": "markup.user_hl5", "background": "lime", "foreground": "black" },
         { "scope": "markup.user_hl6", "background": "cyan", "foreground": "black" },
-
-
-
-
     ]
 }

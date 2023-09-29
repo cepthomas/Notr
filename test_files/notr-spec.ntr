@@ -42,7 +42,6 @@ Visual delimiters that don't do anything else. Like a horizontal rule:
 
 
 IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
-
 Hello! Welcome to my world. I have invincible walls.
 IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
 
@@ -77,7 +76,7 @@ or... [nyt](https://nytimes.com)
 Note: use forward slash separator if compatibility with linux is important.
 
 
-- Highlight links in lists like [nyt](https://nytimes.com).
+- Highlight links in lists like [booga](https://nytimes.com).
 > Also [See](https://www.sublimetext.com/docs/syntax.html#include-patterns).
 
 Define things like `$NOTR_PATH` before being referenced, usually in your `notr_index` file.
