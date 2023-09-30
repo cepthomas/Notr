@@ -14,8 +14,8 @@ Built for ST4 on Windows and Linux.
 - Targets and references - targets can be section, file (image or other), uri. Navigation to any within context of your settings.
 - Lists.
 - Tables - fit, sort, etc (could be ported for general purpose use). Loosely based on https://github.com/wadetb/Sublime-Text-Advanced-CSV.
-- Auto highlight - supplements [SbotHighlight](https://github.com/cepthomas/SbotHighlight)
-- Render to html with [SbotRender](https://github.com/cepthomas/SbotRender)
+- Auto highlight - supplements [SbotHighlight](https://github.com/cepthomas/SbotHighlight).
+- Render to html with [SbotRender](https://github.com/cepthomas/SbotRender).
 
 Highly recommended to install SbotHighlight and SbotRender.
 
@@ -27,6 +27,8 @@ something like this:
 ![ex1](test_files/ex1.jpg)
 
 ![ex2](test_files/ex2.jpg)
+
+![ex2](test_files/ex3.jpg)
 
 To run the demo:
 - Install the plugin.
