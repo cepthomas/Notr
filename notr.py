@@ -23,7 +23,7 @@ IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 # name: section title
 # resource: what type points to
 # level: for section only
-# tags[] tags for targets TODO for file/uri?
+# tags[] tags for targets
 # srcfile: ntr file path
 # line: ntr file line
 Target = collections.namedtuple('Target', 'type, name, resource, level, tags, srcfile, line')
@@ -289,16 +289,14 @@ class NotrInsertRefCommand(sublime_plugin.TextCommand):
 class NotrInsertHruleCommand(sublime_plugin.TextCommand):
     ''' Insert visuals. '''
 
-    def run(self, edit, fill_char):
+    def run(self, edit, fill_str, reps):
         v = self.view
-        settings = sublime.load_settings(NOTR_SETTINGS_FILE)
-        visual_line_length = settings.get('visual_line_length')
 
         # Start of current line.
         caret = sc.get_single_caret(v)
         lst = v.line(caret)
 
-        s = fill_char * visual_line_length + '\n'
+        s = fill_str * reps + '\n'
         v.insert(edit, lst.a, s)
 
     def is_visible(self):

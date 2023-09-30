@@ -57,16 +57,15 @@ To run the demo:
 | :--------                      | :-----   | :-------                                          | :--------                             |
 | notr_insert_target_from_clip   | Context  | Insert a target from clipboard                    |                                       |
 | notr_insert_ref                | Context  | Insert a ref from selector                        |                                       |
-| notr_goto_target               | Context  | Go to a target from selector                      | filter_by_tag: true select tag first  |
+| notr_goto_target               | Context  | Go to a target from selector                      | filter_by_tag: true, select tag first |
 | notr_follow_ref                | Context  | Go to a reference from selector                   |                                       |
-| notr_insert_hrule              | Context  | Make a line                                       | fill_char: "="                        |
+| notr_insert_hrule              | Context  | Make a line                                       | fill_str: "=", reps: 20               |
 | table_fit                      | Context  | Fit table contents to columns                     |                                       |
 | table_insert_col               | Context  | Insert column at caret                            |                                       |
 | table_delete_col               | Context  | Remove column at caret                            |                                       |
 | table_sort_col                 | Context  | Sort column at caret - direction toggles          | asc: true/false                       |
 | notr_dump                      | Context  | Diagnostic to show the internal info              |                                       |
 | notr_reload                    | Context  | Diagnostic to force reload after editing colors   |                                       |
-    
 
 ## Settings
 
@@ -76,6 +75,7 @@ To run the demo:
 | notr_index          | Main notr file                             |                                            |
 | sort_tags_alpha     | Sort tags alphabetically else by frequency | true/false                                 |
 | visual_line_length  | For horizontal rule                        |                                            |
+| fill_str            | For horizontal rule                        |                                            |
 | fixed_hl            | Three sets of user keywords                |                                            |
 | fixed_hl_whole_word | User highlights option                     | true/false                                 |
 
