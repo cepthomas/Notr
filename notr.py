@@ -15,9 +15,6 @@ NOTR_SETTINGS_FILE = "Notr.sublime-settings"
 # Known file types.
 IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 
-# TODO Make into package when it's cooked. Maybe others. https://packagecontrol.io/docs/submitting_a_package.
-# TODO Publish notes somewhere for access from internet/phone - raw or rendered. refs should be html links. Nothing confidential! Android OneDrive doesn't recognize .ntr files.
-# TODO tags for targets?
 
 #--------------------------- Types -------------------------------------------------
 
@@ -26,7 +23,7 @@ IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 # name: section title
 # resource: what type points to
 # level: for section only
-# tags[] tags for targets
+# tags[] tags for targets TODO for file/uri?
 # srcfile: ntr file path
 # line: ntr file line
 Target = collections.namedtuple('Target', 'type, name, resource, level, tags, srcfile, line')
@@ -189,7 +186,6 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
             panel_items.append(sublime.QuickPanelItem(trigger=f'{target.name}', kind=sublime.KIND_AMBIGUOUS))
         # Combine the two.
         self._sorted_targets = main_targets
-
         self.view.window().show_quick_panel(panel_items, on_select=self.on_sel_target)
 
     def on_sel_target(self, *args, **kwargs):
@@ -459,7 +455,7 @@ def _process_notr_file(ntr_fn):
             # Get the things of interest defined in the file. Grep escape these .^$*+?()[{\|  syntax uses X?!*
             re_directives = re.compile(r'^:(.*)')
             # re_directives = re.compile(r'^\$(.*)')
-            re_links = re.compile(r'\[(.*)\]\((.*)\)')
+            re_links = re.compile(r'\[(.*)\]\((.*)\) *(?:\[(.*)\])?')
             # re_links = re.compile(r'\[([^:]*): *([^\]]*)\]')
             re_refs = re.compile(r'\[\* *([^\]]*)\]')
             re_sections = re.compile(r'^(#+ +[^\[]+) *(?:\[(.*)\])?')
@@ -467,7 +463,7 @@ def _process_notr_file(ntr_fn):
 
             for line in lines:
 
-                # First: directives, aliases.
+                ### Directives, aliases.
                 # :NOTES_PATH=$OneDrive/OneDriveDocuments/notes
                 # :NO_INDEX
                 matches = re_directives.findall(line)
@@ -488,15 +484,14 @@ def _process_notr_file(ntr_fn):
                     if not handled:
                         _user_error(ntr_fn, line_num, 'Invalid directive')
 
-                # Links - also checks validity.
+                ### Links - also checks validity.
                 # [yer news](https://nytimes.com)
                 # [some felix]($NOTES_PATH/felix9.jpg)
                 matches = re_links.findall(line)
                 for m in matches:
-                    if len(m) == 2:
+                    if len(m) >= 2:
                         name = m[0].strip()
                         res = sc.expand_vars(m[1].strip())
-
                         if res is None:
                             # Bad env var.
                             _user_error(ntr_fn, line_num, f'Bad env var: {m[1]}')
@@ -514,12 +509,18 @@ def _process_notr_file(ntr_fn):
                                 _user_error(ntr_fn, line_num, f'Invalid target resource: {res}')
 
                             if ttype is not None:
+                                # Tags?
                                 tags = []
+                                if len(m) >= 2:
+                                    tags = m[2].strip().split()
                                 links.append(Target(ttype, name, res, 0, tags, ntr_fn, line_num))
+                                # Update global tags.
+                                for tag in tags:
+                                    _tags[tag] = _tags[tag] + 1 if tag in _tags else 1
                     else:
                         _user_error(ntr_fn, line_num, 'Invalid syntax')
 
-                # Refs - will be validated at end.
+                ### Refs - will be validated at end.
                 # [*some felix]
                 # [*yer news]
                 # [*ST executable dir]
@@ -534,9 +535,8 @@ def _process_notr_file(ntr_fn):
                         name = froot + name
                     refs.append(Ref(name, ntr_fn, line_num))
 
-                # Sections
-                # # Some name
-                # # Another name
+                ### Sections
+                # # Some name[tag1 tag2]
                 matches = re_sections.findall(line)
                 for m in matches:
                     valid = True
@@ -555,6 +555,7 @@ def _process_notr_file(ntr_fn):
 
                     if valid:
                         sections.append(Target("section", name, "", len(hashes), tags, ntr_fn, line_num))
+                        # Update global tags.
                         for tag in tags:
                             _tags[tag] = _tags[tag] + 1 if tag in _tags else 1
                     else:

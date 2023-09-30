@@ -9,19 +9,20 @@ Built for ST4 on Windows and Linux.
 
 ## Features
 
-- Sections with tags
-- Various text decorations
-- Targets and references - targets can be section, file (image or other), uri
-- Lists
-- Tables - fit, sort, etc (could be ported for general purpose md use)
+- Sections with tags.
+- Various text decorations.
+- Targets and references - targets can be section, file (image or other), uri. Navigation to any within context of your settings.
+- Lists.
+- Tables - fit, sort, etc (could be ported for general purpose use). Loosely based on https://github.com/wadetb/Sublime-Text-Advanced-CSV.
 - Auto highlight - supplements [SbotHighlight](https://github.com/cepthomas/SbotHighlight)
 - Render to html with [SbotRender](https://github.com/cepthomas/SbotRender)
 
+Highly recommended to install SbotHighlight and SbotRender.
 
 ## Demo
 
 [The spec](test_files/notr-spec.ntr) provides an example of the features. If the plugin is installed it will look
-something like this (uses my color scheme):
+something like this:
 
 ![ex1](test_files/ex1.jpg)
 
@@ -31,12 +32,13 @@ To run the demo:
 - Install the plugin.
 - Open `Preferences->Package Settings->Notr`.
 - Edit to something like this:
-```
+
+``` json
 {
     "notr_paths": [
-        ".../Sublime Text/Packages/Notr/test_files",
+        "your-path/Sublime Text/Packages/Notr/test_files",
     ],
-    "notr_index": ".../Sublime Text/Packages/Notr/test_files/test-index.ntr",
+    "notr_index": "your-path/Sublime Text/Packages/Notr/test_files/test-index.ntr",
     "fixed_hl": [
         ["2DO", "and_a"],
         ["user", "and_b"],
@@ -45,9 +47,8 @@ To run the demo:
 }
 ```
 
-- Color schemes require new and edited scopes to support this tool. They are identified in `test_files/NotrOverlay.sublime-color-scheme`.
-  Implement your unique version of this per [Color customization](https://www.sublimetext.com/docs/color_schemes.html#customization).
-- Now open `test_files/notr-spec.ntr` and be amazed.
+- Implement color scheme per [Color Scheme](#color-scheme).
+- Now open `test_files/notr-spec.ntr`. Test drive the various context menu selections.
 
 
 ## Commands
@@ -64,7 +65,7 @@ To run the demo:
 | table_delete_col               | Context  | Remove column at caret                            |                                       |
 | table_sort_col                 | Context  | Sort column at caret - direction toggles          | asc: true/false                       |
 | notr_dump                      | Context  | Diagnostic to show the internal info              |                                       |
-| notr_reload                    | Context  | Diagnostid to force reload after editing colors   |                                       |
+| notr_reload                    | Context  | Diagnostic to force reload after editing colors   |                                       |
     
 
 ## Settings
@@ -78,23 +79,74 @@ To run the demo:
 | fixed_hl            | Three sets of user keywords                |                                            |
 | fixed_hl_whole_word | User highlights option                     | true/false                                 |
 
+## Color Scheme
+
+Color schemes require new and edited scopes to support this tool. Implement your unique version of these in `your.sublime-color-scheme`.
+
+``` json
+{
+    "rules":
+    [
+        // Existing scopes used by Notr.
+        { "scope": "meta.link.reference", "background": "lightgreen" },
+        { "scope": "meta.link.inline", "background": "lightblue" },
+        { "scope": "meta.table", "background": "lightblue" },
+        { "scope": "meta.table.header", "background": "deepskyblue" },
+        { "scope": "markup.underline.link", "background": "yellow" },
+        { "scope": "markup.italic", "font_style": "italic" },
+        { "scope": "markup.bold", "font_style": "bold" },
+        { "scope": "markup.underline", "font_style": "underline" },
+
+        // Scopes added for Notr.
+        { "scope": "text.notr", "foreground": "black" },
+        { "scope": "markup.directive.notr", "background": "lightsalmon" },
+        { "scope": "markup.underline.link.notr", "background": "chartreuse" },
+        { "scope": "markup.strikethrough", "background": "lightgray" },
+        { "scope": "markup.heading.content.notr", "background": "aquamarine", "font_style": "bold" },
+        { "scope": "markup.heading.tags.notr", "background": "bisque", "font_style": "italic" },
+        { "scope": "markup.hrule.notr", "background": "mediumaquamarine" },
+        { "scope": "markup.raw.inline.notr", "background": "aliceblue" },
+        { "scope": "markup.raw.block.notr", "background": "aliceblue" },
+        { "scope": "markup.quote.notr", "background": "lightcyan", "font_style": "italic" },
+        { "scope": "markup.list.indent.notr", "background": "snow" },
+        { "scope": "markup.list.marker.notr", "background": "pink", "font_style": "bold" },
+        { "scope": "markup.list.content.notr", "background": "lightyellow" },
+        { "scope": "markup.link.name.notr", "background": "lemonchiffon", "font_style": "italic" },
+        { "scope": "markup.link.tags.notr", "background": "bisque", "font_style": "italic" },
+        { "scope": "markup.link.refname.notr", "background": "lavender", "font_style": "bold" },
+
+        // Fixed highlighting.
+        { "scope": "markup.fixed_hl1", "background": "gainsboro", "foreground": "red" },
+        { "scope": "markup.fixed_hl2", "background": "gainsboro", "foreground": "green" },
+        { "scope": "markup.fixed_hl3", "background": "gainsboro", "foreground": "blue" },
+
+        // User highlighting. Only needed if you are also using SbotHighlight.
+        { "scope": "markup.user_hl1", "background": "red", "foreground": "white" },
+        { "scope": "markup.user_hl2", "background": "green", "foreground": "white" },
+        { "scope": "markup.user_hl3", "background": "blue", "foreground": "white" },
+        { "scope": "markup.user_hl4", "background": "yellow", "foreground": "black" },
+        { "scope": "markup.user_hl5", "background": "lime", "foreground": "black" },
+        { "scope": "markup.user_hl6", "background": "cyan", "foreground": "black" },
+    ]
+}
+```
 
 ## Caveats
 
-- ST regex is a line-oriented version of [Oniguruma Regular Expressions Version 6.8.0](https://github.com/kkos/oniguruma).
-  Some things pertaining to normal line endings don't quite work as expected.
-- Note that coloring *should* stop at the right edge of a table. This is also how ST renders MD tables...
-- Coloring for the markup.user_hls and markup.fixed_hls only supports fore and back colors, not font_style.
-- view.add_regions() apparently only supports colors, annotations, and icon. It does not support font style and region flags.
-  Also they are not available via extract_scope().
-- After editing color-scheme, close and reopen affected views.
+- ST regex is a custom line-oriented [engine](https://www.sublimetext.com/docs/syntax.html). Some things pertaining to normal line endings don't quite work as expected.
+- Note that coloring *should* stop at the right edge of a table. This is also how ST renders MD tables. Something to do with meta-scope.
+- Coloring for `markup.user_hls` and `markup.fixed_hls` only supports fore and back colors, not font_style.
+- `view.add_regions()`` apparently only supports colors, annotations, and icon. It does not support font style and region flags.   Also they are not available via `extract_scope()``.
+- After editing your color-scheme, close and reopen affected views.
 
-# Future Features Consideration
-- Block comment/uncomment with char/string from settings.
-- Nav and folding by section/hierarchy. Might be tricky: https://github.com/sublimehq/sublime_text/issues/5423.
-- Unicode menu/picker to insert/view at caret.
-- Toggle syntax coloring (distraction free). Or just set syntax to Plain Text.
-- Show image file as phantom or hover, maybe thumbnail. Annotations, popups (mdpopups)?
+
+# Future Features (maybe)
+- Publish notes somewhere for access from browser/phone.
+- Support projects.
+- Block "comment" by inserting string from settings at bol.
+- Folding by section/hierarchy. Might be [tricky](https://github.com/sublimehq/sublime_text/issues/5423).
+- Insert from unicode menu at caret.
+- Toggle syntax coloring (distraction free).
+- Show image file thumbnail as phantom or hover. Something fun with annotations, like [popups](https://facelessuser.github.io/sublime-markdown-popups).
 - Indent/dedent lists with bullets.
 - Table filters.
-- Make a syntax_test_notr.ntr.

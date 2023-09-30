@@ -1,4 +1,5 @@
 
+
 # section name [tag1 tag2]
 A section of content.
 Starts in first column with number of `#` indicates level.
@@ -70,13 +71,13 @@ item states (in settings)
 ## Links and References [tag3 tag4 tag9]
 
 
-Define a link and its ref name like [image felix le chat]($NOTR_PATH/test_files/felix1.jpg) or
+Define a link and its ref name like [image felix le chat]($NOTR_PATH/test_files/felix1.jpg)[tag4 tag3] or
    [other type of file]($NOTR_PATH/notr.py)
-or... [nyt](https://nytimes.com)
+or... [nyt](https://nytimes.com)[tag2 tag9]
 Note: use forward slash separator if compatibility with linux is important.
 
 
-- Highlight links in lists like [booga](https://nytimes.com).
+- Highlight links in lists like [booga](https://google.com).
 > Also [See](https://www.sublimetext.com/docs/syntax.html#include-patterns).
 
 Define things like `$NOTR_PATH` before being referenced, usually in your `notr_index` file.

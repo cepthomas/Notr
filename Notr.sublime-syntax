@@ -1,7 +1,8 @@
 %YAML 1.2
 ---
-# http://www.sublimetext.com/docs/3/syntax.html
+# http://www.sublimetext.com/docs/syntax.html
 # ST uses [Oniguruma Regular Expressions Version 6.8.0](https://github.com/kkos/oniguruma) - syntax: ONIG_SYNTAX_ONIGURUMA (default)
+# Should make a syntax_test_notr.ntr.
 
 name: Notr
 scope: text.notr
@@ -15,7 +16,7 @@ file_extensions:
 
 contexts:
   main:
-    - include: atx-heading
+    - include: section-heading
     - include: simple-text
     - include: table
     - include: link
@@ -49,9 +50,9 @@ contexts:
       scope: markup.hrule.notr
 
 
-#################### headings ###########################################
+#################### section ###########################################
 
-  atx-heading:
+  section-heading:
     - match: '^(#+ +[^\[]+) *(?:\[(.*)\])?\n'
       scope: markup.heading.notr
       captures:
@@ -113,11 +114,12 @@ contexts:
   #################### link ###########################################
 
   link:
-    # link def  [ggg](https://www.reddit.com) Also supports file and general targets.
-    - match: '\[(.*)\]\((.*)\)'
+    # link def  [ggg](https://www.abc.com)[tag4 tag5] Also supports file and general targets.
+    - match: '\[(.*)\]\((.*)\) *(?:\[(.*)\])?'
       captures:
         1: markup.link.name.notr
         2: markup.underline.link.notr
+        3: markup.link.tags.notr
 
     # ref to a link
     - match: '\[\* *([^\]]*)\]'
