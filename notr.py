@@ -15,6 +15,9 @@ NOTR_SETTINGS_FILE = "Notr.sublime-settings"
 # Known file types.
 IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 
+# TODO Put MRU targets at top of selector.
+# TODO Add non-ntr files to index.
+
 
 #--------------------------- Types -------------------------------------------------
 
@@ -462,7 +465,7 @@ def _process_notr_file(ntr_fn):
             for line in lines:
 
                 ### Directives, aliases.
-                # :NOTES_PATH=$OneDrive/OneDriveDocuments/notes
+                # :NOTES_PATH=some/where/notes
                 # :NO_INDEX
                 matches = re_directives.findall(line)
                 for m in matches:

@@ -143,7 +143,7 @@ Color schemes require new and edited scopes to support this tool. Implement your
 
 
 # Future Features (maybe)
-- Publish notes somewhere for access from browser/phone.
+- Publish notes somewhere - raw or rendered.
 - Support projects.
 - Block "comment" by inserting string from settings at bol.
 - Folding by section/hierarchy. Might be [tricky](https://github.com/sublimehq/sublime_text/issues/5423).
