@@ -70,6 +70,8 @@ item states (in settings)
 
 ## Links and References [tag3 tag4 tag9]
 
+Define things like `$NOTR_PATH` before being referenced, usually in your `notr_index` file.
+Like `:AN_ALIAS="abcde"`
 
 Define a link and its ref name like [image felix le chat]($NOTR_PATH/test_files/felix1.jpg)[tag4 tag3] or
    [other type of file]($NOTR_PATH/notr.py)
@@ -79,9 +81,6 @@ Note: use forward slash separator if compatibility with linux is important.
 
 - Highlight links in lists like [booga](https://google.com).
 > Also [See](https://www.sublimetext.com/docs/syntax.html#include-patterns).
-
-Define things like `$NOTR_PATH` before being referenced, usually in your `notr_index` file.
-:AN_ALIAS="abcde"
 
 Use `*` to identify references defined beforehand - above or in `notr_index` file. Right click to navigate to the ref.
 Ref to other file. [* image felix le chat] or [* other type of file] or [* another felix].

@@ -34,7 +34,6 @@ To run the demo:
 - Install the plugin.
 - Open `Preferences->Package Settings->Notr`.
 - Edit to something like this:
-
 ``` json
 {
     "notr_paths": [
@@ -48,7 +47,6 @@ To run the demo:
     ],
 }
 ```
-
 - Implement color scheme per [Color Scheme](#color-scheme).
 - Now open `test_files/notr-spec.ntr`. Test drive the various context menu selections.
 
