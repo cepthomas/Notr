@@ -17,6 +17,19 @@ IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 
 # TODO Put MRU targets at top of selector.
 # TODO Add non-ntr files to index.
+# TODO Back up ntr files.
+
+
+# Future Features (maybe)
+# - Publish notes somewhere - raw or rendered.
+# - Support projects.
+# - Block "comment" by inserting string from settings at bol.
+# - Folding by section/hierarchy. Might be [tricky](https://github.com/sublimehq/sublime_text/issues/5423).
+# - Insert from unicode menu at caret.
+# - Toggle syntax coloring (distraction free).
+# - Show image file thumbnail as phantom or hover. Something fun with annotations, like sublime-markdown-popups.
+# - Indent/dedent lists with bullets.
+# - Table filters.
 
 
 #--------------------------- Types -------------------------------------------------
@@ -455,17 +468,14 @@ def _process_notr_file(ntr_fn):
 
             # Get the things of interest defined in the file. Grep escape these .^$*+?()[{\|  syntax uses X?!*
             re_directives = re.compile(r'^:(.*)')
-            # re_directives = re.compile(r'^\$(.*)')
             re_links = re.compile(r'\[(.*)\]\((.*)\) *(?:\[(.*)\])?')
-            # re_links = re.compile(r'\[([^:]*): *([^\]]*)\]')
             re_refs = re.compile(r'\[\* *([^\]]*)\]')
-            re_sections = re.compile(r'^(#+ +[^\[]+) *(?:\[(.*)\])?')
-            # re_sections = re.compile(r'^(#+) +([^\[]+) *(?:\[(.*)\])?')
+            re_sections = re.compile(r'^(#+ +[^\[]+) *(?:\[(.*)\])?') # TODO limit number of levels?
 
             for line in lines:
 
                 ### Directives, aliases.
-                # :NOTES_PATH=some/where/notes
+                # :MY_PATH=some/where/my
                 # :NO_INDEX
                 matches = re_directives.findall(line)
                 for m in matches:
