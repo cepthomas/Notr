@@ -21,7 +21,7 @@ Highly recommended to install SbotHighlight and SbotRender.
 
 ## Demo
 
-[The spec](test_files/notr-spec.ntr) provides an example of the features. If the plugin is installed it will look
+[The spec](notr-spec.ntr) provides an example of the features. If the plugin is installed it will look
 something like this:
 
 ![ex1](test_files/ex1.jpg)

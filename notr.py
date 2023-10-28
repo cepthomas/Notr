@@ -15,15 +15,17 @@ NOTR_SETTINGS_FILE = "Notr.sublime-settings"
 # Known file types.
 IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 
-# TODO Put MRU targets at top of selector.
+# TODO Put MRU targets at top of selector. Also sort sections on a page alpha.
 # TODO Add non-ntr files to index.
 # TODO Back up ntr files.
+# TODO follow files/etc directly without needing a ref.
+# TODO search within project files.
+# TODO Make into package, maybe others. https://packagecontrol.io/docs/submitting_a_package.
 
 
 # Future Features (maybe)
 # - Publish notes somewhere - raw or rendered.
 # - Support projects.
-# - Block "comment" by inserting string from settings at bol.
 # - Folding by section/hierarchy. Might be [tricky](https://github.com/sublimehq/sublime_text/issues/5423).
 # - Insert from unicode menu at caret.
 # - Toggle syntax coloring (distraction free).
@@ -470,7 +472,7 @@ def _process_notr_file(ntr_fn):
             re_directives = re.compile(r'^:(.*)')
             re_links = re.compile(r'\[(.*)\]\((.*)\) *(?:\[(.*)\])?')
             re_refs = re.compile(r'\[\* *([^\]]*)\]')
-            re_sections = re.compile(r'^(#+ +[^\[]+) *(?:\[(.*)\])?') # TODO limit number of levels?
+            re_sections = re.compile(r'^(#+ +[^\[]+) *(?:\[(.*)\])?') # TODO limit number of levels? or do something else?
 
             for line in lines:
 
