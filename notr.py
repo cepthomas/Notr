@@ -15,23 +15,45 @@ NOTR_SETTINGS_FILE = "Notr.sublime-settings"
 # Known file types.
 IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 
-# TODO Put MRU targets at top of selector. Also sort sections on a page alpha.
-# TODO Add non-ntr files to index.
-# TODO Back up ntr files.
-# TODO follow files/etc directly without needing a ref.
-# TODO search within project files.
+
+# TODO Put MRU targets at top of selector.
+
+# TODO Add non-ntr files to index. Follow files/etc directly without needing a ref.
+
+# TODO Indent/dedent lists. Toggle bullets. Code chunks get '```'. Quote chunks get '> '
+
+# TODO Simple section folding. https://github.com/jamalsenouci/sublimetext-syntaxfold
+# Code folding in Sublime is currently based off of the indentation of files;; it only appears to indent on keywords like the ones you mentioned above because they contain indented code.
+# It’s not currently possible to override that at the moment but the options in the Edit > Code Folding menu or the key bindings for those commands (visible from the menu) can also be used for folding, and the first one will fold the current selection. That can be useful when combined with the items from the Selection menu.
+# { "keys": ["ctrl+shift+["], "command": "fold" },
+# { "keys": ["ctrl+shift+]"], "command": "unfold" },
+# { "keys": ["ctrl+k", "ctrl+1"], "command": "fold_by_level", "args": {"level": 1} },
+# { "keys": ["ctrl+k", "ctrl+2"], "command": "fold_by_level", "args": {"level": 2} },
+# { "keys": ["ctrl+k", "ctrl+3"], "command": "fold_by_level", "args": {"level": 3} },
+# { "keys": ["ctrl+k", "ctrl+4"], "command": "fold_by_level", "args": {"level": 4} },
+# { "keys": ["ctrl+k", "ctrl+5"], "command": "fold_by_level", "args": {"level": 5} },
+# { "keys": ["ctrl+k", "ctrl+6"], "command": "fold_by_level", "args": {"level": 6} },
+# { "keys": ["ctrl+k", "ctrl+7"], "command": "fold_by_level", "args": {"level": 7} },
+# { "keys": ["ctrl+k", "ctrl+8"], "command": "fold_by_level", "args": {"level": 8} },
+# { "keys": ["ctrl+k", "ctrl+9"], "command": "fold_by_level", "args": {"level": 9} },
+# { "keys": ["ctrl+k", "ctrl+0"], "command": "unfold_all" },
+# { "keys": ["ctrl+k", "ctrl+j"], "command": "unfold_all" },
+# { "keys": ["ctrl+k", "ctrl+t"], "command": "fold_tag_attributes" },
+
+
+
+# Projects:
+# TODO support demo/example project better.
+# TODO search within project ntr files.
+# TODO Back up files.
+
+# TODO Publish notes somewhere - raw or rendered.
+
 # TODO Make into package, maybe others. https://packagecontrol.io/docs/submitting_a_package.
 
-
-# Future Features (maybe)
-# - Publish notes somewhere - raw or rendered.
-# - Support projects.
-# - Folding by section/hierarchy. Might be [tricky](https://github.com/sublimehq/sublime_text/issues/5423).
-# - Insert from unicode menu at caret.
-# - Toggle syntax coloring (distraction free).
-# - Show image file thumbnail as phantom or hover. Something fun with annotations, like sublime-markdown-popups.
-# - Indent/dedent lists with bullets.
-# - Table filters.
+# TODO Hierarchal section folding. Might be [tricky](https://github.com/sublimehq/sublime_text/issues/5423).
+# TODO Multiple projects.
+# TODO Show image file thumbnail as phantom or hover. Something fun with annotations, see sublime-markdown-popups.
 
 
 #--------------------------- Types -------------------------------------------------
