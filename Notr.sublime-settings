@@ -7,7 +7,10 @@
     // Sort tags alphabetically or by frequency.
     "sort_tags_alpha": true,
 
-    // Tokens for highlighting 3 sets of user keywords. Scopes are markup.fixed_hl1-3.
+    // How many mru entries in goto selector. 0 = disabled.
+    "mru_size": 10,
+
+    // Tokens for highlighting 3 sets of user keywords. Scopes are hard-coded markup.fixed_hl1-3.
     "fixed_hl": [ [], [], [] ],
     // User highlights option.
     "fixed_hl_whole_word": true,

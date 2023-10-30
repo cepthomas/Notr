@@ -5,56 +5,47 @@ import glob
 import collections
 import random
 import subprocess
+import json
 import sublime
 import sublime_plugin
 from . import sbot_common as sc
 
 
 NOTR_SETTINGS_FILE = "Notr.sublime-settings"
+NOTR_STORAGE_FILE = "notr.store"
 
 # Known file types.
 IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 
+# Persisted info. This is global across all ST instances.
+_store = { "mru": []}
 
-# TODO Put MRU targets at top of selector.
+"""
+File mgmt:
+TODO0 Put MRU targets at top of selector.
+TODO1 Add non-ntr files to index. Follow files/etc directly without needing a ref.
 
-# TODO Add non-ntr files to index. Follow files/etc directly without needing a ref.
+Formatting:
+TODO1 Indent/dedent lists. Toggle bullets. Code chunks get '```'. Quote chunks get '> '. Use different colors for each of X?!*
+TODO1 support text formatting inside lists, tables, etc. See link in list for example.
 
-# TODO Indent/dedent lists. Toggle bullets. Code chunks get '```'. Quote chunks get '> '
+Visual:
+TODO1 Simple section folding. C:\\Users\\cepth\\OneDrive\\OneDriveDocuments\\tech\\sublime\\folding-hack.py ??https://github.com/jamalsenouci/sublimetext-syntaxfold.
 
-# TODO Simple section folding. https://github.com/jamalsenouci/sublimetext-syntaxfold
-# Code folding in Sublime is currently based off of the indentation of files;; it only appears to indent on keywords like the ones you mentioned above because they contain indented code.
-# It’s not currently possible to override that at the moment but the options in the Edit > Code Folding menu or the key bindings for those commands (visible from the menu) can also be used for folding, and the first one will fold the current selection. That can be useful when combined with the items from the Selection menu.
-# { "keys": ["ctrl+shift+["], "command": "fold" },
-# { "keys": ["ctrl+shift+]"], "command": "unfold" },
-# { "keys": ["ctrl+k", "ctrl+1"], "command": "fold_by_level", "args": {"level": 1} },
-# { "keys": ["ctrl+k", "ctrl+2"], "command": "fold_by_level", "args": {"level": 2} },
-# { "keys": ["ctrl+k", "ctrl+3"], "command": "fold_by_level", "args": {"level": 3} },
-# { "keys": ["ctrl+k", "ctrl+4"], "command": "fold_by_level", "args": {"level": 4} },
-# { "keys": ["ctrl+k", "ctrl+5"], "command": "fold_by_level", "args": {"level": 5} },
-# { "keys": ["ctrl+k", "ctrl+6"], "command": "fold_by_level", "args": {"level": 6} },
-# { "keys": ["ctrl+k", "ctrl+7"], "command": "fold_by_level", "args": {"level": 7} },
-# { "keys": ["ctrl+k", "ctrl+8"], "command": "fold_by_level", "args": {"level": 8} },
-# { "keys": ["ctrl+k", "ctrl+9"], "command": "fold_by_level", "args": {"level": 9} },
-# { "keys": ["ctrl+k", "ctrl+0"], "command": "unfold_all" },
-# { "keys": ["ctrl+k", "ctrl+j"], "command": "unfold_all" },
-# { "keys": ["ctrl+k", "ctrl+t"], "command": "fold_tag_attributes" },
+Project:
+TODO0 support demo/example project better.
+TODO1 search within project ntr files.
+TODO2 Back up project ntr only? files.
 
+Meta:
+TODO2 Publish notes somewhere - raw or rendered.
+TODO2 Make into package, maybe others. https://packagecontrol.io/docs/submitting_a_package.
 
-
-# Projects:
-# TODO support demo/example project better.
-# TODO search within project ntr files.
-# TODO Back up files.
-
-# TODO Publish notes somewhere - raw or rendered.
-
-# TODO Make into package, maybe others. https://packagecontrol.io/docs/submitting_a_package.
-
-# TODO Hierarchal section folding. Might be [tricky](https://github.com/sublimehq/sublime_text/issues/5423).
-# TODO Multiple projects.
-# TODO Show image file thumbnail as phantom or hover. Something fun with annotations, see sublime-markdown-popups.
-
+FUTURE:
+Hierarchal section folding. Might be [tricky](https://github.com/sublimehq/sublime_text/issues/5423).
+Multiple projects.
+Show image file thumbnail as phantom or hover. Something fun with annotations, see sublime-markdown-popups.
+"""
 
 #--------------------------- Types -------------------------------------------------
 
@@ -78,6 +69,9 @@ Ref = collections.namedtuple('Ref', 'name, srcfile, line')
 
 # All Targets found in all ntr files.
 _targets = []
+
+# # Cache.
+# _valid_target_names = set()
 
 # All Refs found in all ntr files.
 _refs = []
@@ -108,6 +102,18 @@ class NotrEvent(sublime_plugin.EventListener):
 
     def on_init(self, views):
         ''' First thing that happens when plugin/window created. Initialize everything. '''
+        global _store
+
+        # Get persisted info.
+        store_fn = sc.get_store_fn(NOTR_STORAGE_FILE)
+
+        if os.path.isfile(store_fn):
+            with open(store_fn, 'r') as fp:
+                values = json.load(fp)
+                _store = values
+        else:
+            # Assumes new file.
+            pass
 
         # Open and process notr files.
         _process_notr_files(views[0].window())
@@ -119,6 +125,13 @@ class NotrEvent(sublime_plugin.EventListener):
     def on_load(self, view):
         ''' Load a new file. View is valid so init it. '''
         self._init_fixed_hl(view)
+
+    # def on_pre_close(self, view):
+    #     ''' Save anything. '''
+    #     global _store
+    #     store_fn = sc.get_store_fn(NOTR_STORAGE_FILE)
+    #     with open(store_fn, 'w') as fp:
+    #         json.dump(_store, fp, indent=4)
 
     def on_post_save(self, view):
         ''' Called after a ntr view has been saved so reload all ntr files. Seems a bit brute force, how else? '''
@@ -161,11 +174,11 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
 
     # Prepared lists for quick panel.
     _sorted_tags = []
-    _sorted_targets = []
+    _targets = []
 
     def run(self, edit, filter_by_tag):
         self._sorted_tags.clear()
-        self._sorted_targets.clear()
+        self._targets.clear()
 
         if filter_by_tag:
             settings = sublime.load_settings(NOTR_SETTINGS_FILE)
@@ -204,36 +217,46 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
                 sublime.status_message('No targets with that tag')
 
     def show_targets(self, targets):
-        ''' Present target options to user. '''
-
+        ''' Present target options to user. Put the mru first, then the ones in the current file. '''
+        global _store
+        mru_targets = []
         main_targets = []
         other_targets = []
         panel_items = []
         current_file = self.view.file_name()
 
+        # Cache the mru targets to maintain order.
+        mru_targets_cache = {}
+
         for target in targets:
             if current_file is not None and os.path.samefile(target.srcfile, current_file):
                 main_targets.append(target)
+            elif target.name in _store["mru"]:
+                mru_targets_cache[target.name] = target
+                # mru_targets.append(target)
             else:
                 other_targets.append(target)
 
-        # Sort them all.
+        # Sort them all?
         # main_targets = sorted(main_targets)
         # other_targets = sorted(other_targets)
-        main_targets.extend(other_targets)
+        all_targets = []
+        for mru in _store["mru"]:
+            all_targets.append(mru_targets_cache[mru])
+        all_targets.extend(main_targets)
+        all_targets.extend(other_targets)
 
-        for target in main_targets:
+        for target in all_targets:
             panel_items.append(sublime.QuickPanelItem(trigger=f'{target.name}', kind=sublime.KIND_AMBIGUOUS))
-        # Combine the two.
-        self._sorted_targets = main_targets
+        self._targets = all_targets
         self.view.window().show_quick_panel(panel_items, on_select=self.on_sel_target)
 
     def on_sel_target(self, *args, **kwargs):
         sel = args[0]
-
         if sel >= 0:
             # Locate the target record.
-            target = self._sorted_targets[sel]
+            target = self._targets[sel]
+            _update_mru(target.name)
             if target.type == "section":
                 # Open the notr file and position it.
                 sc.wait_load_file(self.view.window(), target.srcfile, target.line)
@@ -247,7 +270,7 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
 
 #-----------------------------------------------------------------------------------
 class NotrFollowRefCommand(sublime_plugin.TextCommand):
-    ''' Open target from selected ref. '''
+    ''' Open target from selected ref. TODO0 mru? '''
 
     refs = []
 
@@ -302,7 +325,7 @@ class NotrFollowRefCommand(sublime_plugin.TextCommand):
 
 #-----------------------------------------------------------------------------------
 class NotrInsertRefCommand(sublime_plugin.TextCommand):
-    ''' Insert ref from list of known refs. '''
+    ''' Insert ref from list of known refs. TODO0 mru? '''
     refs = []
 
     def run(self, edit):
@@ -412,6 +435,35 @@ class NotrDumpCommand(sublime_plugin.WindowCommand):
 
 
 #-----------------------------------------------------------------------------------
+def _save_store():
+    ''' Save everything. '''
+    global _store
+    store_fn = sc.get_store_fn(NOTR_STORAGE_FILE)
+    with open(store_fn, 'w') as fp:
+        json.dump(_store, fp, indent=4)
+
+
+#-----------------------------------------------------------------------------------
+def _update_mru(new_val):
+    '''  '''
+    global _store
+
+    settings = sublime.load_settings(NOTR_SETTINGS_FILE)
+    valid_refs = _get_valid_refs(False)
+
+    new_list = [ ]
+    new_list.append(new_val)
+
+    # Remove duplicate and invalid names.
+    for s in _store["mru"]:
+        if s in valid_refs and s not in new_list and len(new_list) <= settings.get("mru_size"):
+            new_list.append(s)
+    _store["mru"] = new_list            
+
+    _save_store()
+
+
+#-----------------------------------------------------------------------------------
 def _user_error(path, line, msg):
     ''' Error in user edited file. '''
     _parse_errors.append(f'{path}({line}): {msg}')
@@ -420,9 +472,9 @@ def _user_error(path, line, msg):
 #-----------------------------------------------------------------------------------
 def _process_notr_files(window):
     ''' Get all ntr files and grab their goodies. '''
-
     _ntr_files.clear()
     _targets.clear()
+    _valid_target_names.clear()
     _refs.clear()
     _tags.clear()
     _parse_errors.clear()
@@ -479,7 +531,6 @@ def _process_notr_file(ntr_fn):
     Validity will be checked when all files processed.
     Returns (sections, links,refs)
     '''
-
     sections = []
     links = []
     refs = []
@@ -490,11 +541,11 @@ def _process_notr_file(ntr_fn):
             lines = file.read().splitlines()
             line_num = 1
 
-            # Get the things of interest defined in the file. Grep escape these .^$*+?()[{\|  syntax uses X?!*
+            # Get the things of interest defined in the file. TODO1? > Grep escape these .^$*+?()[{\|  syntax uses X?!*
             re_directives = re.compile(r'^:(.*)')
             re_links = re.compile(r'\[(.*)\]\((.*)\) *(?:\[(.*)\])?')
             re_refs = re.compile(r'\[\* *([^\]]*)\]')
-            re_sections = re.compile(r'^(#+ +[^\[]+) *(?:\[(.*)\])?') # TODO limit number of levels? or do something else?
+            re_sections = re.compile(r'^(#+ +[^\[]+) *(?:\[(.*)\])?') # TODO2 limit number of levels? or do something else?
 
             for line in lines:
 
@@ -608,7 +659,6 @@ def _process_notr_file(ntr_fn):
 #-----------------------------------------------------------------------------------
 def _get_valid_refs(sort):
     ''' Get all valid target for generating refs. '''
-
     # All valid ref targets.
     ref_targets = {}
 
@@ -625,7 +675,6 @@ def _get_valid_refs(sort):
 #-----------------------------------------------------------------------------------
 def _get_selection_for_scope(view, scope):
     ''' If the current region includes the scope return it otherwise None. '''
-
     sel_text = None
     caret = sc.get_single_caret(view)
     if caret is not None:

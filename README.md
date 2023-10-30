@@ -75,9 +75,11 @@ To run the demo:
 | notr_index          | Main notr file                             |                                            |
 | sort_tags_alpha     | Sort tags alphabetically else by frequency | true/false                                 |
 | visual_line_length  | For horizontal rule                        |                                            |
+| mru_size            | How many mru entries in goto selector      |                                            |
 | fill_str            | For horizontal rule                        |                                            |
 | fixed_hl            | Three sets of user keywords                |                                            |
 | fixed_hl_whole_word | User highlights option                     | true/false                                 |
+
 
 ## Color Scheme
 

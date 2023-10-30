@@ -26,7 +26,8 @@ Set the text tokens in your settings.
 
 `An inline chunk of raw text` and here is `another one` ok?
 
-```A block of raw text
+``` Title
+A block of raw text - could be code.
   - ServerName www.example.com
   - DocumentRoot http://www/example1
 ```
