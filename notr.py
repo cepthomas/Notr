@@ -22,7 +22,6 @@ _store = { "mru": []}
 
 """
 File mgmt:
-TODO0 Put MRU targets at top of selector.
 TODO1 Add non-ntr files to index. Follow files/etc directly without needing a ref.
 
 Formatting:
@@ -55,23 +54,20 @@ Show image file thumbnail as phantom or hover. Something fun with annotations, s
 # resource: what type points to
 # level: for section only
 # tags[] tags for targets
-# srcfile: ntr file path
+# file: ntr file path
 # line: ntr file line
-Target = collections.namedtuple('Target', 'type, name, resource, level, tags, srcfile, line')
+Target = collections.namedtuple('Target', 'type, name, resource, level, tags, file, line')
 
 # A reference to a Target.
 # name: target name
-# srcfile: ntr file path
+# file: ntr file path
 # line: ntr file line
-Ref = collections.namedtuple('Ref', 'name, srcfile, line')
+Ref = collections.namedtuple('Ref', 'name, file, line')
 
 #---------------------------- Globals -----------------------------------------------
 
 # All Targets found in all ntr files.
 _targets = []
-
-# # Cache.
-# _valid_target_names = set()
 
 # All Refs found in all ntr files.
 _refs = []
@@ -123,15 +119,18 @@ class NotrEvent(sublime_plugin.EventListener):
             self._init_fixed_hl(view)
 
     def on_load(self, view):
-        ''' Load a new file. View is valid so init it. '''
+        ''' Loaded a new file. View is valid so init it. '''
         self._init_fixed_hl(view)
+        # If it's a notr file, update mru.
+        fn = view.file_name()
+        print(">>>", fn)
+        target = _get_target_for_file(fn)
+        if target is not None:
+            _update_mru(target.name)
 
-    # def on_pre_close(self, view):
-    #     ''' Save anything. '''
-    #     global _store
-    #     store_fn = sc.get_store_fn(NOTR_STORAGE_FILE)
-    #     with open(store_fn, 'w') as fp:
-    #         json.dump(_store, fp, indent=4)
+    def on_pre_close(self, view):
+        ''' Save anything. '''
+        _save_store()
 
     def on_post_save(self, view):
         ''' Called after a ntr view has been saved so reload all ntr files. Seems a bit brute force, how else? '''
@@ -229,20 +228,20 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
         mru_targets_cache = {}
 
         for target in targets:
-            if current_file is not None and os.path.samefile(target.srcfile, current_file):
+            if current_file is not None and os.path.samefile(target.file, current_file):
                 main_targets.append(target)
             elif target.name in _store["mru"]:
                 mru_targets_cache[target.name] = target
-                # mru_targets.append(target)
             else:
                 other_targets.append(target)
 
-        # Sort them all?
+        # Sort?
         # main_targets = sorted(main_targets)
         # other_targets = sorted(other_targets)
         all_targets = []
-        for mru in _store["mru"]:
-            all_targets.append(mru_targets_cache[mru])
+        for mru in _store["mru"]: # ordered
+            if mru in mru_targets_cache:
+                all_targets.append(mru_targets_cache[mru])
         all_targets.extend(main_targets)
         all_targets.extend(other_targets)
 
@@ -259,7 +258,7 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
             _update_mru(target.name)
             if target.type == "section":
                 # Open the notr file and position it.
-                sc.wait_load_file(self.view.window(), target.srcfile, target.line)
+                sc.wait_load_file(self.view.window(), target.file, target.line)
                 valid = True
             else:
                 valid = sc.open_file(target.resource)
@@ -287,7 +286,7 @@ class NotrFollowRefCommand(sublime_plugin.TextCommand):
                 if target.name == tref:
                     if target.type == "section":
                         # Open the notr file and position it.
-                        sc.wait_load_file(self.view.window(), target.srcfile, target.line)
+                        sc.wait_load_file(self.view.window(), target.file, target.line)
                         valid = True
                     else:
                         valid = sc.open_file(target.resource)
@@ -313,7 +312,7 @@ class NotrFollowRefCommand(sublime_plugin.TextCommand):
                 if target.name == tref:
                     if target.type == "section":
                         # Open the notr file and position it.
-                        sc.wait_load_file(self.view.window(), target.srcfile, target.line)
+                        sc.wait_load_file(self.view.window(), target.file, target.line)
                         valid = True
                     else:
                         valid = sc.open_file(target.resource)
@@ -444,22 +443,20 @@ def _save_store():
 
 
 #-----------------------------------------------------------------------------------
-def _update_mru(new_val):
+def _update_mru(name):
     '''  '''
     global _store
-
     settings = sublime.load_settings(NOTR_SETTINGS_FILE)
     valid_refs = _get_valid_refs(False)
 
-    new_list = [ ]
-    new_list.append(new_val)
+    new_list = []
+    new_list.append(name)
 
     # Remove duplicate and invalid names.
     for s in _store["mru"]:
         if s in valid_refs and s not in new_list and len(new_list) <= settings.get("mru_size"):
             new_list.append(s)
     _store["mru"] = new_list            
-
     _save_store()
 
 
@@ -474,7 +471,6 @@ def _process_notr_files(window):
     ''' Get all ntr files and grab their goodies. '''
     _ntr_files.clear()
     _targets.clear()
-    _valid_target_names.clear()
     _refs.clear()
     _tags.clear()
     _parse_errors.clear()
@@ -518,7 +514,7 @@ def _process_notr_files(window):
     valid_refs = _get_valid_refs(False)  # unsorted
     for ref in _refs:
         if ref.name not in valid_refs:
-            _user_error(ref.srcfile, ref.line, f'Invalid ref name:{ref.name}')
+            _user_error(ref.file, ref.line, f'Invalid ref name:{ref.name}')
 
     if len(_parse_errors) > 0:
         _parse_errors.insert(0, "Errors in your configuration:")
@@ -657,6 +653,15 @@ def _process_notr_file(ntr_fn):
 
 
 #-----------------------------------------------------------------------------------
+def _get_target_for_file(fn):
+    ''' Get valid target for the file or None. '''
+    for target in _targets:
+        if os.path.samefile(fn, target.file):
+            return target
+    return None
+
+
+#-----------------------------------------------------------------------------------
 def _get_valid_refs(sort):
     ''' Get all valid target for generating refs. '''
     # All valid ref targets.
@@ -665,9 +670,9 @@ def _get_valid_refs(sort):
     for target in _targets:
         tname = target.name
         if tname not in ref_targets:
-            ref_targets[tname] = tname  # f'{target.srcfile}({target.line})'
+            ref_targets[tname] = tname  # f'{target.file}({target.line})'
         else:
-            _user_error(target.srcfile, target.line, f'Duplicate target name:{target.name} see:{ref_targets[tname]}')
+            _user_error(target.file, target.line, f'Duplicate target name:{target.name} see:{ref_targets[tname]}')
 
     return sorted(ref_targets) if sort else ref_targets
 
