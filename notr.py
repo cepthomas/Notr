@@ -1,10 +1,8 @@
 import os
-import platform
 import re
 import glob
 import collections
 import random
-import subprocess
 import json
 import sublime
 import sublime_plugin
@@ -18,33 +16,16 @@ NOTR_STORAGE_FILE = "notr.store"
 IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 
 # Persisted info. This is global across all ST instances.
-_store = { "mru": []}
+_store = {"mru": []}
 
-"""
-File mgmt:
-TODO1 Add non-ntr files to index. Follow files/etc directly without needing a ref.
 
-Formatting:
-TODO1 Indent/dedent lists. Toggle bullets. Code chunks get '```'. Quote chunks get '> '. Use different colors for each of X?!*
-TODO1 support text formatting inside lists, tables, etc. See link in list for example.
+# FUTURE:
+# - Hierarchal section folding. Might be [tricky](https://github.com/sublimehq/sublime_text/issues/5423).
+# - Multiple projects. One would be the demo.
+# - Show image file thumbnail as phantom or hover. Something fun with annotations, see sublime-markdown-popups.
+# - Make into package, maybe others. https://packagecontrol.io/docs/submitting_a_package.
+# - Backup notr project files.
 
-Visual:
-TODO1 Simple section folding. C:\\Users\\cepth\\OneDrive\\OneDriveDocuments\\tech\\sublime\\folding-hack.py ??https://github.com/jamalsenouci/sublimetext-syntaxfold.
-
-Project:
-TODO0 support demo/example project better.
-TODO1 search within project ntr files.
-TODO2 Back up project ntr only? files.
-
-Meta:
-TODO2 Publish notes somewhere - raw or rendered.
-TODO2 Make into package, maybe others. https://packagecontrol.io/docs/submitting_a_package.
-
-FUTURE:
-Hierarchal section folding. Might be [tricky](https://github.com/sublimehq/sublime_text/issues/5423).
-Multiple projects.
-Show image file thumbnail as phantom or hover. Something fun with annotations, see sublime-markdown-popups.
-"""
 
 #--------------------------- Types -------------------------------------------------
 
@@ -218,7 +199,6 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
     def show_targets(self, targets):
         ''' Present target options to user. Put the mru first, then the ones in the current file. '''
         global _store
-        mru_targets = []
         main_targets = []
         other_targets = []
         panel_items = []
@@ -239,7 +219,7 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
         # main_targets = sorted(main_targets)
         # other_targets = sorted(other_targets)
         all_targets = []
-        for mru in _store["mru"]: # ordered
+        for mru in _store["mru"]:  # ordered
             if mru in mru_targets_cache:
                 all_targets.append(mru_targets_cache[mru])
         all_targets.extend(main_targets)
@@ -268,16 +248,17 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
 
 
 #-----------------------------------------------------------------------------------
-class NotrFollowRefCommand(sublime_plugin.TextCommand):
-    ''' Open target from selected ref. TODO0 mru? '''
+class NotrFollowCommand(sublime_plugin.TextCommand):
+    ''' Open target from selected ref. '''
 
     refs = []
 
     def run(self, edit):
         valid = True  # default
-        # Determine if user has selected a specific ref to follow, otherwise show the list of all.
+        # Determine if user has selected a specific ref or link to follow, otherwise show the list of all.
 
         tref = _get_selection_for_scope(self.view, 'markup.link.refname.notr')
+        tlink = _get_selection_for_scope(self.view, 'markup.underline.link.notr')
 
         if tref is not None:  # explicit ref to selected element. do immediate.
             # Get the corresponding target spec. Could be a dict?
@@ -295,6 +276,13 @@ class NotrFollowRefCommand(sublime_plugin.TextCommand):
             if not valid:
                 sc.slog(sc.CAT_ERR, f'Invalid reference: {self.view.file_name()} :{tref}')
 
+        elif tlink is not None:  # explicit link. do immediate.
+            fn = sc.expand_vars(tlink)
+            valid = sc.open_file(fn)
+            print(">>>", valid, fn)
+            if not valid:
+                sc.slog(sc.CAT_ERR, f'Invalid link: {tlink}')
+
         else:
             # Show a quickpanel of all target names.
             self.refs = _get_valid_refs(True)  # sorted
@@ -308,14 +296,12 @@ class NotrFollowRefCommand(sublime_plugin.TextCommand):
         if sel >= 0:
             tref = self.refs[sel]            
             for target in _targets:
-                valid = False
                 if target.name == tref:
                     if target.type == "section":
                         # Open the notr file and position it.
                         sc.wait_load_file(self.view.window(), target.file, target.line)
-                        valid = True
                     else:
-                        valid = sc.open_file(target.resource)
+                        sc.open_file(target.resource)
                     break
 
     # def is_visible(self):
@@ -324,7 +310,7 @@ class NotrFollowRefCommand(sublime_plugin.TextCommand):
 
 #-----------------------------------------------------------------------------------
 class NotrInsertRefCommand(sublime_plugin.TextCommand):
-    ''' Insert ref from list of known refs. TODO0 mru? '''
+    ''' Insert ref from list of known refs. '''
     refs = []
 
     def run(self, edit):
@@ -499,16 +485,16 @@ def _process_notr_files(window):
             _user_error(NOTR_SETTINGS_FILE, -1, f'Invalid path in settings {npath}')
 
     # Process the files. Targets are ordered by sections then files/uris.
-    s = []
-    l = []
+    sections = []
+    uris = []
     for nfile in _ntr_files:
         fparts = _process_notr_file(nfile)
         if fparts is not None:
-            s.extend(fparts[0])
-            l.extend(fparts[1])
+            sections.extend(fparts[0])
+            uris.extend(fparts[1])
             _refs.extend(fparts[2])
-    _targets.extend(s)
-    _targets.extend(l)
+    _targets.extend(sections)
+    _targets.extend(uris)
 
     # Check all user refs are valid.
     valid_refs = _get_valid_refs(False)  # unsorted
@@ -541,7 +527,7 @@ def _process_notr_file(ntr_fn):
             re_directives = re.compile(r'^:(.*)')
             re_links = re.compile(r'\[(.*)\]\((.*)\) *(?:\[(.*)\])?')
             re_refs = re.compile(r'\[\* *([^\]]*)\]')
-            re_sections = re.compile(r'^(#+ +[^\[]+) *(?:\[(.*)\])?') # TODO2 limit number of levels? or do something else?
+            re_sections = re.compile(r'^(#+ +[^\[]+) *(?:\[(.*)\])?')  # TODO2 limit number of levels? or do something else?
 
             for line in lines:
 
@@ -649,7 +635,7 @@ def _process_notr_file(ntr_fn):
         sc.slog(sc.CAT_ERR, f'Error processing {ntr_fn}: {e}')
         raise
 
-    return None if no_index else (sections, links,refs)
+    return None if no_index else (sections, links, refs)
 
 
 #-----------------------------------------------------------------------------------

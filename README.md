@@ -47,7 +47,7 @@ To run the demo:
     ],
 }
 ```
-- Implement color scheme per [Color Scheme](#color-scheme).
+- Optionally implement color scheme per [Color Scheme](#color-scheme).
 - Now open `test_files/notr-spec.ntr`. Test drive the various context menu selections.
 
 
@@ -58,7 +58,7 @@ To run the demo:
 | notr_insert_target_from_clip   | Context  | Insert a target from clipboard                    |                                       |
 | notr_insert_ref                | Context  | Insert a ref from selector                        |                                       |
 | notr_goto_target               | Context  | Go to a target from selector                      | filter_by_tag: true, select tag first |
-| notr_follow_ref                | Context  | Go to a reference from selector                   |                                       |
+| notr_follow                    | Context  | Go to a reference or link from selector           |                                       |
 | notr_insert_hrule              | Context  | Make a line                                       | fill_str: "=", reps: 20               |
 | table_fit                      | Context  | Fit table contents to columns                     |                                       |
 | table_insert_col               | Context  | Insert column at caret                            |                                       |

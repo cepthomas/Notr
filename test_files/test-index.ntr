@@ -1,18 +1,17 @@
 
-This file gets loaded first.
-Put stuff like path aliases and common links here.
+- This file gets loaded first.
+- Put stuff like path aliases and common links here.
+- Use forward slash separator for linux compatibility.
 
 Directives start with `:`.
 
+This means don't add this file to the index. References are still included.
+:NO_INDEX
+
 Aliases for paths. They go into env and can be used in your links along with any other env var.
-If you do stuff like this, `ST_PKGS` needs to be set in your env.
+This can be useful for custom paths (like `ST_PKGS`) you set in your env.
 :NOTR_PATH=$ST_PKGS/Notr
 
-C:\Users\cepth\AppData\Roaming\Sublime Text\Packages\Notr
-Note: use forward slash separator for linux compatibility.
-
-This means don't add this file to the index. References are functional.
-`:NO_INDEX`
 
 # Common Links [tag2 tag9]
 

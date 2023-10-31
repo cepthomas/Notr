@@ -20,5 +20,5 @@
         ]
     },
     { "caption": "Goto Target", "command": "notr_goto_target", "args" : {"filter_by_tag" : false} },
-    { "caption": "Follow Ref", "command": "notr_follow_ref" },
+    { "caption": "Follow", "command": "notr_follow" },
 ]
