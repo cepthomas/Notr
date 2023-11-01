@@ -18,9 +18,13 @@ IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 # Persisted info. This is global across all ST instances.
 _store = {"mru": []}
 
+# TODO1 Indent/dedent lists. Toggle bullets. Code chunks get '```'. Quote chunks get '> '. Use different colors for each of X?!*
+# TODO1 Text formatting inside lists, tables, etc. See link in list for example.
+# TODO1 Simple section folding. C:\\Users\\cepth\\OneDrive\\OneDriveDocuments\\tech\\sublime\\folding-hack.py ??https://github.com/jamalsenouci/sublimetext-syntaxfold.
+# TODO2 Publish notes somewhere - raw or rendered.
 
 # FUTURE:
-# - Hierarchal section folding. Might be [tricky](https://github.com/sublimehq/sublime_text/issues/5423).
+# - Hierarchal section folding. Might be tricky - https://github.com/sublimehq/sublime_text/issues/5423.
 # - Multiple projects. One would be the demo.
 # - Show image file thumbnail as phantom or hover. Something fun with annotations, see sublime-markdown-popups.
 # - Make into package, maybe others. https://packagecontrol.io/docs/submitting_a_package.
@@ -525,9 +529,9 @@ def _process_notr_file(ntr_fn):
 
             # Get the things of interest defined in the file. TODO1? > Grep escape these .^$*+?()[{\|  syntax uses X?!*
             re_directives = re.compile(r'^:(.*)')
-            re_links = re.compile(r'\[(.*)\]\((.*)\) *(?:\[(.*)\])?')
+            re_links = re.compile(r'\[(.*)\]\((.*)\) *(?:\[(.*)\])?') # TODO1 handle unnamed ok  - anonymous
             re_refs = re.compile(r'\[\* *([^\]]*)\]')
-            re_sections = re.compile(r'^(#+ +[^\[]+) *(?:\[(.*)\])?')  # TODO2 limit number of levels? or do something else?
+            re_sections = re.compile(r'^(#+ +[^\[]+) *(?:\[(.*)\])?')  # TODO1 limit number of levels? or do something else? make targets for one # only.
 
             for line in lines:
 
@@ -572,7 +576,7 @@ def _process_notr_file(ntr_fn):
                             elif res.startswith('http'):
                                 ttype = "uri"
                             elif os.path.exists(res):
-                                ttype = "path"
+                                ttype = "path" # TODO1 ? discriminate file and folder
                             else:
                                 _user_error(ntr_fn, line_num, f'Invalid target resource: {res}')
 
