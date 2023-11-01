@@ -19,6 +19,8 @@ IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 # TODO1 Text formatting inside lists, tables, etc. See link in list for example.
 # TODO1 Simple section folding. C:\\Users\\cepth\\OneDrive\\OneDriveDocuments\\tech\\sublime\\folding-hack.py ??https://github.com/jamalsenouci/sublimetext-syntaxfold.
 # TODO2 Publish notes somewhere - raw or rendered.
+# TODO2 Detect all bad links/refs/etc.
+
 
 # FUTURE:
 # - Hierarchal section folding. Might be tricky - https://github.com/sublimehq/sublime_text/issues/5423.
@@ -46,7 +48,7 @@ Target = collections.namedtuple('Target', 'type, name, resource, level, tags, fi
 # line: ntr file line
 Ref = collections.namedtuple('Ref', 'name, file, line')
 
-#---------------------------- Globals -----------------------------------------------
+#---------------------------- Data -----------------------------------------------
 
 # All Targets found in all ntr files.
 _targets = []
@@ -54,18 +56,12 @@ _targets = []
 # All Refs found in all ntr files.
 _refs = []
 
-# # All tags found in all ntr files. Key is tag text, value is count.
-# _tags = {}
-
 # Persisted info.
 _store = {"mru": []}
 
 # Parse errors to report to user.
 _parse_errors = []
 
-
-# # All processed ntr files, fully qualified paths.
-# _ntr_files = []
 
 #-----------------------------------------------------------------------------------
 def plugin_loaded():
@@ -161,23 +157,12 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
     _targets_to_show = []
 
     def run(self, edit, filter_by_tag):
-        # self._tags.clear()
-        # self._targets.clear()
-
         if filter_by_tag:
             self._tags = _get_tags()
-            # settings = sublime.load_settings(NOTR_SETTINGS_FILE)
-            # sort_tags_alpha = settings.get('sort_tags_alpha')
             panel_items = []
-
-            # if sort_tags_alpha:
-            #     self._sorted_tags = sorted(_tags)
-            # else:  # Sort by frequency.
-            #     self._sorted_tags = [x[0] for x in sorted(_tags.items(), key=lambda x:x[1], reverse=True)]
 
             for tag in self._tags:
                 panel_items.append(sublime.QuickPanelItem(trigger=tag, kind=sublime.KIND_AMBIGUOUS))
-                # panel_items.append(sublime.QuickPanelItem(trigger=tag, annotation=f"qty:{self._tags[tag]}", kind=sublime.KIND_AMBIGUOUS))
             self.view.window().show_quick_panel(panel_items, on_select=self.on_sel_tag)
         else:
             self.show_targets(_get_targets(mru_first=True, current_file=self.view.file_name()))
@@ -205,38 +190,11 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
 
     def show_targets(self, targets):
         ''' Present target options to user. '''
-        self._targets_to_show = targets  #_get_targets(mru_first=True, current_file=self.view.file_name())
+        self._targets_to_show = targets
         panel_items = []
-
-        # # global _store
-        # main_targets = []
-        # other_targets = []
-        # current_file = self.view.file_name()
-
-        # # Cache the mru targets to maintain order.
-        # mru_targets_cache = {}
-
-        # for target in targets:
-        #     if current_file is not None and os.path.samefile(target.file, current_file):
-        #         main_targets.append(target)
-        #     elif target.name in _store["mru"]:
-        #         mru_targets_cache[target.name] = target
-        #     else:
-        #         other_targets.append(target)
-
-        # # Sort?
-        # # main_targets = sorted(main_targets)
-        # # other_targets = sorted(other_targets)
-        # self._targets_to_show.clear()
-        # for mru in _store["mru"]:  # ordered
-        #     if mru in mru_targets_cache:
-        #         self._targets_to_show.append(mru_targets_cache[mru])
-        # self._targets_to_show.extend(main_targets)
-        # self._targets_to_show.extend(other_targets)
 
         for target in self._targets_to_show:
             panel_items.append(sublime.QuickPanelItem(trigger=f'{target.name}', kind=sublime.KIND_AMBIGUOUS))
-        # self._targets_to_show = self._targets_to_show
         self.view.window().show_quick_panel(panel_items, on_select=self.on_sel_target)
 
     def on_sel_target(self, *args, **kwargs):
@@ -248,10 +206,8 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
             if target.type == "section":
                 # Open the notr file and position it.
                 sc.wait_load_file(self.view.window(), target.file, target.line)
-                # valid = True
             else:
                 sc.open_file(target.resource)
-                # valid = sc.open_file(target.resource)
 
     def is_visible(self):
         return True
@@ -259,19 +215,17 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
 
 #-----------------------------------------------------------------------------------
 class NotrFollowCommand(sublime_plugin.TextCommand):
-    ''' Open target from selected ref. '''
-
+    ''' Open target from selected ref or link. '''
     _refs = []
 
     def run(self, edit):
-        valid = True  # default
         # Determine if user has selected a specific ref or link to follow, otherwise show the list of all.
-
+        valid = True  # default
         tref = _get_selection_for_scope(self.view, 'markup.link.refname.notr')
         tlink = _get_selection_for_scope(self.view, 'markup.underline.link.notr')
 
         if tref is not None:  # explicit ref to selected element. do immediate.
-            # Get the corresponding target spec. Could be a dict?
+            # Get the corresponding target spec.
             for target in _targets:
                 valid = False
                 if target.name == tref:
@@ -293,10 +247,8 @@ class NotrFollowCommand(sublime_plugin.TextCommand):
             if not valid:
                 sc.slog(sc.CAT_ERR, f'Invalid link: {tlink}')
 
-        else:
-            # Show a quickpanel of all target names.
+        else: # Show a quickpanel of all target names.
             panel_items = []
-            # self._refs = _get_refs(True)  # sorted
             self._targets = _get_targets(sort=True, mru_first=True, current_file=self.view.file_name())
             for target in self._targets:
                 panel_items.append(sublime.QuickPanelItem(trigger=target.name, kind=sublime.KIND_AMBIGUOUS))
@@ -437,7 +389,6 @@ class NotrDumpCommand(sublime_plugin.WindowCommand):
 #-----------------------------------------------------------------------------------
 def _save_store():
     ''' Save everything. '''
-    # global _store
     store_fn = sc.get_store_fn(NOTR_STORAGE_FILE)
     with open(store_fn, 'w') as fp:
         json.dump(_store, fp, indent=4)
@@ -446,7 +397,6 @@ def _save_store():
 #-----------------------------------------------------------------------------------
 def _update_mru(name):
     '''  '''
-    # global _store
     settings = sublime.load_settings(NOTR_SETTINGS_FILE)
     # valid_refs = _get_refs(False)
     valid_refs = []
@@ -473,12 +423,10 @@ def _user_error(path, line, msg):
 #-----------------------------------------------------------------------------------
 def _process_notr_files(window):
     ''' Get all ntr files and grab their goodies. '''
-    # _ntr_files.clear()
     _targets.clear()
     _refs.clear()
-    ntr_files = []
-    # _tags.clear()
     _parse_errors.clear()
+    ntr_files = []
 
     # Open and process all notr files.
     settings = sublime.load_settings(NOTR_SETTINGS_FILE)
@@ -521,8 +469,6 @@ def _process_notr_files(window):
     valid_refs = []
     for target in valid_targets:
         valid_refs.append(target.name)
-
-    print("XXX", valid_targets)
 
     for ref in _refs:
         if ref.name not in valid_refs:
@@ -693,31 +639,6 @@ def _get_ntr_files():
     return sorted(fns)
 
 
-# #-----------------------------------------------------------------------------------
-# def _get_target_for_file(fn):
-#     ''' Get target associated with the the file or None. '''
-#     for target in _targets:
-#         if os.path.samefile(fn, target.file):
-#             return target
-#     return None
-
-
-# #-----------------------------------------------------------------------------------
-# def _get_refs(sort):
-#     ''' Get all valid target refs. '''
-#     # All valid ref targets.
-#     refs = {}
-
-#     for target in _targets:
-#         tname = target.name
-#         if tname not in refs:
-#             refs[tname] = tname
-#         else:
-#             _user_error(target.file, target.line, f'Duplicate target name:{target.name} see:{refs[tname]}')
-
-#     return sorted(refs) if sort else refs
-
-
 #-----------------------------------------------------------------------------------
 def _get_targets(**kwargs):
 
@@ -731,7 +652,6 @@ def _get_targets(**kwargs):
     # global _store
     main_targets = []
     other_targets = []
-    # panel_items = []
 
     # Args.
     sort = True if "sort" in kwargs and kwargs["sort"] else False
