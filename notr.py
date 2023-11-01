@@ -104,10 +104,10 @@ class NotrEvent(sublime_plugin.EventListener):
         # View is valid so init it.
         self._init_fixed_hl(view)
         
-        # If it's a notr file of interest, update mru.
-        for target in _targets:
-            if os.path.samefile(view.file_name(), target.file):
-                _update_mru(target.name)
+        # # If it's a notr file of interest, update mru. TODO1 not
+        # for target in _targets:
+        #     if os.path.samefile(view.file_name(), target.file):
+        #         _update_mru(target.name)
 
     def on_pre_close(self, view):
         ''' Save anything. '''
@@ -243,7 +243,6 @@ class NotrFollowCommand(sublime_plugin.TextCommand):
         elif tlink is not None:  # explicit link. do immediate.
             fn = sc.expand_vars(tlink)
             valid = sc.open_file(fn)
-            # print(">>>", valid, fn)
             if not valid:
                 sc.slog(sc.CAT_ERR, f'Invalid link: {tlink}')
 
@@ -279,7 +278,6 @@ class NotrInsertRefCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         # Show a quickpanel of all target names.
         panel_items = []
-        # self._refs = _get_refs(True)
         self._targets = _get_targets(sort=True, mru_first=True, current_file=self.view.file_name())
         for target in self._targets:
             panel_items.append(sublime.QuickPanelItem(trigger=target.name, kind=sublime.KIND_AMBIGUOUS))
@@ -387,40 +385,6 @@ class NotrDumpCommand(sublime_plugin.WindowCommand):
 
 
 #-----------------------------------------------------------------------------------
-def _save_store():
-    ''' Save everything. '''
-    store_fn = sc.get_store_fn(NOTR_STORAGE_FILE)
-    with open(store_fn, 'w') as fp:
-        json.dump(_store, fp, indent=4)
-
-
-#-----------------------------------------------------------------------------------
-def _update_mru(name):
-    '''  '''
-    settings = sublime.load_settings(NOTR_SETTINGS_FILE)
-    # valid_refs = _get_refs(False)
-    valid_refs = []
-    for target in _get_targets():
-        valid_refs.append(target.name)
-
-    new_list = []
-    new_list.append(name)  # front
-
-    # Remove duplicate and invalid names.
-    for s in _store["mru"]:
-        if s in valid_refs and s not in new_list and len(new_list) <= settings.get("mru_size"):
-            new_list.append(s)
-    _store["mru"] = new_list            
-    _save_store()
-
-
-#-----------------------------------------------------------------------------------
-def _user_error(path, line, msg):
-    ''' Error in user edited file. '''
-    _parse_errors.append(f'{path}({line}): {msg}')
-
-
-#-----------------------------------------------------------------------------------
 def _process_notr_files(window):
     ''' Get all ntr files and grab their goodies. '''
     _targets.clear()
@@ -464,7 +428,6 @@ def _process_notr_files(window):
     _targets.extend(uris)
 
     # Check all user refs are valid.
-    # valid_refs = _get_refs(False)
     valid_targets = _get_targets()
     valid_refs = []
     for target in valid_targets:
@@ -495,15 +458,15 @@ def _process_notr_file(ntr_fn):
             lines = file.read().splitlines()
             line_num = 1
 
-            # Get the things of interest defined in the file. TODO1? > Grep escape these .^$*+?()[{\|  syntax uses X?!*
+            # Get the things of interest defined in the file.
             re_directives = re.compile(r'^:(.*)')
             re_links = re.compile(r'\[(.*)\]\((.*)\) *(?:\[(.*)\])?') # TODO1 handle unnamed ok  - anonymous
             re_refs = re.compile(r'\[\* *([^\]]*)\]')
-            re_sections = re.compile(r'^(#+ +[^\[]+) *(?:\[(.*)\])?')  # TODO1 limit number of levels? or do something else? make targets for one # only.
+            re_sections = re.compile(r'^(#+ +[^\[]+) *(?:\[(.*)\])?')
 
             for line in lines:
 
-                ### Directives, aliases.
+                ### Directives/aliases.
                 # :MY_PATH=some/where/my
                 # :NO_INDEX
                 matches = re_directives.findall(line)
@@ -554,9 +517,6 @@ def _process_notr_file(ntr_fn):
                                 if len(m) >= 2:
                                     tags = m[2].strip().split()
                                 links.append(Target(ttype, name, res, 0, tags, ntr_fn, line_num))
-                                # # Update global tags.
-                                # for tag in tags:
-                                #     _tags[tag] = _tags[tag] + 1 if tag in _tags else 1
                     else:
                         _user_error(ntr_fn, line_num, 'Invalid syntax')
 
@@ -584,7 +544,7 @@ def _process_notr_file(ntr_fn):
                         content = m[0].strip().split(None, 1)
                         if len(content) == 2:
                             hashes = content[0].strip()
-                            name = f'{_get_froot(ntr_fn)}#{content[1].strip()}'
+                            name = f'{_get_froot(ntr_fn)}{hashes}{content[1].strip()}'
                         else:
                             valid = False
 
@@ -594,10 +554,8 @@ def _process_notr_file(ntr_fn):
                         valid = False
 
                     if valid:
-                        sections.append(Target("section", name, "", len(hashes), tags, ntr_fn, line_num))
-                        # # Update global tags.
-                        # for tag in tags:
-                        #     _tags[tag] = _tags[tag] + 1 if tag in _tags else 1
+                        if len(hashes) == 1: # TODO2 minimize clutter option?
+                            sections.append(Target("section", name, "", len(hashes), tags, ntr_fn, line_num))
                     else:
                         _user_error(ntr_fn, line_num, 'Invalid syntax')
 
@@ -649,7 +607,6 @@ def _get_targets(**kwargs):
         filter_by_tags: filter by tags
         returns a list per request
     '''
-    # global _store
     main_targets = []
     other_targets = []
 
@@ -700,6 +657,41 @@ def _get_selection_for_scope(view, scope):
                 sel_text = view.substr(reg).strip()
 
     return sel_text
+
+
+#-----------------------------------------------------------------------------------
+def _update_mru(name):
+    ''' Update the mru list. '''
+    settings = sublime.load_settings(NOTR_SETTINGS_FILE)
+    valid_refs = []
+    for target in _get_targets():
+        valid_refs.append(target.name)
+
+    new_list = []
+    new_list.append(name)  # to front
+
+    # Remove duplicate and invalid names.
+    print(f'111:{_store["mru"]}')
+    for s in _store["mru"]:
+        if s in valid_refs and s not in new_list and len(new_list) <= settings.get("mru_size"):
+            new_list.append(s)
+    _store["mru"] = new_list            
+    print(f'222:{_store["mru"]}')
+    _save_store()
+
+
+#-----------------------------------------------------------------------------------
+def _save_store():
+    ''' Save everything. '''
+    store_fn = sc.get_store_fn(NOTR_STORAGE_FILE)
+    with open(store_fn, 'w') as fp:
+        json.dump(_store, fp, indent=4)
+
+
+#-----------------------------------------------------------------------------------
+def _user_error(path, line, msg):
+    ''' Error in user edited file. '''
+    _parse_errors.append(f'{path}({line}): {msg}')
 
 
 #-----------------------------------------------------------------------------------

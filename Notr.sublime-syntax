@@ -102,7 +102,7 @@ contexts:
     - match: '^([ ]*)([-X\?!\*])[ ]+'
       captures:
         1: markup.list.indent.notr
-        2: markup.list.marker.notr
+        2: markup.list.marker.notr # X?!*
       push: list-content
 
   list-content:
