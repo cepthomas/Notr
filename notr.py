@@ -19,8 +19,7 @@ IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 # TODO1 Text formatting inside lists, tables, etc. See link in list for example.
 # TODO1 Simple section folding. C:\\Users\\cepth\\OneDrive\\OneDriveDocuments\\tech\\sublime\\folding-hack.py ??https://github.com/jamalsenouci/sublimetext-syntaxfold.
 # TODO2 Publish notes somewhere - raw or rendered.
-# TODO2 Detect all bad links/refs/etc.
-
+# TODO2 Sticky targets in list.
 
 # FUTURE:
 # - Hierarchal section folding. Might be tricky - https://github.com/sublimehq/sublime_text/issues/5423.
@@ -56,8 +55,8 @@ _targets = []
 # All Refs found in all ntr files.
 _refs = []
 
-# Persisted info.
-_store = {"mru": []}
+# Persisted mru.
+_mru = []
 
 # Parse errors to report to user.
 _parse_errors = []
@@ -79,18 +78,7 @@ class NotrEvent(sublime_plugin.EventListener):
 
     def on_init(self, views):
         ''' First thing that happens when plugin/window created. Initialize everything. '''
-        global _store
-
-        # Get persisted info.
-        store_fn = sc.get_store_fn(NOTR_STORAGE_FILE)
-
-        if os.path.isfile(store_fn):
-            with open(store_fn, 'r') as fp:
-                values = json.load(fp)
-                _store = values
-        else:
-            # Assumes new file.
-            pass
+        _read_store()
 
         # Open and process notr files.
         _process_notr_files(views[0].window())
@@ -103,15 +91,10 @@ class NotrEvent(sublime_plugin.EventListener):
         ''' Loaded a new file. '''
         # View is valid so init it.
         self._init_fixed_hl(view)
-        
-        # # If it's a notr file of interest, update mru. TODO1 not
-        # for target in _targets:
-        #     if os.path.samefile(view.file_name(), target.file):
-        #         _update_mru(target.name)
 
     def on_pre_close(self, view):
         ''' Save anything. '''
-        _save_store()
+        _write_store()
 
     def on_post_save(self, view):
         ''' Called after a ntr view has been saved so reload all ntr files. Seems a bit brute force, how else? '''
@@ -154,7 +137,7 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
 
     # Prepared lists for quick panel.
     _tags = []
-    _targets_to_show = []
+    _targets_to_select = []
 
     def run(self, edit, filter_by_tag):
         if filter_by_tag:
@@ -178,22 +161,22 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
             self.view.window().run_command("hide_overlay")
 
             # Filter per tag selection.
-            filtered_targets = []
+            tag_targets = []
             for target in _targets:
                 if sel_tag in target.tags:
-                    filtered_targets.append(target)
+                    tag_targets.append(target)
 
-            if len(filtered_targets) > 0:
-                self.show_targets(filtered_targets)
+            if len(tag_targets) > 0:
+                self.show_targets(tag_targets)
             else:
                 sublime.status_message('No targets with that tag')
 
     def show_targets(self, targets):
         ''' Present target options to user. '''
-        self._targets_to_show = targets
+        self._targets_to_select = targets
         panel_items = []
 
-        for target in self._targets_to_show:
+        for target in self._targets_to_select:
             panel_items.append(sublime.QuickPanelItem(trigger=f'{target.name}', kind=sublime.KIND_AMBIGUOUS))
         self.view.window().show_quick_panel(panel_items, on_select=self.on_sel_target)
 
@@ -201,12 +184,12 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
         sel = args[0]
         if sel >= 0:
             # Locate the target record.
-            target = self._targets_to_show[sel]
+            target = self._targets_to_select[sel]
             _update_mru(target.name)
             if target.type == "section":
                 # Open the notr file and position it.
                 sc.wait_load_file(self.view.window(), target.file, target.line)
-            else:
+            else: # "image", "uri", "path"
                 sc.open_file(target.resource)
 
     def is_visible(self):
@@ -216,7 +199,7 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
 #-----------------------------------------------------------------------------------
 class NotrFollowCommand(sublime_plugin.TextCommand):
     ''' Open target from selected ref or link. '''
-    _refs = []
+    _targets_to_select = []
 
     def run(self, edit):
         # Determine if user has selected a specific ref or link to follow, otherwise show the list of all.
@@ -224,7 +207,7 @@ class NotrFollowCommand(sublime_plugin.TextCommand):
         tref = _get_selection_for_scope(self.view, 'markup.link.refname.notr')
         tlink = _get_selection_for_scope(self.view, 'markup.underline.link.notr')
 
-        if tref is not None:  # explicit ref to selected element. do immediate.
+        if tref is not None:  # explicit ref to selected element - do immediate.
             # Get the corresponding target spec.
             for target in _targets:
                 valid = False
@@ -233,7 +216,7 @@ class NotrFollowCommand(sublime_plugin.TextCommand):
                         # Open the notr file and position it.
                         sc.wait_load_file(self.view.window(), target.file, target.line)
                         valid = True
-                    else:
+                    else: # "image", "uri", "path"
                         valid = sc.open_file(target.resource)
                     break
 
@@ -248,21 +231,21 @@ class NotrFollowCommand(sublime_plugin.TextCommand):
 
         else: # Show a quickpanel of all target names.
             panel_items = []
-            self._targets = _get_targets(sort=True, mru_first=True, current_file=self.view.file_name())
-            for target in self._targets:
+            self._targets_to_select = _get_targets(sort=True, mru_first=True, current_file=self.view.file_name())
+            for target in self._targets_to_select:
                 panel_items.append(sublime.QuickPanelItem(trigger=target.name, kind=sublime.KIND_AMBIGUOUS))
             self.view.window().show_quick_panel(panel_items, on_select=self.on_sel_ref)
 
     def on_sel_ref(self, *args, **kwargs):
         sel = args[0]
         if sel >= 0:
-            tsel = self._targets[sel]            
-            for target in _targets:
+            tsel = self._targets_to_select[sel]            
+            for target in self._targets_to_select:
                 if target.name == tsel.name:
                     if target.type == "section":
                         # Open the notr file and position it.
                         sc.wait_load_file(self.view.window(), target.file, target.line)
-                    else:
+                    else: # "image", "uri", "path"
                         sc.open_file(target.resource)
                     break
 
@@ -273,24 +256,24 @@ class NotrFollowCommand(sublime_plugin.TextCommand):
 #-----------------------------------------------------------------------------------
 class NotrInsertRefCommand(sublime_plugin.TextCommand):
     ''' Insert ref from list of known refs. '''
-    _targets = []
+    _targets_to_select = []
 
     def run(self, edit):
         # Show a quickpanel of all target names.
         panel_items = []
-        self._targets = _get_targets(sort=True, mru_first=True, current_file=self.view.file_name())
-        for target in self._targets:
+        self._targets_to_select = _get_targets(sort=True, mru_first=True, current_file=self.view.file_name())
+        for target in self._targets_to_select:
             panel_items.append(sublime.QuickPanelItem(trigger=target.name, kind=sublime.KIND_AMBIGUOUS))
         self.view.window().show_quick_panel(panel_items, on_select=self.on_sel_ref)
 
     def on_sel_ref(self, *args, **kwargs):
         sel = args[0]
         if sel >= 0:
-            s = f'[*{self._targets[sel].name}]'
+            s = f'[*{self._targets_to_select[sel].name}]'
             self.view.run_command("insert", {"characters": f'{s}'})  # Insert in created view
         else:
             # Stick them in the clipboard.
-            sublime.set_clipboard('\n'.join(self._targets))
+            sublime.set_clipboard('\n'.join(self._targets_to_select))
 
     def is_visible(self):
         return self.view.syntax() is not None and self.view.syntax().name == 'Notr'
@@ -321,7 +304,7 @@ class NotrInsertTargetFromClipCommand(sublime_plugin.TextCommand):
 
     def run(self, edit):
         random.seed()
-        s = f'[EDITME{random.randrange(10000)}]({sublime.get_clipboard()})'
+        s = f'[EDIT_ME{random.randrange(10000)}]({sublime.get_clipboard()})'
         caret = sc.get_single_caret(self.view)
         self.view.insert(edit, caret, s)
 
@@ -338,7 +321,7 @@ class NotrPublishCommand(sublime_plugin.WindowCommand):
     ''' Publish notes somewhere... '''
 
     def run(self):
-        # Render notr files for android target.
+        # Render notr files for android or ? target.
         # self.window.active_view().run_command('sbot_render_to_html', {'font_face':'monospace', 'font_size':'1.2em' } )  
         pass
 
@@ -372,10 +355,9 @@ class NotrDumpCommand(sublime_plugin.WindowCommand):
         do_one('targets', _targets)
         do_one('refs', _refs)
         do_one('tags', _get_tags())
-        # do_one('tags', _tags)  # text.append(f'{x}:{_tags[x]}')
         do_one('ntr_files', _get_ntr_files())
-        # do_one('ntr_files', _ntr_files)
         if len(_parse_errors) > 0:
+            text.insert(0, f'========== Errors in your file - see below ==========\n')
             do_one('parse_errors', _parse_errors)
 
         sc.create_new_view(self.window, '\n'.join(text))
@@ -507,7 +489,7 @@ def _process_notr_file(ntr_fn):
                             elif res.startswith('http'):
                                 ttype = "uri"
                             elif os.path.exists(res):
-                                ttype = "path" # TODO1 ? discriminate file and folder
+                                ttype = "path" # TODO2 useful to discriminate file and folder?
                             else:
                                 _user_error(ntr_fn, line_num, f'Invalid target resource: {res}')
 
@@ -554,7 +536,7 @@ def _process_notr_file(ntr_fn):
                         valid = False
 
                     if valid:
-                        if len(hashes) == 1: # TODO2 minimize clutter option?
+                        if len(hashes) == 1: # Minimizes slector clutter, could be setting. TODO2
                             sections.append(Target("section", name, "", len(hashes), tags, ntr_fn, line_num))
                     else:
                         _user_error(ntr_fn, line_num, 'Invalid syntax')
@@ -600,14 +582,15 @@ def _get_ntr_files():
 #-----------------------------------------------------------------------------------
 def _get_targets(**kwargs):
 
-    ''' Get filtered/ordered list of targets. Options:
+    ''' Get filtered/ordered list of targets.
+        Options facilitate usage for UI presentation or internal consumption:
         sort: T/F asc only
         mru_first: Put the mru first, then the ones in the current file
         current_file: If provided put these after mru and before the rest
         filter_by_tags: filter by tags
         returns a list per request
     '''
-    main_targets = []
+    current_file_targets = []
     other_targets = []
 
     # Args.
@@ -616,29 +599,32 @@ def _get_targets(**kwargs):
     mru_first = True if "mru_first" in kwargs and kwargs["mru_first"] else False
     current_file = kwargs["current_file"] if "current_file" in kwargs else None
 
+    print(f"sort:{sort} filter_by_tags:{filter_by_tags} mru_first:{mru_first} current_file:{current_file}")
+
     # Cache the mru targets to maintain order.
-    mru_targets_cache = {}
+    mru_cache = {}
 
     for target in _targets:
-        if current_file is not None and os.path.samefile(target.file, current_file):
-            main_targets.append(target)
-        elif mru_first and target.name in _store["mru"]:
-            mru_targets_cache[target.name] = target
+        if mru_first and target.name in _mru:
+            mru_cache[target.name] = target
+        elif current_file is not None and os.path.samefile(target.file, current_file):
+            current_file_targets.append(target)
         else:
             other_targets.append(target)
 
     # Sort?
     if sort:
-        main_targets = sorted(main_targets)
+        current_file_targets = sorted(current_file_targets)
         other_targets = sorted(other_targets)
 
     # Collect and return.
     ret = []
     if mru_first:
-        for mru in _store["mru"]:  # ordered
-            if mru in mru_targets_cache:
-                ret.append(mru_targets_cache[mru])
-    ret.extend(main_targets)
+        for mru in _mru:  # ordered by recent first
+            if mru in mru_cache:
+                ret.append(mru_cache[mru])
+
+    ret.extend(current_file_targets)
     ret.extend(other_targets)
 
     return ret
@@ -661,31 +647,60 @@ def _get_selection_for_scope(view, scope):
 
 #-----------------------------------------------------------------------------------
 def _update_mru(name):
-    ''' Update the mru list. '''
+    ''' Update the mru list. Removes duplicate and invalid names. '''
+    global _mru
+
     settings = sublime.load_settings(NOTR_SETTINGS_FILE)
-    valid_refs = []
+    mru_size = settings.get("mru_size")
+
+    # Clean up the mru.
+    tmp = _mru.copy()
+    _mru.clear()
+    _mru.append(name) # new first
+
+    valid_refs = set()
     for target in _get_targets():
-        valid_refs.append(target.name)
+        valid_refs.add(target.name)
 
-    new_list = []
-    new_list.append(name)  # to front
+    for tname in tmp:
+        if tname in valid_refs and tname not in _mru and len(_mru) <= mru_size:
+            _mru.append(tname)
 
-    # Remove duplicate and invalid names.
-    print(f'111:{_store["mru"]}')
-    for s in _store["mru"]:
-        if s in valid_refs and s not in new_list and len(new_list) <= settings.get("mru_size"):
-            new_list.append(s)
-    _store["mru"] = new_list            
-    print(f'222:{_store["mru"]}')
-    _save_store()
+    # Persist.
+    _write_store()
 
 
 #-----------------------------------------------------------------------------------
-def _save_store():
-    ''' Save everything. '''
+def _read_store():
+    ''' Get everything. '''
+    global _mru
+
+    # Get persisted info.
     store_fn = sc.get_store_fn(NOTR_STORAGE_FILE)
+
+    if os.path.isfile(store_fn):
+        try:
+            with open(store_fn, 'r') as fp:
+                s = fp.read()
+                store = json.loads(s)
+                _mru = store["mru"]
+        except Exception as e:
+            # Assume bad file.
+            sc.slog(sc.CAT_ERR, f'Error processing {store_fn}: {e}')
+    else: # Assume new file.
+        _mru.clear()
+
+
+#-----------------------------------------------------------------------------------
+def _write_store():
+    ''' Save everything. '''
+    global _mru
+    
+    store_fn = sc.get_store_fn(NOTR_STORAGE_FILE)
+    store = { "mru":_mru }
+    print(f"_write_store:{store}")
     with open(store_fn, 'w') as fp:
-        json.dump(_store, fp, indent=4)
+        json.dump(store, fp, indent=4)
 
 
 #-----------------------------------------------------------------------------------
