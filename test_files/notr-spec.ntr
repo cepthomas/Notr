@@ -79,6 +79,8 @@ Define a link and its ref name like [image felix le chat]($NOTR_PATH/test_files/
 or... [nyt](https://nytimes.com)[tag2 tag9]
 Note: use forward slash separator if compatibility with linux is important.
 
+Link without id:
+[]($NOTR_PATH/test_files/felix1.jpg)
 
 - Highlight links in lists like [booga](https://google.com).
 > Also [See](https://www.sublimetext.com/docs/syntax.html#include-patterns).

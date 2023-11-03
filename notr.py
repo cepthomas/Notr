@@ -16,10 +16,12 @@ NOTR_STORAGE_FILE = "notr.store"
 # Known file types.
 IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 
-# TODO1 Indent/dedent lists. Toggle bullets. Code chunks get '```'. Quote chunks get '> '. Use different colors for each of X?!*
-# TODO1 Text formatting inside lists, tables, etc. See link in list for example.
-# TODO1 Simple section folding. C:\\Users\\cepth\\OneDrive\\OneDriveDocuments\\tech\\sublime\\folding-hack.py ??https://github.com/jamalsenouci/sublimetext-syntaxfold.
-# TODO2 Publish notes somewhere - raw or rendered.
+
+# TODO0 Search within notr project files. See dev.
+# TODO0 Indent/dedent lists. Toggle bullets. Code chunks get '```'. Quote chunks get '> '. Use different colors for each of X?!*
+# TODO0 Text formatting inside lists, tables, etc. See link in list for example.
+# TODO0 Simple section folding. C:\\Users\\cepth\\OneDrive\\OneDriveDocuments\\tech\\sublime\\folding-hack.py ??https://github.com/jamalsenouci/sublimetext-syntaxfold.
+# TODO Publish notes somewhere - raw or rendered.
 
 # FUTURE:
 # - Hierarchal section folding. Might be tricky - https://github.com/sublimehq/sublime_text/issues/5423.
@@ -406,7 +408,8 @@ def _process_notr_files(window):
     # Check all user refs are valid.
     valid_refs = []
     for target in _targets:
-        valid_refs.append(target.name)
+        if len(target.name) > 0:
+            valid_refs.append(target.name)
 
     for ref in _refs:
         if ref.name not in valid_refs:
@@ -435,7 +438,7 @@ def _process_notr_file(ntr_fn):
 
             # Get the things of interest defined in the file.
             re_directives = re.compile(r'^:(.*)')
-            re_links = re.compile(r'\[(.*)\]\((.*)\) *(?:\[(.*)\])?')  # TODO1 handle unnamed ok  - anonymous
+            re_links = re.compile(r'\[(.*)\]\((.*)\) *(?:\[(.*)\])?')
             re_refs = re.compile(r'\[\* *([^\]]*)\]')
             re_sections = re.compile(r'^(#+ +[^\[]+) *(?:\[(.*)\])?')
 
@@ -482,7 +485,7 @@ def _process_notr_file(ntr_fn):
                             elif res.startswith('http'):
                                 ttype = "uri"
                             elif os.path.exists(res):
-                                ttype = "path"  # TODO2 useful to discriminate file and folder?
+                                ttype = "path"  # TODO useful to discriminate file and folder?
                             else:
                                 _user_error(ntr_fn, line_num, f'Invalid target resource: {res}')
 
@@ -529,7 +532,7 @@ def _process_notr_file(ntr_fn):
                         valid = False
 
                     if valid:
-                        if len(hashes) == 1:  # Minimizes slector clutter, could be setting. TODO2
+                        if len(hashes) == 1:  # Minimizes selector clutter, could be setting. TODO
                             sections.append(Target(name, "section", "", len(hashes), tags, "", ntr_fn, line_num))
                     else:
                         _user_error(ntr_fn, line_num, 'Invalid syntax')
