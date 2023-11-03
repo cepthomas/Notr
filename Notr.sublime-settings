@@ -1,15 +1,19 @@
 {
+    ///// Data
     // Where notr files live.
     "notr_paths": [],
     // Main notr file.
     "notr_index": "",
 
+    ///// UI selection
     // Sort tags alphabetically or by frequency.
     "sort_tags_alpha": true,
-
+    // Always put these at the top of selector.
+    "sticky": [],
     // How many mru entries in goto selector. 0 = disabled.
     "mru_size": 10,
 
+    ///// Cosmetic
     // Tokens for highlighting 3 sets of user keywords. Scopes are hard-coded markup.fixed_hl1-3.
     "fixed_hl": [ [], [], [] ],
     // User highlights option.
