@@ -17,10 +17,9 @@ NOTR_STORAGE_FILE = "notr.store"
 IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 
 
-# TODO0 Search within notr project files. See dev.
-# TODO0 Indent/dedent lists. Toggle bullets. Code chunks get '```'. Quote chunks get '> '. Use different colors for each of X?!*
-# TODO0 Text formatting inside lists, tables, etc. See link in list for example.
-# TODO0 Simple section folding. C:\\Users\\cepth\\OneDrive\\OneDriveDocuments\\tech\\sublime\\folding-hack.py ??https://github.com/jamalsenouci/sublimetext-syntaxfold.
+# TODO Indent/dedent lists. Toggle bullets. Code chunks get '```'. Quote chunks get '> '. Use different colors for each of X?!*
+# TODO Text formatting inside lists, tables, etc. See link in list for example.
+# TODO Simple section folding. C:\\Users\\cepth\\OneDrive\\OneDriveDocuments\\tech\\sublime\\folding-hack.py ??https://github.com/jamalsenouci/sublimetext-syntaxfold.
 # TODO Publish notes somewhere - raw or rendered.
 
 # FUTURE:
@@ -79,6 +78,10 @@ def plugin_unloaded():
 
 
 #-----------------------------------------------------------------------------------
+#-------------------------- Events -------------------------------------------------
+#-----------------------------------------------------------------------------------
+
+#-----------------------------------------------------------------------------------
 class NotrEvent(sublime_plugin.EventListener):
     ''' Process view events. '''
 
@@ -135,6 +138,100 @@ class NotrEvent(sublime_plugin.EventListener):
                     if len(hl_regions) > 0:
                         view.add_regions(key=hl.region_name, regions=hl_regions, scope=hl.scope_name,
                                          flags=sublime.RegionFlags.DRAW_STIPPLED_UNDERLINE)
+
+#-----------------------------------------------------------------------------------
+#-------------------------- WindowCommands -----------------------------------------
+#-----------------------------------------------------------------------------------
+
+
+#-----------------------------------------------------------------------------------
+class NotrReloadCommand(sublime_plugin.WindowCommand):
+    ''' Reload after editing. '''
+
+    def run(self):
+        # Open and process notr files.
+        _process_notr_files(self.window)
+
+    def is_visible(self):
+        return True
+
+
+#-----------------------------------------------------------------------------------
+class NotrDumpCommand(sublime_plugin.WindowCommand):
+    ''' Diagnostic. '''
+
+    def run(self):
+        text = []
+
+        def do_one(name, coll):
+            text.append(f'\n========== {name} ==========')
+            text.extend([str(x) for x in coll])
+
+        do_one('targets', _targets)
+        do_one('refs', _refs)
+        do_one('tags', _get_all_tags())
+        do_one('ntr_files', _get_all_ntr_files())
+        if len(_parse_errors) > 0:
+            text.insert(0, '========== Errors in your file - see below ==========\n')
+            do_one('parse_errors', _parse_errors)
+
+        sc.create_new_view(self.window, '\n'.join(text))
+
+    def is_visible(self):
+        return True
+
+
+#-----------------------------------------------------------------------------------
+class NotrFindInFilesCommand(sublime_plugin.WindowCommand):
+    ''' Search in the .ntr files. '''
+
+    def run(self):
+
+        # Assemble the search locations from users paths. Index folder also?
+        settings = sublime.load_settings(NOTR_SETTINGS_FILE)
+        paths = ["*.ntr", "-<open files>"]
+        notr_paths = settings.get('notr_paths')
+        for npath in notr_paths:
+            expath = sc.expand_vars(npath)
+            if expath is not None and os.path.exists(expath):
+                paths.append(expath)
+
+        # Show it so the user can enter the pattern.
+        # https://github.com/SublimeText/PackageDev/blob/master/plugins/command_completions/builtin_commands_meta_data.yaml
+        self.window.run_command("show_panel",
+            {
+                "panel": "find_in_files",
+                "where": ', '.join(paths),
+                "case_sensitive": True,
+                "pattern": "",
+                "whole_word": False, 
+                "preserve_case": True,
+                "show_context": False,
+                "use_buffer": True,
+                "replace": "",
+                "regex": False,
+            })
+
+    def is_visible(self):
+        return True
+
+
+#-----------------------------------------------------------------------------------
+class NotrPublishCommand(sublime_plugin.WindowCommand):
+    ''' Publish notes somewhere... '''
+
+    def run(self):
+        # Render notr files for android or ? target.
+        # self.window.active_view().run_command('sbot_render_to_html', {'font_face':'monospace', 'font_size':'1.2em' } )  
+        pass
+
+    def is_visible(self):
+        return True
+
+
+#-----------------------------------------------------------------------------------
+#-------------------------- TextCommands -------------------------------------------
+#-----------------------------------------------------------------------------------
 
 
 #-----------------------------------------------------------------------------------
@@ -313,54 +410,8 @@ class NotrInsertTargetFromClipCommand(sublime_plugin.TextCommand):
 
 
 #-----------------------------------------------------------------------------------
-class NotrPublishCommand(sublime_plugin.WindowCommand):
-    ''' Publish notes somewhere... '''
-
-    def run(self):
-        # Render notr files for android or ? target.
-        # self.window.active_view().run_command('sbot_render_to_html', {'font_face':'monospace', 'font_size':'1.2em' } )  
-        pass
-
-    def is_visible(self):
-        return True
-
-
+#-------------------------- Private Functions --------------------------------------
 #-----------------------------------------------------------------------------------
-class NotrReloadCommand(sublime_plugin.WindowCommand):
-    ''' Reload after editing. '''
-
-    def run(self):
-        # Open and process notr files.
-        _process_notr_files(self.window)
-
-    def is_visible(self):
-        return True
-
-
-#-----------------------------------------------------------------------------------
-class NotrDumpCommand(sublime_plugin.WindowCommand):
-    ''' Diagnostic. '''
-
-    def run(self):
-        text = []
-
-        def do_one(name, coll):
-            text.append(f'\n========== {name} ==========')
-            text.extend([str(x) for x in coll])
-
-        do_one('targets', _targets)
-        do_one('refs', _refs)
-        do_one('tags', _get_all_tags())
-        do_one('ntr_files', _get_all_ntr_files())
-        if len(_parse_errors) > 0:
-            text.insert(0, '========== Errors in your file - see below ==========\n')
-            do_one('parse_errors', _parse_errors)
-
-        sc.create_new_view(self.window, '\n'.join(text))
-
-    def is_visible(self):
-        return True
-
 
 #-----------------------------------------------------------------------------------
 def _process_notr_files(window):
@@ -485,7 +536,7 @@ def _process_notr_file(ntr_fn):
                             elif res.startswith('http'):
                                 ttype = "uri"
                             elif os.path.exists(res):
-                                ttype = "path"  # TODO useful to discriminate file and folder?
+                                ttype = "path"  # FUTURE useful to discriminate file and folder?
                             else:
                                 _user_error(ntr_fn, line_num, f'Invalid target resource: {res}')
 
@@ -532,7 +583,7 @@ def _process_notr_file(ntr_fn):
                         valid = False
 
                     if valid:
-                        if len(hashes) == 1:  # Minimizes selector clutter, could be setting. TODO
+                        if len(hashes) == 1:  # Minimizes selector clutter, could be setting.
                             sections.append(Target(name, "section", "", len(hashes), tags, "", ntr_fn, line_num))
                     else:
                         _user_error(ntr_fn, line_num, 'Invalid syntax')

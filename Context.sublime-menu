@@ -21,4 +21,5 @@
     },
     { "caption": "Goto Target", "command": "notr_goto_target", "args" : {"filter_by_tag" : false} },
     { "caption": "Follow", "command": "notr_follow" },
+    { "caption": "Find in Notr Files", "command": "notr_find_in_files" },
 ]

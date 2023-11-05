@@ -11,7 +11,8 @@ Built for ST4 on Windows and Linux.
 
 - Sections with tags.
 - Various text decorations.
-- Targets and references - targets can be section, file (image or other), uri. Navigation to any within context of your settings.
+- Targets and references - targets can be section, file (image or other), uri.
+- Navigation to targets via goto anything. Has MRU and sticky entries.
 - Lists.
 - Tables - fit, sort, etc (could be ported for general purpose use). Loosely based on https://github.com/wadetb/Sublime-Text-Advanced-CSV.
 - Auto highlight - supplements [SbotHighlight](https://github.com/cepthomas/SbotHighlight).
@@ -60,6 +61,7 @@ To run the demo:
 | notr_goto_target               | Context  | Go to a target from selector                      | filter_by_tag: true, select tag first |
 | notr_follow                    | Context  | Go to a reference or link from selector           |                                       |
 | notr_insert_hrule              | Context  | Make a line                                       | fill_str: "=", reps: 20               |
+| notr_find_in_files             | Context  | Search within the notr_paths in settings          |                                       |
 | table_fit                      | Context  | Fit table contents to columns                     |                                       |
 | table_insert_col               | Context  | Insert column at caret                            |                                       |
 | table_delete_col               | Context  | Remove column at caret                            |                                       |
