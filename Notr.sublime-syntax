@@ -94,6 +94,7 @@ contexts:
     - match: '(?x)^(?= \s*$)'
       pop: 1
 
+
   #################### list ###########################################
 
   list:
@@ -104,10 +105,11 @@ contexts:
       push: list-content
 
   list-content:
+    - include: simple-text
     - include: link
-      # scope: markup.list.content.notr
     - match: '\n'
       pop: 1
+
 
   #################### link ###########################################
 
@@ -123,6 +125,7 @@ contexts:
     - match: '\[\* *([^\]]*)\]'
       captures:
         1: markup.link.refname.notr
+
 
   #################### directive #######################################
 

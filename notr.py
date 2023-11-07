@@ -17,7 +17,6 @@ NOTR_STORAGE_FILE = "notr.store"
 IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 
 
-# TODO Text formatting inside lists, tables, etc. See link in list for example.
 # TODO Simple section folding. C:\\Users\\cepth\\OneDrive\\OneDriveDocuments\\tech\\sublime\\folding-hack.py ??https://github.com/jamalsenouci/sublimetext-syntaxfold.
 
 # FUTURE:
