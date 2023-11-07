@@ -17,12 +17,12 @@ NOTR_STORAGE_FILE = "notr.store"
 IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 
 
-# TODO Indent/dedent lists. Toggle bullets. Code chunks get '```'. Quote chunks get '> '. Use different colors for each of X?!*
 # TODO Text formatting inside lists, tables, etc. See link in list for example.
 # TODO Simple section folding. C:\\Users\\cepth\\OneDrive\\OneDriveDocuments\\tech\\sublime\\folding-hack.py ??https://github.com/jamalsenouci/sublimetext-syntaxfold.
-# TODO Publish notes somewhere - raw or rendered.
 
 # FUTURE:
+# - Indent/dedent lists. Toggle bullets. Code chunks get '```'. Quote chunks get '> '. Use different colors for each of X?!*
+# - Publish notes somewhere - raw or rendered.
 # - Hierarchal section folding. Might be tricky - https://github.com/sublimehq/sublime_text/issues/5423.
 # - Multiple projects. One would be the demo.
 # - Show image file thumbnail as phantom or hover. Something fun with annotations, see sublime-markdown-popups.
@@ -187,7 +187,7 @@ class NotrFindInFilesCommand(sublime_plugin.WindowCommand):
 
     def run(self):
 
-        # Assemble the search locations from users paths. Index folder also?
+        # Assemble the search locations from users paths. Index directory also?
         settings = sublime.load_settings(NOTR_SETTINGS_FILE)
         paths = ["*.ntr", "-<open files>"]
         notr_paths = settings.get('notr_paths')
@@ -536,7 +536,7 @@ def _process_notr_file(ntr_fn):
                             elif res.startswith('http'):
                                 ttype = "uri"
                             elif os.path.exists(res):
-                                ttype = "path"  # FUTURE useful to discriminate file and folder?
+                                ttype = "path"  # FUTURE useful to discriminate file and directory?
                             else:
                                 _user_error(ntr_fn, line_num, f'Invalid target resource: {res}')
 

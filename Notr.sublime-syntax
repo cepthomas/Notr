@@ -1,8 +1,6 @@
 %YAML 1.2
 ---
-# http://www.sublimetext.com/docs/syntax.html
-# ST uses [Oniguruma Regular Expressions Version 6.8.0](https://github.com/kkos/oniguruma) - syntax: ONIG_SYNTAX_ONIGURUMA (default)
-# Should make a syntax_test_notr.ntr.
+# http://www.sublimetext.com/docs/syntax.html. Should make a syntax_test_notr.ntr.
 
 name: Notr
 scope: text.notr
