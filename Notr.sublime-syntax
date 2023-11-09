@@ -23,7 +23,7 @@ contexts:
     - include: directive
 
 
-#################### simple text formatting ###########################################
+  #################### simple text formatting ###########################################
 
   simple-text:
     - match: '(?:^|\s)(\*[^\*]+\*)(?:[\s,.:;-])'
@@ -48,7 +48,7 @@ contexts:
       scope: markup.hrule.notr
 
 
-#################### section ###########################################
+  #################### section ###########################################
 
   section-heading:
     - match: '^(#+ +[^\[]+) *(?:\[(.*)\])?\n'
@@ -101,7 +101,7 @@ contexts:
     - match: '^([ ]*)([-X\?!\*])[ ]+'
       captures:
         1: markup.list.indent.notr
-        2: markup.list.marker.notr # X?!*
+        2: markup.list.marker.notr # -X?!*
       push: list-content
 
   list-content:

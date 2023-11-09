@@ -6,11 +6,13 @@ Starts in first column with number of `#` indicates level.
 Tag(s) are used for categorizing and selecting sections.
 Right click to select from a list of all sections or tags to navigate to.
 
+
 ## section no tags
 Another section but without tags.
 
 
 ### subject text [tag2 tag3]
+Nothing here...
 
 
 ### Text Attributes [tag2 dds tag3]
@@ -45,7 +47,7 @@ Visual delimiters that don't do anything else. Like a horizontal rule:
 
 IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
 Hello! Welcome to my world. I have invincible walls.
-IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 
 ## Lists [tag9 tagZZZ]
@@ -106,3 +108,4 @@ Note that coloring *should* stop at the right edge of the table but this is how 
 |  ME   |  IA  |   CO     |
 | Blue  | Red  | Brown    |
 
+# TODO need a better way to detect EOF than an extra section

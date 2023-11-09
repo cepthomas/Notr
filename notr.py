@@ -17,16 +17,17 @@ NOTR_STORAGE_FILE = "notr.store"
 IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 
 
-# TODO Simple section folding. C:\\Users\\cepth\\OneDrive\\OneDriveDocuments\\tech\\sublime\\folding-hack.py ??https://github.com/jamalsenouci/sublimetext-syntaxfold.
+# TODO Use different colors for each of -X?!*
+# TODO Indent/dedent lists. Toggle bullets. Code chunks get '```'. Quote chunks get '> '.
+
 
 # FUTURE:
-# - Indent/dedent lists. Toggle bullets. Code chunks get '```'. Quote chunks get '> '. Use different colors for each of X?!*
 # - Publish notes somewhere - raw or rendered.
 # - Hierarchal section folding. Might be tricky - https://github.com/sublimehq/sublime_text/issues/5423.
-# - Multiple projects. One would be the demo.
+# - Multiple projects. One would be the example.
 # - Show image file thumbnail as phantom or hover. Something fun with annotations, see sublime-markdown-popups.
 # - Make into package, maybe others. https://packagecontrol.io/docs/submitting_a_package.
-# - Backup notr project files.
+# - Backup notr files.
 
 
 #--------------------------- Types -------------------------------------------------

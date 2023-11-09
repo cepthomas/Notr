@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plist version="1.0">
+<dict>
+    <key>scope</key>
+    <string>text.notr</string>
+    <key>settings</key>
+    <dict>
+        <key>indentationFoldingEnabled</key>
+        <false/>
+        <!-- was <true/> -->
+        <key>foldScopes</key>
+        <array>
+            <dict>
+                <key>begin</key>
+                <string>markup.heading.notr</string>
+                <key>end</key>
+                <string>markup.heading.notr</string>
+                <!-- <key>excludeTrailingNewlines</key>
+                <true/> -->
+            </dict>
+        </array>
+    </dict>
+</dict>
+</plist>

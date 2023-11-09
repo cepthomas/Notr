@@ -9,7 +9,7 @@ Built for ST4 on Windows and Linux.
 
 ## Features
 
-- Sections with tags.
+- Sections with tags and simple folding.
 - Various text decorations.
 - Targets and references - targets can be section, file (image or other), uri.
 - Navigation to targets via goto anything. Has MRU and sticky entries.
