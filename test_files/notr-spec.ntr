@@ -1,4 +1,6 @@
 
+# Top
+These can make it slightly easier to locate in selector.
 
 # section name [tag1 tag2]
 A section of content.
@@ -73,7 +75,7 @@ item states (in settings)
 stuff in lists
   - link [nyt](https://nytimes.com)[tag2 tag9]
   - ref [*another felix].
-  - TODO needs plain text first? *text abcdefg*   _text abcdefg_    /text abcdefg/    ~text abcdefg~.
+  - TODO-bug needs plain text first char *text abcdefg*   _text abcdefg_    /text abcdefg/    ~text abcdefg~.
 
 
 ## Links and References [tag3 tag4 tag9]
@@ -84,6 +86,8 @@ Like `:AN_ALIAS="abcde"`
 Define a link and its ref name like [image felix le chat]($NOTR_PATH/test_files/felix1.jpg)[tag4 tag3] or
    [other type of file]($NOTR_PATH/notr.py)
 or... [nyt](https://nytimes.com)[tag2 tag9]
+[bad one]($NGENV/booga.txt)
+
 Note: use forward slash separator if compatibility with linux is important.
 
 Link without id:
@@ -108,4 +112,5 @@ Note that coloring *should* stop at the right edge of the table but this is how 
 |  ME   |  IA  |   CO     |
 | Blue  | Red  | Brown    |
 
-# TODO need a better way to detect EOF than an extra section
+# End
+The simple folding scheme (by section) needs a section definition here if you want the previous one to fold.
