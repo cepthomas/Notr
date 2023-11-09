@@ -98,11 +98,30 @@ contexts:
   #################### list ###########################################
 
   list:
-    - match: '^([ ]*)([-X\?!\*])[ ]+'
+    - match: '^([ ]*)([-])[ ]+'
       captures:
         1: markup.list.indent.notr
-        2: markup.list.marker.notr # -X?!*
+        2: markup.list.marker.dash.notr
       push: list-content
+
+    - match: '^([ ]*)([X])[ ]+'
+      captures:
+        1: markup.list.indent.notr
+        2: markup.list.marker.x.notr
+      push: list-content
+
+    - match: '^([ ]*)([\?])[ ]+'
+      captures:
+        1: markup.list.indent.notr
+        2: markup.list.marker.question.notr
+      push: list-content
+
+    - match: '^([ ]*)([!])[ ]+'
+      captures:
+        1: markup.list.indent.notr
+        2: markup.list.marker.exclmation.notr
+      push: list-content
+
 
   list-content:
     - include: simple-text

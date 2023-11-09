@@ -17,7 +17,6 @@ NOTR_STORAGE_FILE = "notr.store"
 IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 
 
-# TODO Use different colors for each of -X?!*
 # TODO Indent/dedent lists. Toggle bullets. Code chunks get '```'. Quote chunks get '> '.
 
 
