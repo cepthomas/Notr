@@ -17,16 +17,10 @@ NOTR_STORAGE_FILE = "notr.store"
 IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 
 
-# TODO Indent/dedent lists. Toggle bullets. Code chunks get '```'. Quote chunks get '> '.
-
-
-# FUTURE:
-# - Publish notes somewhere - raw or rendered.
-# - Hierarchal section folding. Might be tricky - https://github.com/sublimehq/sublime_text/issues/5423.
-# - Multiple projects. One would be the example.
-# - Show image file thumbnail as phantom or hover. Something fun with annotations, see sublime-markdown-popups.
-# - Make into package, maybe others. https://packagecontrol.io/docs/submitting_a_package.
-# - Backup notr files.
+# TODOF Publish contents somewhere - raw or rendered.
+# TODOF Multiple projects. One could be the example.
+# TODOF Fancy stuff: image file thumbnail phantom/hover, annotations, hover/popups, etc.
+# TODOF Make into package https://packagecontrol.io/docs/submitting_a_package.
 
 
 #--------------------------- Types -------------------------------------------------
@@ -34,9 +28,9 @@ IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 # One target of section or file/uri.
 @dataclass
 class Target:
-    name: str  # section title
-    type: str  # section, uri, image, path
-    category: str  # sticky, mru, none
+    name: str  # section title or description
+    type: str  # "section", "uri", "image", "path" TODOF useful to discriminate file and directory?
+    category: str  # "sticky", "mru", "none"
     level: int  # for section only
     tags: []  # tags for targets
     resource: str  # what type points to
@@ -46,7 +40,7 @@ class Target:
 # A reference to a Target.
 @dataclass
 class Ref:
-    name: str  # target name
+    name: str  # "target#name"
     file: str  # .ntr file path
     line: int  # .ntr file line
 
@@ -535,7 +529,7 @@ def _process_notr_file(ntr_fn):
                             elif res.startswith('http'):
                                 ttype = "uri"
                             elif os.path.exists(res):
-                                ttype = "path"  # FUTURE useful to discriminate file and directory?
+                                ttype = "path"
                             else:
                                 _user_error(ntr_fn, line_num, f'Invalid target resource: {res}')
 
