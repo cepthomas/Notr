@@ -1,10 +1,9 @@
 import os
 import re
 import glob
-import collections
 import random
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import sublime
 import sublime_plugin
 from . import sbot_common as sc
@@ -26,8 +25,9 @@ IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 #--------------------------- Types -------------------------------------------------
 
 # One target of section or file/uri.
-@dataclass
+@dataclass(order=True)
 class Target:
+    sort_index: str = field(init=False)
     name: str  # section title or description
     type: str  # "section", "uri", "image", "path" TODOF useful to discriminate file and directory?
     category: str  # "sticky", "mru", "none"
@@ -36,13 +36,18 @@ class Target:
     resource: str  # what type points to
     file: str  # .ntr file path
     line: int  # .ntr file line
+    def __post_init__(self):
+            self.sort_index = self.name
 
 # A reference to a Target.
-@dataclass
+@dataclass(order=True)
 class Ref:
+    sort_index: str = field(init=False)
     name: str  # "target#name"
     file: str  # .ntr file path
     line: int  # .ntr file line
+    def __post_init__(self):
+            self.sort_index = self.name
 
 
 #---------------------------- Data -----------------------------------------------
@@ -192,18 +197,18 @@ class NotrFindInFilesCommand(sublime_plugin.WindowCommand):
         # Show it so the user can enter the pattern.
         # https://github.com/SublimeText/PackageDev/blob/master/plugins/command_completions/builtin_commands_meta_data.yaml
         self.window.run_command("show_panel",
-            {
-                "panel": "find_in_files",
-                "where": ', '.join(paths),
-                "case_sensitive": True,
-                "pattern": "",
-                "whole_word": False, 
-                "preserve_case": True,
-                "show_context": False,
-                "use_buffer": True,
-                "replace": "",
-                "regex": False,
-            })
+        {
+            "panel": "find_in_files",
+            "where": ', '.join(paths),
+            "case_sensitive": True,
+            "pattern": "",
+            "whole_word": False, 
+            "preserve_case": True,
+            "show_context": False,
+            "use_buffer": True,
+            "replace": "",
+            "regex": False,
+        })
 
     def is_visible(self):
         return True
@@ -248,14 +253,12 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
             self.show_targets(targets)
 
     def on_sel_tag(self, *args, **kwargs):
-        sel = args[0]
-
-        if sel >= 0:
+        if len(args) > 0 and args[0] >= 0:
             # Hide current quick panel.
             self.view.window().run_command("hide_overlay")
 
             # Make a selector with sorted target names, current file's first.
-            sel_tag = self._tags[sel]
+            sel_tag = self._tags[args[0]]
 
             # Filter per tag selection.
             tag_targets = _filter_order_targets(sort=True, mru_first=True, tags=[sel_tag])
@@ -271,10 +274,9 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
         self.view.window().show_quick_panel(panel_items, on_select=self.on_sel_target)
 
     def on_sel_target(self, *args, **kwargs):
-        sel = args[0]
-        if sel >= 0:
+        if len(args) > 0 and args[0] >= 0:
             # Locate the target record.
-            target = self._targets_to_select[sel]
+            target = self._targets_to_select[args[0]]
             _update_mru(target.name)
             if target.type == "section":
                 # Open the notr file and position it.
@@ -325,9 +327,8 @@ class NotrFollowCommand(sublime_plugin.TextCommand):
             self.view.window().show_quick_panel(panel_items, on_select=self.on_sel_ref)
 
     def on_sel_ref(self, *args, **kwargs):
-        sel = args[0]
-        if sel >= 0:
-            tsel = self._targets_to_select[sel]            
+        if len(args) > 0 and args[0] >= 0:
+            tsel = self._targets_to_select[args[0]]            
             for target in self._targets_to_select:
                 if target.name == tsel.name:
                     if target.type == "section":
@@ -353,13 +354,11 @@ class NotrInsertRefCommand(sublime_plugin.TextCommand):
         self.view.window().show_quick_panel(panel_items, on_select=self.on_sel_ref)
 
     def on_sel_ref(self, *args, **kwargs):
-        sel = args[0]
-        if sel >= 0:
-            s = f'[*{self._targets_to_select[sel].name}]'
-            self.view.run_command("insert", {"characters": f'{s}'})  # Insert in created view
-        else:
-            # Stick them in the clipboard.
-            sublime.set_clipboard('\n'.join(self._targets_to_select))
+        if len(args) > 0:
+            if args[0] >= 0:
+                print(f"$$$ 1111 ")
+                s = f'[*{self._targets_to_select[args[0]].name}]'
+                self.view.run_command("insert", {"characters": f'{s}'})  # Insert in view
 
     def is_visible(self):
         return self.view.syntax() is not None and self.view.syntax().name == 'Notr'
@@ -593,13 +592,14 @@ def _process_notr_file(ntr_fn):
 #-----------------------------------------------------------------------------------
 def _build_selector(targets):
     settings = sublime.load_settings(NOTR_SETTINGS_FILE)
-    sticky = settings.get("sticky")
 
     panel_items = []
     for target in targets:
         color = sublime.KIND_ID_AMBIGUOUS  # default
-        if target.category == "sticky": color = sublime.KindId.COLOR_REDISH
-        elif target.category == "mru": color = sublime.KindId.COLOR_GREENISH
+        if target.category == "sticky":
+            color = sublime.KindId.COLOR_REDISH
+        elif target.category == "mru":
+            color = sublime.KindId.COLOR_GREENISH
         panel_items.append(sublime.QuickPanelItem(trigger=f'{target.name}', kind=(color, "", "")))  # details="deets", annotation="annie"))
     return panel_items
 
@@ -649,7 +649,6 @@ def _filter_order_targets(**kwargs):
     settings = sublime.load_settings(NOTR_SETTINGS_FILE)
     stickies = settings.get("sticky")
 
-    sticky_targets = []
     current_file_targets = []
     other_targets = []
 
@@ -664,12 +663,12 @@ def _filter_order_targets(**kwargs):
     mru_cache = {}
 
     for target in _targets:
-        target.category = "" # default
+        target.category = ""  # default
         # Sticky always wins.
         if target.name in stickies:
             target.category = "sticky"
             sticky_cache[target.name] = target
-        else: # The others.
+        else:  # The others.
             # Check tags.
             tag_ok = len(tags) == 0
             for t in tags:
