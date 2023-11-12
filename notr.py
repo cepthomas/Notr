@@ -17,7 +17,7 @@ IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 
 
 # TODOF Publish contents somewhere - raw or rendered.
-# TODOF Multiple projects. One could be the example.
+# TODOF Multiple "projects". One would be the example.
 # TODOF Fancy stuff: image file thumbnail phantom/hover, annotations, hover/popups, etc.
 # TODOF Make into package https://packagecontrol.io/docs/submitting_a_package.
 
@@ -29,7 +29,7 @@ IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 class Target:
     sort_index: str = field(init=False)
     name: str  # section title or description
-    type: str  # "section", "uri", "image", "path" TODOF useful to discriminate file and directory?
+    type: str  # "section", "uri", "image", "path" maybe useful to discriminate file and directory?
     category: str  # "sticky", "mru", "none"
     level: int  # for section only
     tags: []  # tags for targets
