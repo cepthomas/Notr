@@ -15,6 +15,7 @@ NOTR_STORAGE_FILE = "notr.store"
 # Known file types.
 IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 
+# TODO0 indent/dedent with bullet(s), quote (>) - like toggle_comments => \tech\sublime\ST4\Default\comment.py
 
 # TODOF Publish contents somewhere - raw or rendered.
 # TODOF Multiple "projects". One would be the example.
@@ -36,8 +37,9 @@ class Target:
     resource: str  # what type points to
     file: str  # .ntr file path
     line: int  # .ntr file line
+
     def __post_init__(self):
-            self.sort_index = self.name
+        self.sort_index = self.name
 
 # A reference to a Target.
 @dataclass(order=True)
@@ -46,8 +48,9 @@ class Ref:
     name: str  # "target#name"
     file: str  # .ntr file path
     line: int  # .ntr file line
+
     def __post_init__(self):
-            self.sort_index = self.name
+        self.sort_index = self.name
 
 
 #---------------------------- Data -----------------------------------------------
@@ -197,18 +200,18 @@ class NotrFindInFilesCommand(sublime_plugin.WindowCommand):
         # Show it so the user can enter the pattern.
         # https://github.com/SublimeText/PackageDev/blob/master/plugins/command_completions/builtin_commands_meta_data.yaml
         self.window.run_command("show_panel",
-        {
-            "panel": "find_in_files",
-            "where": ', '.join(paths),
-            "case_sensitive": True,
-            "pattern": "",
-            "whole_word": False, 
-            "preserve_case": True,
-            "show_context": False,
-            "use_buffer": True,
-            "replace": "",
-            "regex": False,
-        })
+                                {
+                                    "panel": "find_in_files",
+                                    "where": ', '.join(paths),
+                                    "case_sensitive": True,
+                                    "pattern": "",
+                                    "whole_word": False, 
+                                    "preserve_case": True,
+                                    "show_context": False,
+                                    "use_buffer": True,
+                                    "replace": "",
+                                    "regex": False,
+                                })
 
     def is_visible(self):
         return True
@@ -389,7 +392,8 @@ class NotrInsertTargetFromClipCommand(sublime_plugin.TextCommand):
 
     def run(self, edit):
         random.seed()
-        s = f'[EDIT_ME{random.randrange(10000)}]({sublime.get_clipboard()})'
+        s = f'[]({sublime.get_clipboard()})'
+        # s = f'[EDIT_ME{random.randrange(10000)}]({sublime.get_clipboard()})'
         caret = sc.get_single_caret(self.view)
         self.view.insert(edit, caret, s)
 
@@ -591,7 +595,6 @@ def _process_notr_file(ntr_fn):
 
 #-----------------------------------------------------------------------------------
 def _build_selector(targets):
-    settings = sublime.load_settings(NOTR_SETTINGS_FILE)
 
     panel_items = []
     for target in targets:
