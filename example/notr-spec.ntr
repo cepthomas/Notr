@@ -30,18 +30,28 @@ Set the text tokens in your settings.
 
 `An inline chunk of raw text` and here is `another one` ok?
 
-``` Title
-A block of raw text - could be code.
+`> Title
+A block of raw text.
   - ServerName www.example.com
   - DocumentRoot http://www/example1
-```
-and
-```
-Here is another block. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-```
 
-> Blockquotes are very handy.
+We also use them for block comments!
+`<
+
+and
+
+`>
+Here is another block. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
+et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+`<
+
+
+
+> Block quotes are very handy.
 > This line is part of the same quote.
+> We also use them for single line comments!
+
 
 Visual delimiters that don't do anything else. Like a horizontal rule:
 ================================================================================

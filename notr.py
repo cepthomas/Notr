@@ -15,12 +15,6 @@ NOTR_STORAGE_FILE = "notr.store"
 # Known file types.
 IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 
-# TODO0 indent/dedent with bullet(s), quote(>) - like toggle_comments => \tech\sublime\ST4\Default\comment.py
-# TODOF Publish contents somewhere - raw or rendered.
-# TODOF Multiple "projects". One would be the example.
-# TODOF Fancy stuff: image file thumbnail phantom/hover, annotations, hover/popups, etc.
-# TODOF Make into package https://packagecontrol.io/docs/submitting_a_package.
-
 
 #--------------------------- Types -------------------------------------------------
 

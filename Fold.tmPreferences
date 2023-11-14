@@ -15,6 +15,12 @@
                 <string>markup.heading.notr</string>
                 <key>end</key>
                 <string>markup.heading.notr</string>
+            </dict>
+            <dict>
+                <key>begin</key>
+                <string>punctuation.definition.block.begin.notr</string>
+                <key>end</key>
+                <string>punctuation.definition.block.end.notr</string>
                 <!-- <key>excludeTrailingNewlines</key>
                 <true/> -->
             </dict>

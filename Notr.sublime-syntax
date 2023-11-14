@@ -19,7 +19,7 @@ contexts:
     - include: table
     - include: link
     - include: list
-    - include: raw-block
+    - include: raw
     - include: directive
 
 
@@ -38,17 +38,13 @@ contexts:
     - match: '(?:^|\s)(~[^~]+~)(?:[\s,.:;-])'
       scope: markup.strikethrough
 
-    - match: '(`[^`]+`)'
-      scope: markup.raw.inline.notr
-
-    - match: '^( *> +)(.*)'
-      scope: markup.quote.notr
-
     - match: '^(?:[-=\+IXx]{5,}.*)$'
       scope: markup.hrule.notr
 
 
   #################### section ###########################################
+
+  # section also used by Fold.tmPreferences
 
   section-heading:
     - match: '^(#+ +[^\[]+) *(?:\[(.*)\])?\n'
@@ -58,21 +54,29 @@ contexts:
         2: markup.heading.tags.notr
 
 
-  #################### raw block ###########################################
+  #################### raw ###########################################
 
-  raw-block:
-    - match: '```'
-      scope: markup.raw.block.notr
-      push: raw-block-body
+  # raw is a catchall for inline text markup, comments, quotes, etc.
+  # `raw text inline` => markup.raw.inline.notr
+  # ``` text block => markup.raw.block.notr
+  # ```
+  # > quote or comment text => markup.quote.notr (not exactly raw but close enough)
+  # quote and block also used by Comments.tmPreferences and Fold.tmPreferences
 
-  raw-block-body:
-    - meta_scope: markup.raw.block.notr
-    - include: raw-block-end
+  raw:
+    - match: '(`[^`]+`)'
+      scope: markup.raw.inline.notr
 
-  raw-block-end:
-    - match: '```'
-      scope: markup.raw.block.notr
-      pop: 1
+    - match: '^( *> +)(.*)'
+      scope: markup.quote.notr
+
+    - match: '^(`>)'
+      scope: punctuation.definition.block.begin.notr
+      push:
+        - meta_scope: markup.raw.block.notr
+        - match: '^(`<)'
+          scope: punctuation.definition.block.end.notr
+          pop: true
 
 
   #################### table ###########################################
