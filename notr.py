@@ -458,7 +458,7 @@ def _process_notr_files(window):
 
     if len(_parse_errors) > 0:
         _parse_errors.insert(0, "Errors in your configuration:")
-        sc.create_new_view(window, '\n'.join(_parse_errors)) # TODOF open file and annotate - like build sys product.
+        sc.create_new_view(window, '\n'.join(_parse_errors)) # TODO open file and annotate - like build sys product.
 
 
 #-----------------------------------------------------------------------------------
@@ -471,6 +471,7 @@ def _process_notr_file(ntr_fn):
     links = []
     refs = []
     no_index = False
+    line_num = -1
 
     try:
         with open(ntr_fn, 'r', encoding='utf-8') as file:
@@ -577,8 +578,10 @@ def _process_notr_file(ntr_fn):
                 line_num += 1
 
     except Exception as e:
-        sc.slog(sc.CAT_ERR, f'Error processing {ntr_fn}: {e}')
-        raise
+        _user_error(ntr_fn, line_num, f'Error processing file: {e}')
+        return None
+        # sc.slog(sc.CAT_ERR, f'Error processing {ntr_fn}: {e}')
+        # raise
 
     return None if no_index else (sections, links, refs)
 
