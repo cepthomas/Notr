@@ -478,7 +478,7 @@ def _process_notr_file(ntr_fn):
 
             # Get the things of interest defined in the file.
             re_directives = re.compile(r'^:(.*)')
-            re_links = re.compile(r'\[(.*)\]\((.*)\) *(?:\[(.*)\])?')
+            re_links = re.compile(r'\[(.*)\]\(([^\)]*)\)')
             re_refs = re.compile(r'\[\* *([^\]]*)\]')
             re_sections = re.compile(r'^(#+ +[^\[]+) *(?:\[(.*)\])?')
 
@@ -530,11 +530,7 @@ def _process_notr_file(ntr_fn):
                                 _user_error(ntr_fn, line_num, f'Invalid target resource: {res}')
 
                             if ttype is not None:
-                                # Any tags?
-                                tags = []
-                                if len(m) >= 2:
-                                    tags = m[2].strip().split()
-                                links.append(Target(name, ttype, "", 0, tags, res, ntr_fn, line_num))
+                                links.append(Target(name, ttype, "", 0, [], res, ntr_fn, line_num))
                     else:
                         _user_error(ntr_fn, line_num, 'Invalid syntax')
 

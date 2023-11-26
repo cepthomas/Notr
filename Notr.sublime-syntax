@@ -137,14 +137,14 @@ contexts:
   #################### link ###########################################
 
   link:
-    # link def  [ggg](https://www.abc.com)[tag4 tag5] Also supports file and general targets.
-    - match: '\[(.*)\]\((.*)\) *(?:\[(.*)\])?'
+    # link def  [ggg](https://www.abc.com) Also supports file and general targets.
+    - match: '\[(.*)\]\(([^\)]*)\)'
       captures:
         1: markup.link.name.notr
         2: markup.underline.link.notr
         3: markup.link.tags.notr
 
-    # ref to a link
+    # ref to a link  [*linux-install#Install stuff]
     - match: '\[\* *([^\]]*)\]'
       captures:
         1: markup.link.refname.notr
