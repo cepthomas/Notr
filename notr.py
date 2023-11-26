@@ -8,6 +8,7 @@ import sublime
 import sublime_plugin
 from . import sbot_common as sc
 
+# TODO Block uncomment isn't quite right.
 
 NOTR_SETTINGS_FILE = "Notr.sublime-settings"
 NOTR_STORAGE_FILE = "notr.store"
@@ -457,7 +458,7 @@ def _process_notr_files(window):
 
     if len(_parse_errors) > 0:
         _parse_errors.insert(0, "Errors in your configuration:")
-        sc.create_new_view(window, '\n'.join(_parse_errors))
+        sc.create_new_view(window, '\n'.join(_parse_errors)) # TODOF open file and annotate - like build sys product.
 
 
 #-----------------------------------------------------------------------------------
