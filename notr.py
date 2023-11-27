@@ -58,7 +58,7 @@ _refs = []
 # Persisted mru.
 _mru = []
 
-# Parse errors to report to user.
+# Parse errors to report to user. Tuples of (path, line, msg)
 _parse_errors = []
 
 
@@ -168,7 +168,7 @@ class NotrDumpCommand(sublime_plugin.WindowCommand):
         do_one('ntr_files', _get_all_ntr_files())
         if len(_parse_errors) > 0:
             text.insert(0, '========== Errors in your file - see below ==========\n')
-            do_one('parse_errors', _parse_errors)
+            text.extend([f'{p[0]}({p[1]}): {p[2]}' for p in _parse_errors])
 
         sc.create_new_view(self.window, '\n'.join(text))
 
@@ -456,9 +456,35 @@ def _process_notr_files(window):
         if ref.name not in valid_refs:
             _user_error(ref.file, ref.line, f'Invalid ref name:{ref.name}')
 
+    # Do output if errors.
     if len(_parse_errors) > 0:
-        _parse_errors.insert(0, "Errors in your configuration:")
-        sc.create_new_view(window, '\n'.join(_parse_errors)) # TODO open file and annotate - like build sys product.
+        output_view = None
+        working_dir = ''  # os.path.dirname(window.active_view().file_name())
+        prefs = sublime.load_settings("Preferences.sublime-settings")
+        use_panel = prefs.get("show_panel_on_build", True)
+
+        # Create output to panel or view. Don't call get_output_panel until the regexes are assigned.
+        if use_panel:
+            output_view = window.create_output_panel("exec")
+        else:
+            output_view = sc.create_new_view(window, '')
+
+        # Enable result navigation.
+        settings = output_view.settings()
+        settings.set('result_file_regex', r'^([^\(]+)\(([0-9]+)\)(): (.*)$')
+        settings.set('result_base_dir', working_dir)
+
+        # Create a second time after assigning the above regex and settings.
+        if use_panel:
+            output_view = window.create_output_panel("exec")
+            window.run_command('show_panel', {'panel': 'output.exec'})
+        else:
+            window.focus_view(output_view)
+
+        # Fill with info.
+        output_view.run_command('append', {'characters': "Notr file errors:\n"})
+        for p in _parse_errors:
+            output_view.run_command('append', {'characters': f'{p[0]}({p[1]}): {p[2]}\n', 'force': True, 'scroll_to_end': True})
 
 
 #-----------------------------------------------------------------------------------
@@ -776,7 +802,7 @@ def _write_store():
 #-----------------------------------------------------------------------------------
 def _user_error(path, line, msg):
     ''' Error in user edited file. '''
-    _parse_errors.append(f'{path}({line}): {msg}')
+    _parse_errors.append((path, line, msg))
 
 
 #-----------------------------------------------------------------------------------

@@ -13,6 +13,7 @@ Built for ST4 on Windows and Linux.
 - Various text decorations for visual indication.
 - Targets and references - targets can be section, file (image or other), uri.
 - Navigation to targets via goto anything. Has MRU and sticky entries.
+- Navigation to notr file errors, honors `show_panel_on_build`.
 - Lists with customizable bullets.
 - Markdown-like quotes and raw text also act like comments.
 - Tables with insert/delete column, fit, sort. Loosely based on https://github.com/wadetb/Sublime-Text-Advanced-CSV. Note that this could be ported for general purpose use.
