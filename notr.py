@@ -481,6 +481,8 @@ def _process_notr_files(window):
         else:
             window.focus_view(output_view)
 
+        bing = bong
+        
         # Fill with info.
         output_view.run_command('append', {'characters': "Notr file errors:\n"})
         for p in _parse_errors:
@@ -606,8 +608,6 @@ def _process_notr_file(ntr_fn):
     except Exception as e:
         _user_error(ntr_fn, line_num, f'Error processing file: {e}')
         return None
-        # sc.slog(sc.CAT_ERR, f'Error processing {ntr_fn}: {e}')
-        # raise
 
     return None if no_index else (sections, links, refs)
 
