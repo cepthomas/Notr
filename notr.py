@@ -8,7 +8,7 @@ import sublime
 import sublime_plugin
 from . import sbot_common as sc
 
-# TODO Block uncomment isn't quite right.
+# FIX Block uncomment isn't quite right.
 
 NOTR_SETTINGS_FILE = "Notr.sublime-settings"
 NOTR_STORAGE_FILE = "notr.store"
@@ -76,6 +76,7 @@ def plugin_unloaded():
 #-------------------------- Events -------------------------------------------------
 #-----------------------------------------------------------------------------------
 
+
 #-----------------------------------------------------------------------------------
 class NotrEvent(sublime_plugin.EventListener):
     ''' Process view events. '''
@@ -133,6 +134,7 @@ class NotrEvent(sublime_plugin.EventListener):
                     if len(hl_regions) > 0:
                         view.add_regions(key=hl.region_name, regions=hl_regions, scope=hl.scope_name,
                                          flags=sublime.RegionFlags.DRAW_STIPPLED_UNDERLINE)
+
 
 #-----------------------------------------------------------------------------------
 #-------------------------- WindowCommands -----------------------------------------
@@ -403,6 +405,7 @@ class NotrInsertTargetFromClipCommand(sublime_plugin.TextCommand):
 #-------------------------- Private Functions --------------------------------------
 #-----------------------------------------------------------------------------------
 
+
 #-----------------------------------------------------------------------------------
 def _process_notr_files(window):
     ''' Get all ntr files and grab their goodies. '''
@@ -481,8 +484,6 @@ def _process_notr_files(window):
         else:
             window.focus_view(output_view)
 
-        bing = bong
-        
         # Fill with info.
         output_view.run_command('append', {'characters': "Notr file errors:\n"})
         for p in _parse_errors:
