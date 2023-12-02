@@ -99,6 +99,7 @@ Color schemes require new and edited scopes to support this tool. Implement your
         { "scope": "markup.italic", "font_style": "italic" },
         { "scope": "markup.bold", "font_style": "bold" },
         { "scope": "markup.underline", "font_style": "underline" },
+
         // Scopes added for Notr.
         { "scope": "text.notr", "foreground": "black" },
         { "scope": "markup.directive.notr", "background": "lightsalmon" },
@@ -110,18 +111,27 @@ Color schemes require new and edited scopes to support this tool. Implement your
         { "scope": "markup.raw.inline.notr", "background": "aliceblue" },
         { "scope": "markup.raw.block.notr", "background": "aliceblue" },
         { "scope": "markup.quote.notr", "background": "lightcyan", "font_style": "italic" },
+
+        // The builtin list scopes don't fit well with notr so here's some new ones.
         { "scope": "markup.list.indent.notr", "background": "snow" },
         { "scope": "markup.list.marker.dash.notr", "background": "lightskyblue", "font_style": "bold" },
         { "scope": "markup.list.marker.x.notr", "background": "pink", "font_style": "bold" },
-        { "scope": "markup.list.marker.question.notr", "background": "orange", "font_style": "bold" },
-        { "scope": "markup.list.marker.exclmation.notr", "background": "springgreen", "font_style": "bold" },
+        { "scope": "markup.list.marker.question.notr", "background": "springgreen", "font_style": "bold" },
+        { "scope": "markup.list.marker.exclmation.notr", "background": "hotpink", "font_style": "bold" },
         { "scope": "markup.list.content.notr", "background": "lightyellow" },
-        { "scope": "markup.link.name.notr", "background": "lemonchiffon", "font_style": "italic" },
+
+        // New link scopes.
+        { "scope": "markup.link.target.notr", "background": "chartreuse" },
         { "scope": "markup.link.tags.notr", "background": "bisque", "font_style": "italic" },
+        { "scope": "markup.link.name.notr", "background": "lemonchiffon", "font_style": "italic" },
         { "scope": "markup.link.refname.notr", "background": "lavender", "font_style": "bold" },
+        { "scope": "markup.directive.notr", "background": "lightsalmon" },
+
+        // Notr specific highlighting.
         { "scope": "markup.fixed_hl1", "background": "gainsboro", "foreground": "red" },
         { "scope": "markup.fixed_hl2", "background": "gainsboro", "foreground": "green" },
         { "scope": "markup.fixed_hl3", "background": "gainsboro", "foreground": "blue" },
+
         // User highlighting. Only needed if you are also using SbotHighlight.
         { "scope": "markup.user_hl1", "background": "red", "foreground": "white" },
         { "scope": "markup.user_hl2", "background": "green", "foreground": "white" },

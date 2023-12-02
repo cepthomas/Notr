@@ -281,7 +281,7 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
                 # Open the notr file and position it.
                 sc.wait_load_file(self.view.window(), target.file, target.line)
             else:  # "image", "uri", "path"
-                sc.open_file(target.resource)
+                sc.open_path(target.resource)
 
     def is_visible(self):
         return True
@@ -308,7 +308,7 @@ class NotrFollowCommand(sublime_plugin.TextCommand):
                         sc.wait_load_file(self.view.window(), target.file, target.line)
                         valid = True
                     else:  # "image", "uri", "path"
-                        valid = sc.open_file(target.resource)
+                        valid = sc.open_path(target.resource)
                     break
 
             if not valid:
@@ -316,7 +316,7 @@ class NotrFollowCommand(sublime_plugin.TextCommand):
 
         elif tlink is not None:  # explicit link. do immediate.
             fn = sc.expand_vars(tlink)
-            valid = sc.open_file(fn)
+            valid = sc.open_path(fn)
             if not valid:
                 sc.slog(sc.CAT_ERR, f'Invalid link: {tlink}')
 
@@ -334,7 +334,7 @@ class NotrFollowCommand(sublime_plugin.TextCommand):
                         # Open the notr file and position it.
                         sc.wait_load_file(self.view.window(), target.file, target.line)
                     else:  # "image", "uri", "path"
-                        sc.open_file(target.resource)
+                        sc.open_path(target.resource)
                     break
 
     # def is_visible(self):
