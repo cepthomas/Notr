@@ -24,7 +24,7 @@ IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 class Target:
     sort_index: str = field(init=False)
     name: str  # section title or description
-    type: str  # "section", "uri", "image", "path" maybe useful to discriminate file and directory?
+    type: str  # "section", "uri", "image", "path" - maybe useful to discriminate file and dir?
     category: str  # "sticky", "mru", "none"
     level: int  # for section only
     tags: []  # tags for targets
@@ -550,7 +550,6 @@ def _process_notr_file(ntr_fn):
                         else:
                             ttype = None
                             _, ext = os.path.splitext(res)
-
                             if ext in IMAGE_TYPES:
                                 ttype = "image"
                             elif res.startswith('http'):
@@ -618,12 +617,29 @@ def _build_selector(targets):
 
     panel_items = []
     for target in targets:
-        color = sublime.KIND_ID_AMBIGUOUS  # default
-        if target.category == "sticky":
-            color = sublime.KindId.COLOR_REDISH
-        elif target.category == "mru":
-            color = sublime.KindId.COLOR_GREENISH
-        panel_items.append(sublime.QuickPanelItem(trigger=f'{target.name}', kind=(color, "", "")))  # details="deets", annotation="annie"))
+        sty = sublime.KIND_ID_AMBIGUOUS  # default
+        # COLOR_REDISH/COLOR_ORANGISH, COLOR_YELLOWISH/COLOR_GREENISH/COLOR_CYANISH, COLOR_BLUISH,
+        # COLOR_PURPLISH, COLOR_PINKISH, COLOR_DARK, COLOR_LIGHT
+
+        # Cue by type.
+        if target.type == "section":
+            sty = (sublime.KindId.COLOR_REDISH, "S", "TODO???") 
+        elif target.type == "path":
+            sty = (sublime.KindId.COLOR_GREENISH, "P", "") 
+        elif target.type == "uri":
+            sty = (sublime.KindId.COLOR_BLUISH, "U", "") 
+        elif target.type == "image":
+            sty = (sublime.KindId.COLOR_PINKISH, "I", "") 
+
+        lbl = target.name if len(target.name) > 0 else target.resource
+        panel_items.append(sublime.QuickPanelItem(trigger=f'{lbl}', kind=sty))
+
+        # # Cue by category.
+        # if target.category == "sticky":
+        #     sty = ...
+        # elif target.category == "mru":
+        #     sty = ...
+        # panel_items.append(sublime.QuickPanelItem(trigger=f'{target.name}', kind=sty, details=target.resource, annotation=target.resource))
     return panel_items
 
 
@@ -667,7 +683,7 @@ def _filter_order_targets(**kwargs):
         mru_first: Put the mru first, then the ones in the current file
         current_file: If provided put these after mru and before the rest
         tags: filter by tags
-        returns a list per request
+        returns a list of targets
     '''
     settings = sublime.load_settings(NOTR_SETTINGS_FILE)
     stickies = settings.get("sticky")
@@ -679,7 +695,10 @@ def _filter_order_targets(**kwargs):
     sort = True if "sort" in kwargs and kwargs["sort"] else False
     tags = kwargs["tags"] if "tags" in kwargs else []
     mru_first = True if "mru_first" in kwargs and kwargs["mru_first"] else False
-    current_file = kwargs["current_file"] if "current_file" in kwargs else None
+
+    current_file = None
+    if "current_file" in kwargs and kwargs["current_file"] is not None and os.path.exists(kwargs["current_file"]):
+        current_file = kwargs["current_file"]
 
     # Cache some targets to maintain order.
     sticky_cache = {}
@@ -702,8 +721,11 @@ def _filter_order_targets(**kwargs):
                 if mru_first and target.name in _mru:
                     target.category = "mru"
                     mru_cache[target.name] = target
-                elif current_file is not None and os.path.samefile(target.file, current_file):
-                    current_file_targets.append(target)
+                elif current_file is not None:
+                    if target.file is not None and os.path.samefile(target.file, current_file):
+                        current_file_targets.append(target)
+                    else:
+                        other_targets.append(target)
                 else:
                     other_targets.append(target)
 
