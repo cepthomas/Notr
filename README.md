@@ -67,7 +67,7 @@ To run the demo:
 | table_delete_col             | Context  | Remove column at caret                          |                                       |
 | table_sort_col               | Context  | Sort column at caret - direction toggles        | asc: true/false                       |
 | notr_dump                    | Context  | Diagnostic to show the internal info            |                                       |
-| notr_reload                  | Context  | Diagnostic to force reload after editing colors |                                       |
+| notr_reload                  | Context  | Force reload after editing colors etc.          |                                       |
 
 ## Settings
 

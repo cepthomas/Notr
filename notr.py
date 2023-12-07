@@ -618,12 +618,13 @@ def _build_selector(targets):
     panel_items = []
     for target in targets:
         sty = sublime.KIND_ID_AMBIGUOUS  # default
+
         # COLOR_REDISH/COLOR_ORANGISH, COLOR_YELLOWISH/COLOR_GREENISH/COLOR_CYANISH, COLOR_BLUISH,
         # COLOR_PURPLISH, COLOR_PINKISH, COLOR_DARK, COLOR_LIGHT
 
         # Cue by type.
         if target.type == "section":
-            sty = (sublime.KindId.COLOR_REDISH, "S", "TODO???") 
+            sty = (sublime.KindId.COLOR_REDISH, "S", "") 
         elif target.type == "path":
             sty = (sublime.KindId.COLOR_GREENISH, "P", "") 
         elif target.type == "uri":
@@ -640,6 +641,7 @@ def _build_selector(targets):
         # elif target.category == "mru":
         #     sty = ...
         # panel_items.append(sublime.QuickPanelItem(trigger=f'{target.name}', kind=sty, details=target.resource, annotation=target.resource))
+
     return panel_items
 
 
