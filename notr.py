@@ -8,7 +8,7 @@ import sublime
 import sublime_plugin
 from . import sbot_common as sc
 
-# FIX Block uncomment isn't quite right.
+# TODO Block uncomment isn't quite right.
 
 NOTR_SETTINGS_FILE = "Notr.sublime-settings"
 NOTR_STORAGE_FILE = "notr.store"
@@ -208,19 +208,6 @@ class NotrFindInFilesCommand(sublime_plugin.WindowCommand):
                                     "replace": "",
                                     "regex": False,
                                 })
-
-    def is_visible(self):
-        return True
-
-
-#-----------------------------------------------------------------------------------
-class NotrPublishCommand(sublime_plugin.WindowCommand):
-    ''' Publish notes somewhere... '''
-
-    def run(self):
-        # Render notr files for android or ? target.
-        # self.window.active_view().run_command('sbot_render_to_html', {'font_face':'monospace', 'font_size':'1.2em' } )  
-        pass
 
     def is_visible(self):
         return True
