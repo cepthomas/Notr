@@ -86,7 +86,8 @@ class NotrEvent(sublime_plugin.EventListener):
         _read_store()
 
         # Open and process notr files.
-        _process_notr_files(views[0].window())
+        if len(views) > 0:
+            _process_notr_files(views[0].window())
 
         # Views are all valid now so init them.
         for view in views:
@@ -123,12 +124,14 @@ class NotrEvent(sublime_plugin.EventListener):
                     # New ones.
                     hl_regions = []
 
-                    # Colorize one token.
+                    # Colorize one token. TODO things like >>> don't work for whole word.
                     for token in fixed_hl[hl_index]:
                         escaped = re.escape(token)
                         if whole_word:  # and escaped[0].isalnum():
                             escaped = r'\b%s\b' % escaped
                         regs = view.find_all(escaped) if whole_word else view.find_all(token, sublime.LITERAL)
+                        # print(escaped, len(regs))
+
                         hl_regions.extend(regs)
 
                     if len(hl_regions) > 0:
@@ -342,7 +345,6 @@ class NotrInsertRefCommand(sublime_plugin.TextCommand):
     def on_sel_ref(self, *args, **kwargs):
         if len(args) > 0:
             if args[0] >= 0:
-                print(f"$$$ 1111 ")
                 s = f'[*{self._targets_to_select[args[0]].name}]'
                 self.view.run_command("insert", {"characters": f'{s}'})  # Insert in view
 
@@ -606,12 +608,11 @@ def _build_selector(targets):
     for target in targets:
         sty = sublime.KIND_ID_AMBIGUOUS  # default
 
-        # COLOR_REDISH/COLOR_ORANGISH, COLOR_YELLOWISH/COLOR_GREENISH/COLOR_CYANISH, COLOR_BLUISH,
-        # COLOR_PURPLISH, COLOR_PINKISH, COLOR_DARK, COLOR_LIGHT
+        # COLOR_REDISH/_ORANGISH, _GREENISH/_YELLOWISH/_CYANISH, _BLUISH, _PURPLISH, _PINKISH (_DARK, _LIGHT)
 
-        # Cue by type.
+        # Cue by type and category.
         if target.type == "section":
-            sty = (sublime.KindId.COLOR_REDISH, "S", "") 
+            sty = (sublime.KindId.COLOR_REDISH, "!" if target.category == "sticky" else "S", "") 
         elif target.type == "path":
             sty = (sublime.KindId.COLOR_GREENISH, "P", "") 
         elif target.type == "uri":
@@ -621,13 +622,6 @@ def _build_selector(targets):
 
         lbl = target.name if len(target.name) > 0 else target.resource
         panel_items.append(sublime.QuickPanelItem(trigger=f'{lbl}', kind=sty))
-
-        # # Cue by category.
-        # if target.category == "sticky":
-        #     sty = ...
-        # elif target.category == "mru":
-        #     sty = ...
-        # panel_items.append(sublime.QuickPanelItem(trigger=f'{target.name}', kind=sty, details=target.resource, annotation=target.resource))
 
     return panel_items
 
