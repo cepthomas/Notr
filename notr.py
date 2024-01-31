@@ -8,7 +8,11 @@ import sublime
 import sublime_plugin
 from . import sbot_common as sc
 
-# TODO Block uncomment isn't quite right.
+# TODO Block uncomment doesn't work quite right.
+# TODO-FUTURE Support multiple projects. One would be the example.
+# TODO-FUTURE Fancy stuff: image file thumbnail phantom/hover, annotations, hover/popups, etc.
+# TODO-FUTURE publish for web access. html/txt/gkeepapi/...
+
 
 NOTR_SETTINGS_FILE = "Notr.sublime-settings"
 NOTR_STORAGE_FILE = "notr.store"
