@@ -8,7 +8,9 @@ import sublime
 import sublime_plugin
 from . import sbot_common as sc
 
+# TODO Package? https://packagecontrol.io/docs/submitting_a_package.
 # TODO Block uncomment doesn't work quite right.
+# TODO Quick panel autocomplete - prefer alpha sorted but it uses some internal algorithm.
 # TODO-FUTURE Support multiple projects. One would be the example.
 # TODO-FUTURE Fancy stuff: image file thumbnail phantom/hover, annotations, hover/popups, etc.
 # TODO-FUTURE publish for web access. html/txt/gkeepapi/...
@@ -228,6 +230,7 @@ class NotrFindInFilesCommand(sublime_plugin.WindowCommand):
 #-----------------------------------------------------------------------------------
 class NotrGotoTargetCommand(sublime_plugin.TextCommand):
     ''' List all the tag(s) and/or target(s) for user selection then open corresponding file. '''
+    # TODO doesn't seem to work when showing jpg.
 
     # Prepared lists for quick panel.
     _tags = []
@@ -250,11 +253,11 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
             # Hide current quick panel.
             self.view.window().run_command("hide_overlay")
 
-            # Make a selector with sorted target names, current file's first.
+            # Make a selector with target names, current file's first.
             sel_tag = self._tags[args[0]]
 
             # Filter per tag selection.
-            tag_targets = _filter_order_targets(sort=True, mru_first=True, tags=[sel_tag])
+            tag_targets = _filter_order_targets(sort=False, mru_first=True, tags=[sel_tag])
             if len(tag_targets) > 0:
                 self.show_targets(tag_targets)
             else:
@@ -315,7 +318,7 @@ class NotrFollowCommand(sublime_plugin.TextCommand):
                 sc.slog(sc.CAT_ERR, f'Invalid link: {tlink}')
 
         else:  # Show a quickpanel of all target names.
-            self._targets_to_select = _filter_order_targets(sort=True, mru_first=True, current_file=self.view.file_name())
+            self._targets_to_select = _filter_order_targets(sort=False, mru_first=True, current_file=self.view.file_name())
             panel_items = _build_selector(self._targets_to_select)
             self.view.window().show_quick_panel(panel_items, on_select=self.on_sel_ref)
 
@@ -342,7 +345,7 @@ class NotrInsertRefCommand(sublime_plugin.TextCommand):
 
     def run(self, edit):
         # Show a quickpanel of all target names.
-        self._targets_to_select = _filter_order_targets(sort=True, mru_first=True, current_file=self.view.file_name())
+        self._targets_to_select = _filter_order_targets(sort=False, mru_first=True, current_file=self.view.file_name())
         panel_items = _build_selector(self._targets_to_select)
         self.view.window().show_quick_panel(panel_items, on_select=self.on_sel_ref)
 
@@ -767,7 +770,8 @@ def _update_mru(name):
 
     valid_refs = set()
     for target in _targets:
-        valid_refs.add(target.name)
+        if target.category != "sticky":
+            valid_refs.add(target.name)
 
     for tname in tmp:
         if tname in valid_refs and tname not in _mru and len(_mru) <= mru_size:
