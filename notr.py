@@ -234,19 +234,51 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
 
     # Prepared lists for quick panel.
     _tags = []
-    _targets_to_select = []
+    # _targets_to_select = []
 
     def run(self, edit, filter_by_tag):
-        if filter_by_tag:
-            self._tags = _get_all_tags()
-            panel_items = []
+        # Determine if user has selected a specific ref or link to follow, otherwise show the list of all.
+        valid = True  # default
+        tref = _get_selection_for_scope(self.view, 'markup.link.refname.notr')
+        tlink = _get_selection_for_scope(self.view, 'markup.underline.link.notr')
+        if tlink is None: tlink = _get_selection_for_scope(self.view, 'markup.link.target.notr')
 
-            for tag in self._tags:
-                panel_items.append(sublime.QuickPanelItem(trigger=tag, kind=sublime.KIND_AMBIGUOUS))
-            self.view.window().show_quick_panel(panel_items, on_select=self.on_sel_tag)
+        # Explicit ref to selected element - do immediate.
+        if tref is not None:
+            # Get the corresponding target spec.
+            for target in _targets:
+                valid = False
+                if target.name == tref:
+                    if target.type == "section":
+                        # Open the notr file and position it.
+                        sc.wait_load_file(self.view.window(), target.file, target.line)
+                        valid = True
+                    else:  # "image", "uri", "path"
+                        valid = sc.open_path(target.resource)
+                    break
+
+            if not valid:
+                sc.slog(sc.CAT_ERR, f'Invalid reference: {self.view.file_name()} :{tref}')
+
+        # Explicit link. do immediate.
+        elif tlink is not None:
+            fn = sc.expand_vars(tlink)
+            valid = sc.open_path(fn)
+            if not valid:
+                sc.slog(sc.CAT_ERR, f'Invalid link: {tlink}')
+
+        # Show a quickpanel of all target names.
         else:
-            targets = _filter_order_targets(mru_first=True, current_file=self.view.file_name())
-            self.show_targets(targets)
+            if filter_by_tag:
+                self._tags = _get_all_tags()
+                panel_items = []
+
+                for tag in self._tags:
+                    panel_items.append(sublime.QuickPanelItem(trigger=tag, kind=sublime.KIND_AMBIGUOUS))
+                self.view.window().show_quick_panel(panel_items, on_select=self.on_sel_tag)
+            else:
+                targets = _filter_order_targets(mru_first=True, current_file=self.view.file_name())
+                self.show_targets(targets)
 
     def on_sel_tag(self, *args, **kwargs):
         if len(args) > 0 and args[0] >= 0:
@@ -282,60 +314,6 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
 
     def is_visible(self):
         return True
-
-
-#-----------------------------------------------------------------------------------
-class NotrFollowCommand(sublime_plugin.TextCommand):
-    ''' Open target from selected ref or link. '''
-    _targets_to_select = []
-
-    def run(self, edit):
-        # Determine if user has selected a specific ref or link to follow, otherwise show the list of all.
-        valid = True  # default
-        tref = _get_selection_for_scope(self.view, 'markup.link.refname.notr')
-        tlink = _get_selection_for_scope(self.view, 'markup.underline.link.notr')
-
-        if tref is not None:  # explicit ref to selected element - do immediate.
-            # Get the corresponding target spec.
-            for target in _targets:
-                valid = False
-                if target.name == tref:
-                    if target.type == "section":
-                        # Open the notr file and position it.
-                        sc.wait_load_file(self.view.window(), target.file, target.line)
-                        valid = True
-                    else:  # "image", "uri", "path"
-                        valid = sc.open_path(target.resource)
-                    break
-
-            if not valid:
-                sc.slog(sc.CAT_ERR, f'Invalid reference: {self.view.file_name()} :{tref}')
-
-        elif tlink is not None:  # explicit link. do immediate.
-            fn = sc.expand_vars(tlink)
-            valid = sc.open_path(fn)
-            if not valid:
-                sc.slog(sc.CAT_ERR, f'Invalid link: {tlink}')
-
-        else:  # Show a quickpanel of all target names.
-            self._targets_to_select = _filter_order_targets(sort=False, mru_first=True, current_file=self.view.file_name())
-            panel_items = _build_selector(self._targets_to_select)
-            self.view.window().show_quick_panel(panel_items, on_select=self.on_sel_ref)
-
-    def on_sel_ref(self, *args, **kwargs):
-        if len(args) > 0 and args[0] >= 0:
-            tsel = self._targets_to_select[args[0]]            
-            for target in self._targets_to_select:
-                if target.name == tsel.name:
-                    if target.type == "section":
-                        # Open the notr file and position it.
-                        sc.wait_load_file(self.view.window(), target.file, target.line)
-                    else:  # "image", "uri", "path"
-                        sc.open_path(target.resource)
-                    break
-
-    # def is_visible(self):
-    #     return _get_selection_for_scope(self.view, 'markup.link.refname.notr') is not None
 
 
 #-----------------------------------------------------------------------------------

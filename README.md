@@ -58,8 +58,7 @@ To run the demo:
 | :--------                    | :-----   | :-------                                        | :--------                             |
 | notr_insert_target_from_clip | Context  | Insert a target from clipboard                  |                                       |
 | notr_insert_ref              | Context  | Insert a ref from selector                      |                                       |
-| notr_goto_target             | Context  | Go to a target from selector                    | filter_by_tag: true, select tag first |
-| notr_follow                  | Context  | Go to a reference or link from selector         |                                       |
+| notr_goto_target             | Context  | Go to a target via selector or ref or link      | filter_by_tag: true, select tag first |
 | notr_insert_hrule            | Context  | Make a line                                     | fill_str: "=", reps: 20               |
 | notr_find_in_files           | Context  | Search within the notr_paths in settings        |                                       |
 | table_fit                    | Context  | Fit table contents to columns                   |                                       |
