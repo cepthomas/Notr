@@ -17,7 +17,6 @@
             { "caption": "Sort Asc", "command": "table_sort_col", "args" : {"asc" : true} },
             { "caption": "Sort Desc", "command": "table_sort_col", "args" : {"asc" : false} },
         ]
-        
     },
     { "caption": "Goto Target", "command": "notr_goto_target", "args" : {"filter_by_tag" : false} },
     { "caption": "Follow", "command": "notr_follow" },
