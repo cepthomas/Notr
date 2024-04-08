@@ -8,12 +8,14 @@ import sublime
 import sublime_plugin
 from . import sbot_common as sc
 
-# TODO Package? https://packagecontrol.io/docs/submitting_a_package.
-# TODO Block uncomment doesn't work quite right.
-# TODO Quick panel autocomplete - prefer alpha sorted but it uses some internal algorithm.
-# TODO-FUTURE Support multiple projects. One would be the example.
-# TODO-FUTURE Fancy stuff: image file thumbnail phantom/hover, annotations, hover/popups, etc.
-# TODO-FUTURE publish for web access. html/txt/gkeepapi/...
+# TODO! open_path needs to be able to open like dbl-click and open in editor
+# TODO  Show all sections (refs?) in current file.
+# TODO  Support multiple notr projects. One would be the example.
+# TODO  Fancy stuff: image file thumbnail phantom/hover, annotations, hover/popups, etc.
+# TODO  publish for web access. html/txt/gkeepapi/...
+# TODO? Quick panel autocomplete - prefer alpha sorted but it uses some internal algorithm.
+# TODO? https://packagecontrol.io/docs/submitting_a_package.
+# TODO  Bug - block uncomment doesn't work quite right.
 
 
 NOTR_SETTINGS_FILE = "Notr.sublime-settings"
