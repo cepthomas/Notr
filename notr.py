@@ -8,14 +8,17 @@ import sublime
 import sublime_plugin
 from . import sbot_common as sc
 
-# TODO! open_path needs to be able to open like dbl-click and open in editor
-# TODO  Show all sections (refs?) in current file.
-# TODO  Support multiple notr projects. One would be the example.
-# TODO  Fancy stuff: image file thumbnail phantom/hover, annotations, hover/popups, etc.
-# TODO  publish for web access. html/txt/gkeepapi/...
-# TODO? Quick panel autocomplete - prefer alpha sorted but it uses some internal algorithm.
-# TODO? https://packagecontrol.io/docs/submitting_a_package.
-# TODO  Bug - block uncomment doesn't work quite right.
+# TODO1 publish for web access. html/txt/gkeepapi/...
+# TODO1 Bug - block uncomment doesn't work quite right.
+# TODO1 Notr.sublime-syntax sbot broken style for rt paren: [like(C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\shared\winerror.h)
+# TODO1  easier way to navigate sections, esp in same file. something up/down? Show all sections (refs?) in current file.
+
+# TODO Quick panel autocomplete - prefer alpha sorted but it uses some internal algorithm.
+# TODO auto-open file(s) at notr start?
+# TODO open_path needs to be able to open like dbl-click and open in editor
+# TODO Support multiple notr projects. One would be the example.
+# TODO Fancy stuff: image file thumbnail phantom/hover, annotations, hover/popups, etc.
+# TODO https://packagecontrol.io/docs/submitting_a_package.
 
 
 NOTR_SETTINGS_FILE = "Notr.sublime-settings"
