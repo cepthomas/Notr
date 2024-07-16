@@ -11,7 +11,6 @@ from . import sbot_common as sc
 # TODO1 publish for web access. html/txt/gkeepapi/...
 # TODO1 Bug - block uncomment doesn't work quite right.
 # TODO1 Notr.sublime-syntax sbot broken style for rt paren: [like(C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\shared\winerror.h)
-# TODO1  easier way to navigate sections, esp in same file. something up/down? Show all sections (refs?) in current file.
 
 # TODO Quick panel autocomplete - prefer alpha sorted but it uses some internal algorithm.
 # TODO auto-open file(s) at notr start?
@@ -215,7 +214,7 @@ class NotrFindInFilesCommand(sublime_plugin.WindowCommand):
                                     "where": ', '.join(paths),
                                     "case_sensitive": True,
                                     "pattern": "",
-                                    "whole_word": False, 
+                                    "whole_word": False,
                                     "preserve_case": True,
                                     "show_context": False,
                                     "use_buffer": True,
@@ -599,19 +598,27 @@ def _build_selector(targets):
         sty = sublime.KIND_ID_AMBIGUOUS  # default
 
         # COLOR_REDISH/_ORANGISH, _GREENISH/_YELLOWISH/_CYANISH, _BLUISH, _PURPLISH, _PINKISH (_DARK, _LIGHT)
-
         # Cue by type and category.
+        # S=section R=resource(path/image/uri)
+        # sticky=purple mru=red currentfile=? other=green
+
         if target.type == "section":
-            sty = (sublime.KindId.COLOR_REDISH, "!" if target.category == "sticky" else "S", "") 
+            if target.category == "sticky":
+                sty = (sublime.KindId.COLOR_PURPLISH, "S", "")
+            elif target.category == "mru":
+                sty = (sublime.KindId.COLOR_REDISH, "S", "")
+            else:
+                sty = (sublime.KindId.COLOR_GREENISH, "S", "")
         elif target.type == "path":
-            sty = (sublime.KindId.COLOR_GREENISH, "P", "") 
+            sty = (sublime.KindId.COLOR_GREENISH, "R", "")
         elif target.type == "uri":
-            sty = (sublime.KindId.COLOR_BLUISH, "U", "") 
+            sty = (sublime.KindId.COLOR_GREENISH, "R", "")
         elif target.type == "image":
-            sty = (sublime.KindId.COLOR_PINKISH, "I", "") 
+            sty = (sublime.KindId.COLOR_GREENISH, "R", "")
 
         lbl = target.name if len(target.name) > 0 else target.resource
         panel_items.append(sublime.QuickPanelItem(trigger=f'{lbl}', kind=sty))
+        # panel_items.append(sublime.QuickPanelItem(trigger=f'{lbl}', details='fadada', annotation='<<<<<<', kind=sty))
 
     return panel_items
 
@@ -639,7 +646,7 @@ def _get_all_tags():
 #-----------------------------------------------------------------------------------
 def _get_all_ntr_files():
     ''' Return a sorted list of all processed .ntr file names. '''
-    
+
     fns = []
     for target in _targets:
         if target.file not in fns:
@@ -789,7 +796,7 @@ def _read_store():
 def _write_store():
     ''' Save everything. '''
     global _mru
-    
+
     store_fn = sc.get_store_fn(NOTR_STORAGE_FILE)
     store = {"mru": _mru}
     with open(store_fn, 'w') as fp:
