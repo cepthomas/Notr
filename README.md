@@ -1,9 +1,11 @@
 # Notr
 
-Notr is a Sublime Text application plugin for managing and displaying collections of text notes. It is not intended to be anywhere as extensive as something like [Org Mode](https://orgmode.org/). Notr files have the extension `.ntr` and the markup syntax
-provides file and section navigation and colorizing to provide visual clues for things like sections, links, tables, lists, etc.
-It is a plain text format with a lot of similarity to markdown but is not intended to be rendered into a publication - the text
-itself is the whole point of this.
+Notr is a Sublime Text application plugin for managing and displaying collections of text notes. It is not intended to
+be anywhere as extensive as something like [Org Mode](https://orgmode.org/). Notr files have the extension `.ntr`
+and the markup syntax provides file and section navigation and colorizing to provide visual clues for things like
+sections, links, tables, lists, etc.
+It is a plain text format with a lot of similarity to markdown but is not intended to be rendered into a
+publication - the text itself is the whole point of this.
 
 Built for ST4 on Windows and Linux.
 
@@ -16,7 +18,8 @@ Built for ST4 on Windows and Linux.
 - Navigation to notr file errors, honors `show_panel_on_build`.
 - Lists with customizable bullets.
 - Markdown-like quotes and raw text also act like comments.
-- Tables with insert/delete column, fit, sort. Loosely based on https://github.com/wadetb/Sublime-Text-Advanced-CSV. Note that this could be ported for general purpose use.
+- Tables with insert/delete column, fit, sort. Loosely based on https://github.com/wadetb/Sublime-Text-Advanced-CSV.
+  Note that this could be ported for general purpose use.
 - Auto highlight - supplements [SbotHighlight](https://github.com/cepthomas/SbotHighlight) (recommended).
 - Render to html with [SbotRender](https://github.com/cepthomas/SbotRender) (recommended).
 
@@ -149,3 +152,4 @@ Color schemes require new and edited scopes to support this tool. Implement your
 - Coloring for `markup.user_hls` and `markup.fixed_hls` only supports fore and back colors, not font_style.
 - `view.add_regions()` apparently only supports colors, annotations, and icon. It does not support font style and region flags.   Also they are not available via `extract_scope()`.
 - After editing your color-scheme, close and reopen affected views.
+- Doesn't handle targets with embedded parentheses (i.e. C:\Program Files (x86)\SomeApp). It exceeds my meager regex skills.

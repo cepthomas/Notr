@@ -8,13 +8,11 @@ import sublime
 import sublime_plugin
 from . import sbot_common as sc
 
-# TODO1 publish for web access. html/txt/gkeepapi/...
-# TODO1 Bug - block uncomment doesn't work quite right.
-# TODO1 Notr.sublime-syntax sbot broken style for rt paren: [like(C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\shared\winerror.h)
 
+# TODO Bug: block uncomment doesn't work quite right.
+# TODO publish for web access. html/txt/gkeepapi/...
 # TODO Quick panel autocomplete - prefer alpha sorted but it uses some internal algorithm.
 # TODO auto-open file(s) at notr start?
-# TODO open_path needs to be able to open like dbl-click and open in editor
 # TODO Support multiple notr projects. One would be the example.
 # TODO Fancy stuff: image file thumbnail phantom/hover, annotations, hover/popups, etc.
 # TODO https://packagecontrol.io/docs/submitting_a_package.
@@ -134,7 +132,7 @@ class NotrEvent(sublime_plugin.EventListener):
                     # New ones.
                     hl_regions = []
 
-                    # Colorize one token. TODO things like >>> don't work for whole word.
+                    # Colorize one token. TODO Bug: things like >>> don't work for whole word.
                     for token in fixed_hl[hl_index]:
                         escaped = re.escape(token)
                         if whole_word:  # and escaped[0].isalnum():
@@ -234,7 +232,7 @@ class NotrFindInFilesCommand(sublime_plugin.WindowCommand):
 #-----------------------------------------------------------------------------------
 class NotrGotoTargetCommand(sublime_plugin.TextCommand):
     ''' List all the tag(s) and/or target(s) for user selection then open corresponding file. '''
-    # TODO doesn't seem to work when showing jpg.
+    # TODO Bug: doesn't seem to work when showing jpg.
 
     # Prepared lists for quick panel.
     _tags = []
@@ -442,7 +440,8 @@ def _process_notr_files(window):
         output_view = None
         working_dir = ''  # os.path.dirname(window.active_view().file_name())
         prefs = sublime.load_settings("Preferences.sublime-settings")
-        use_panel = prefs.get("show_panel_on_build", True)
+        # use_panel = prefs.get("show_panel_on_build", True)
+        use_panel = False
 
         # Create output to panel or view. Don't call get_output_panel until the regexes are assigned.
         if use_panel:
