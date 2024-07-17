@@ -9,15 +9,6 @@ import sublime_plugin
 from . import sbot_common as sc
 
 
-# TODO Bug: block uncomment doesn't work quite right.
-# TODO publish for web access. html/txt/gkeepapi/...
-# TODO Quick panel autocomplete - prefer alpha sorted but it uses some internal algorithm.
-# TODO auto-open file(s) at notr start?
-# TODO Support multiple notr projects. One would be the example.
-# TODO Fancy stuff: image file thumbnail phantom/hover, annotations, hover/popups, etc.
-# TODO https://packagecontrol.io/docs/submitting_a_package.
-
-
 NOTR_SETTINGS_FILE = "Notr.sublime-settings"
 NOTR_STORAGE_FILE = "notr.store"
 
@@ -32,11 +23,11 @@ IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 class Target:
     sort_index: str = field(init=False)
     name: str  # section title or description
-    type: str  # "section", "uri", "image", "path" - maybe useful to discriminate file and dir?
+    ttype: str  # "section", "uri", "image", "path" - maybe useful to discriminate file and dir?
     category: str  # "sticky", "mru", "none"
     level: int  # for section only
     tags: []  # tags for targets
-    resource: str  # what type points to
+    resource: str  # what ttype points to
     file: str  # .ntr file path
     line: int  # .ntr file line
 
@@ -132,7 +123,7 @@ class NotrEvent(sublime_plugin.EventListener):
                     # New ones.
                     hl_regions = []
 
-                    # Colorize one token. TODO Bug: things like >>> don't work for whole word.
+                    # Colorize one token.
                     for token in fixed_hl[hl_index]:
                         escaped = re.escape(token)
                         if whole_word:  # and escaped[0].isalnum():
@@ -232,7 +223,6 @@ class NotrFindInFilesCommand(sublime_plugin.WindowCommand):
 #-----------------------------------------------------------------------------------
 class NotrGotoTargetCommand(sublime_plugin.TextCommand):
     ''' List all the tag(s) and/or target(s) for user selection then open corresponding file. '''
-    # TODO Bug: doesn't seem to work when showing jpg.
 
     # Prepared lists for quick panel.
     _tags = []
@@ -251,7 +241,7 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
             for target in _targets:
                 valid = False
                 if target.name == tref:
-                    if target.type == "section":
+                    if target.ttype == "section":
                         # Open the notr file and position it.
                         sc.wait_load_file(self.view.window(), target.file, target.line)
                         valid = True
@@ -308,7 +298,7 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
             # Locate the target record.
             target = self._targets_to_select[args[0]]
             _update_mru(target.name)
-            if target.type == "section":
+            if target.ttype == "section":
                 # Open the notr file and position it.
                 sc.wait_load_file(self.view.window(), target.file, target.line)
             else:  # "image", "uri", "path"
@@ -594,30 +584,31 @@ def _build_selector(targets):
 
     panel_items = []
     for target in targets:
-        sty = sublime.KIND_ID_AMBIGUOUS  # default
+        ann = target.ttype
+        if target.ttype == "section":
+            tt = "S"
+            ann = ""
+        elif target.ttype == "uri":
+            tt = "R"
+        elif target.ttype == "image":
+            tt = "R"
+        elif target.ttype == "path":
+            tt = "R"
+        else:
+            tt = "?"
 
         # COLOR_REDISH/_ORANGISH, _GREENISH/_YELLOWISH/_CYANISH, _BLUISH, _PURPLISH, _PINKISH (_DARK, _LIGHT)
-        # Cue by type and category.
-        # S=section R=resource(path/image/uri)
-        # sticky=purple mru=red currentfile=? other=green
+        if target.category == "sticky":
+            clr = sublime.KindId.COLOR_PURPLISH
+        elif target.category == "mru":
+            clr = sublime.KindId.COLOR_REDISH
+        else:
+            clr = sublime.KindId.COLOR_GREENISH
 
-        if target.type == "section":
-            if target.category == "sticky":
-                sty = (sublime.KindId.COLOR_PURPLISH, "S", "")
-            elif target.category == "mru":
-                sty = (sublime.KindId.COLOR_REDISH, "S", "")
-            else:
-                sty = (sublime.KindId.COLOR_GREENISH, "S", "")
-        elif target.type == "path":
-            sty = (sublime.KindId.COLOR_GREENISH, "R", "")
-        elif target.type == "uri":
-            sty = (sublime.KindId.COLOR_GREENISH, "R", "")
-        elif target.type == "image":
-            sty = (sublime.KindId.COLOR_GREENISH, "R", "")
+        sty = (clr, tt, "")
 
         lbl = target.name if len(target.name) > 0 else target.resource
-        panel_items.append(sublime.QuickPanelItem(trigger=f'{lbl}', kind=sty))
-        # panel_items.append(sublime.QuickPanelItem(trigger=f'{lbl}', details='fadada', annotation='<<<<<<', kind=sty))
+        panel_items.append(sublime.QuickPanelItem(trigger=f'{lbl}', annotation=ann, kind=sty))
 
     return panel_items
 
@@ -761,9 +752,8 @@ def _update_mru(name):
     for target in _targets:
         if target.category != "sticky":
             valid_refs.add(target.name)
-
     for tname in tmp:
-        if tname in valid_refs and tname not in _mru and len(_mru) <= mru_size:
+        if tname in valid_refs and tname not in _mru and len(_mru) < mru_size:
             _mru.append(tname)
 
     # Persist.
@@ -805,6 +795,8 @@ def _write_store():
 #-----------------------------------------------------------------------------------
 def _user_error(path, line, msg):
     ''' Error in user edited file. '''
+    if '(' in msg:
+        msg = msg + '   <<< Sorry, targets with parens not allowed'
     _parse_errors.append((path, line, msg))
 
 

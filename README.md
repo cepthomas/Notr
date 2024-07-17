@@ -34,7 +34,7 @@ something like this:
 
 ![ex2](example/ex3.jpg)
 
-To run the demo:
+To run the demo: TODO1 improve this?
 - Install the plugin.
 - Open `Preferences->Package Settings->Notr`.
 - Edit to something like this:
@@ -144,6 +144,13 @@ Color schemes require new and edited scopes to support this tool. Implement your
     ]
 }
 ```
+
+## Future
+
+- Publish for web access - html or txt or ??
+- Support multiple notr projects. One would be the example.
+- Fancy stuff: image thumbnail phantom/hover, annotations, hover/popups, etc.
+- Unicode picker/inserter for symbols.
 
 ## Caveats
 
