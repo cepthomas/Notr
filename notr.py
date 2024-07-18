@@ -16,6 +16,7 @@ NOTR_STORAGE_FILE = "notr.store"
 IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 
 
+
 #--------------------------- Types -------------------------------------------------
 
 # One target of section or file/uri.
@@ -166,12 +167,16 @@ class NotrDumpCommand(sublime_plugin.WindowCommand):
             text.append(f'\n========== {name} ==========')
             text.extend([str(x) for x in coll])
 
+        if len(_parse_errors) > 0:
+            text.append('\n========== !! errors below !! ==========')
+
         do_one('targets', _targets)
         do_one('refs', _refs)
         do_one('tags', _get_all_tags())
         do_one('ntr_files', _get_all_ntr_files())
+
         if len(_parse_errors) > 0:
-            text.insert(0, '========== Errors in your file - see below ==========\n')
+            text.append('\n========== errors ==========')
             text.extend([f'{p[0]}({p[1]}): {p[2]}' for p in _parse_errors])
 
         sc.create_new_view(self.window, '\n'.join(text))
@@ -346,7 +351,6 @@ class NotrInsertTargetFromClipCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         random.seed()
         s = f'[]({sublime.get_clipboard()})'
-        # s = f'[EDIT_ME{random.randrange(10000)}]({sublime.get_clipboard()})'
         caret = sc.get_single_caret(self.view)
         self.view.insert(edit, caret, s)
 
@@ -544,6 +548,8 @@ def _process_notr_file(ntr_fn):
                     valid = True
                     if len(m) == 2:
                         content = m[0].strip().split(None, 1)
+                        print(content)
+
                         if len(content) == 2:
                             hashes = content[0].strip()
                             name = f'{_get_froot(ntr_fn)}{hashes}{content[1].strip()}'
@@ -556,7 +562,7 @@ def _process_notr_file(ntr_fn):
                         valid = False
 
                     if valid:
-                        if len(hashes) == 1:  # Minimizes selector clutter, could be setting.
+                        if len(hashes) == 1:
                             sections.append(Target(name, "section", "", len(hashes), tags, "", ntr_fn, line_num))
                     else:
                         _user_error(ntr_fn, line_num, 'Invalid syntax')

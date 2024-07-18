@@ -1,20 +1,20 @@
 
 # Top
-These can make it slightly easier to locate in selector.
+This can make it slightly easier to locate in selector.
 
 # section name [tag1 tag2]
 A section of content.
 Starts in first column with number of `#` indicates level.
 Tag(s) are used for categorizing and selecting sections.
-Right click to select from a list of all sections or tags to navigate to.
+Right click to select from a list of all sections or tags to navigate to. 
 
-
-## section no tags
-Another section but without tags.
-
-
-### subject text [tag2 tag3]
+## subject text [tag2 tag3]
 Nothing here...
+
+
+
+# section no tags
+Another section but without tags.
 
 
 ### Text Attributes [tag2 dds tag3]
@@ -84,7 +84,7 @@ item states (in settings)
 
 stuff in lists
   - link [nyt](https://nytimes.com)[tag2 tag9]
-  - ref [*another felix].
+  - ref [* image felix le chat].
   - aaa *text abcdefg*   _text abcdefg_    /text abcdefg/    ~text abcdefg~.
 
 
@@ -96,7 +96,6 @@ Like `:AN_ALIAS="abcde"`
 Define a link and its ref name like [image felix le chat]($NOTR_PATH/example/felix1.jpg)[tag4 tag3] or
    [other type of file]($NOTR_PATH/notr.py)
 or... [nyt](https://nytimes.com)[tag2 tag9]
-[bad one]($NGENV/booga.txt)
 
 Note: use forward slash separator if compatibility with linux is important.
 
@@ -107,7 +106,7 @@ Link without id:
 > Also [See](https://www.sublimetext.com/docs/syntax.html#include-patterns).
 
 Use `*` to identify references defined beforehand - above or in `notr_index` file. Right click to navigate to the ref.
-Ref to other file. [* image felix le chat] or [* other type of file] or [* another felix].
+Ref to other file. [* image felix le chat] or [* other type of file].
 Ref to URI. [* nyt]
 Ref section in this ntr file: [* #section no tags] end.
 Ref section in *another* ntr file: [*page2#P2 section 2]. `page2` is the _pathless root of_ the ntr filename. Must be unique in all ntr files!

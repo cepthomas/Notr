@@ -12,6 +12,7 @@ Built for ST4 on Windows and Linux.
 ## Features
 
 - Sections with tags and simple (non-hierarchal) folding.
+- Sections are identified like markdown `#`. Currently only one level supported to keep the clutter down.
 - Various text decorations for visual indication.
 - Targets and references - targets can be section, file (image or other), uri.
 - Navigation to targets via goto anything. Has MRU and sticky entries.
@@ -35,16 +36,17 @@ something like this:
 
 ![ex2](example/ex3.jpg)
 
-To run the demo: TODO1 improve this?
+To run the demo:
+
 - Install the plugin.
 - Open `Preferences->Package Settings->Notr`.
 - Edit to something like this:
 ``` json
 {
     "notr_paths": [
-        "your-path/Sublime Text/Packages/Notr/example",
+        "YOUR_DATA_DIR/Packages/Notr/example",
     ],
-    "notr_index": "your-path/Sublime Text/Packages/Notr/example/my-index.ntr",
+    "notr_index": "YOUR_DATA_DIR/Packages/Notr/example/my-index.ntr",
     "fixed_hl": [
         ["2DO", "and_a"],
         ["user", "and_b"],
@@ -52,7 +54,7 @@ To run the demo: TODO1 improve this?
     ],
 }
 ```
-- Optionally implement color scheme per [Color Scheme](#color-scheme).
+- Implement color scheme per [Color Scheme](#color-scheme).
 - Now open `example/notr-spec.ntr`. Test drive the various context menu selections.
 
 
@@ -149,7 +151,7 @@ in `Packages\User\your.sublime-color-scheme`.
 
 ## Future
 
-- Publish for web access - html or txt or ??
+- Publish for web access - render html or txt or ??
 - Support multiple notr projects. One would be the example.
 - Fancy stuff: image thumbnail phantom/hover, annotations, hover/popups, etc.
 - Unicode picker/inserter for symbols.
@@ -162,3 +164,4 @@ in `Packages\User\your.sublime-color-scheme`.
 - `view.add_regions()` apparently only supports colors, annotations, and icon. It does not support font style and region flags.   Also they are not available via `extract_scope()`.
 - After editing your color-scheme, close and reopen affected views.
 - Doesn't handle targets with embedded parentheses (i.e. C:\Program Files (x86)\SomeApp). It exceeds my meager regex skills.
+- Support configurable section hashes.
