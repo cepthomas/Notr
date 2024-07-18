@@ -197,19 +197,10 @@ class NotrFindInFilesCommand(sublime_plugin.WindowCommand):
 
         # Show it so the user can enter the pattern.
         # https://github.com/SublimeText/PackageDev/blob/master/plugins/command_completions/builtin_commands_meta_data.yaml
-        self.window.run_command("show_panel",
-                                {
-                                    "panel": "find_in_files",
-                                    "where": ', '.join(paths),
-                                    "case_sensitive": True,
-                                    "pattern": "",
-                                    "whole_word": False,
-                                    "preserve_case": True,
-                                    "show_context": False,
-                                    "use_buffer": True,
-                                    "replace": "",
-                                    "regex": False,
-                                })
+        self.window.run_command("show_panel", {
+                                "panel": "find_in_files", "where": ', '.join(paths), "case_sensitive": True, "pattern": "",
+                                "whole_word": False, "preserve_case": True, "show_context": False, "use_buffer": True,
+                                "replace": "", "regex": False })
 
     def is_visible(self):
         return True

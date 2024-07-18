@@ -11,11 +11,12 @@ Built for ST4 on Windows and Linux.
 
 ## Features
 
-- Sections with tags and simple (non-hierarchal) folding. Search in all notr files.
+- Sections with tags and simple (non-hierarchal) folding.
 - Various text decorations for visual indication.
 - Targets and references - targets can be section, file (image or other), uri.
 - Navigation to targets via goto anything. Has MRU and sticky entries.
-- Navigation to notr file errors, honors `show_panel_on_build`.
+- Navigation to notr file errors.
+- Search in all notr files.
 - Lists with customizable bullets.
 - Markdown-like quotes and raw text also act like comments.
 - Tables with insert/delete column, fit, sort. Loosely based on https://github.com/wadetb/Sublime-Text-Advanced-CSV.
@@ -25,7 +26,7 @@ Built for ST4 on Windows and Linux.
 
 ## Example
 
-[The spec](notr-spec.ntr) provides an example of the features. If the plugin is installed it will look
+[The spec](example/notr-spec.ntr) provides an example of the features. If the plugin is installed it will look
 something like this:
 
 ![ex1](example/ex1.jpg)
@@ -86,7 +87,8 @@ To run the demo: TODO1 improve this?
 
 ## Color Scheme
 
-Color schemes require new and edited scopes to support this tool. Implement your unique version of these in `your.sublime-color-scheme`.
+Color schemes require new and edited scopes to support this tool. Implement your unique version of these
+in `Packages\User\your.sublime-color-scheme`.
 
 ``` json
 {
