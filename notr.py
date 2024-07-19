@@ -548,7 +548,7 @@ def _process_notr_file(ntr_fn):
                     valid = True
                     if len(m) == 2:
                         content = m[0].strip().split(None, 1)
-                        print(content)
+                        # print(content)
 
                         if len(content) == 2:
                             hashes = content[0].strip()

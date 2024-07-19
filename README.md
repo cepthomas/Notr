@@ -89,8 +89,9 @@ To run the demo:
 
 ## Color Scheme
 
-Color schemes require new and edited scopes to support this tool. Implement your unique version of these
-in `Packages\User\your.sublime-color-scheme`.
+New scopes have been added to support this application. Adjust these to taste and add
+to your `Packages\User\your.sublime-color-scheme` file. Note that `markup.fixed_hl*`
+and `markup.user_hl*` are shared with other members of the sbot family.
 
 ``` json
 {
