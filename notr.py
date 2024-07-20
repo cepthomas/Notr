@@ -3,11 +3,14 @@ import re
 import glob
 import random
 import json
+import logging
 from dataclasses import dataclass, field
 import sublime
 import sublime_plugin
 from . import sbot_common as sc
 
+_logger = logging.getLogger(__name__)
+_logger.setLevel(logging.DEBUG)
 
 NOTR_SETTINGS_FILE = "Notr.sublime-settings"
 NOTR_STORAGE_FILE = "notr.store"
@@ -246,14 +249,14 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
                     break
 
             if not valid:
-                sc.slog(sc.CAT_ERR, f'Invalid reference: {self.view.file_name()} :{tref}')
+                _logger.error(f'Invalid reference: {self.view.file_name()} :{tref}')
 
         # Explicit link. do immediate.
         elif tlink is not None:
             fn = sc.expand_vars(tlink)
             valid = sc.open_path(fn)
             if not valid:
-                sc.slog(sc.CAT_ERR, f'Invalid link: {tlink}')
+                _logger.error(f'Invalid link: {tlink}')
 
         # Show a quickpanel of all target names.
         else:
@@ -773,7 +776,7 @@ def _read_store():
                 _mru = store["mru"]
         except Exception as e:
             # Assume bad file.
-            sc.slog(sc.CAT_ERR, f'Error processing {store_fn}: {e}')
+            _logger.error(f'Error processing {store_fn}: {e}')
     else:  # Assume new file.
         _mru.clear()
 
