@@ -18,4 +18,7 @@
     "fixed_hl": [ [], [], [] ],
     // User highlights option.
     "fixed_hl_whole_word": true,
+
+    // Log level: "CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"
+    "log_level": "DEBUG",
 }

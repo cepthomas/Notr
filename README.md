@@ -85,6 +85,8 @@ To run the demo:
 | mru_size            | How many mru entries in goto selector      |                            |
 | fixed_hl            | Three sets of user keywords                |                            |
 | fixed_hl_whole_word | User highlights option                     | true/false                 |
+    // Log level: "CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"
+    "log_level": "DEBUG",
 
 
 ## Color Scheme

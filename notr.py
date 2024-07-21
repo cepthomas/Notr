@@ -10,7 +10,7 @@ import sublime_plugin
 from . import sbot_common as sc
 
 _logger = logging.getLogger(__name__)
-_logger.setLevel(logging.DEBUG)
+
 
 NOTR_SETTINGS_FILE = "Notr.sublime-settings"
 NOTR_STORAGE_FILE = "notr.store"
@@ -66,16 +66,6 @@ _parse_errors = []
 
 
 #-----------------------------------------------------------------------------------
-def plugin_loaded():
-    pass
-
-
-#-----------------------------------------------------------------------------------
-def plugin_unloaded():
-    pass
-
-
-#-----------------------------------------------------------------------------------
 #-------------------------- Events -------------------------------------------------
 #-----------------------------------------------------------------------------------
 
@@ -86,6 +76,10 @@ class NotrEvent(sublime_plugin.EventListener):
 
     def on_init(self, views):
         ''' First thing that happens when plugin/window created. Initialize everything. '''
+        global _logger
+        settings = sublime.load_settings(NOTR_SETTINGS_FILE)
+        _logger.setLevel(settings.get('log_level'))
+
         _read_store()
 
         # Open and process notr files.
@@ -222,6 +216,8 @@ class NotrFindInFilesCommand(sublime_plugin.WindowCommand):
 #-----------------------------------------------------------------------------------
 class NotrGotoTargetCommand(sublime_plugin.TextCommand):
     ''' List all the tag(s) and/or target(s) for user selection then open corresponding file. '''
+
+    global _logger
 
     # Prepared lists for quick panel.
     _tags = []
@@ -764,6 +760,7 @@ def _update_mru(name):
 def _read_store():
     ''' Get everything. '''
     global _mru
+    global _logger
 
     # Get persisted info.
     store_fn = sc.get_store_fn(NOTR_STORAGE_FILE)
