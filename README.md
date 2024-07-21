@@ -44,9 +44,9 @@ To run the demo:
 ``` json
 {
     "notr_paths": [
-        "YOUR_DATA_DIR/Packages/Notr/example",
+        ".../Packages/Notr/example",
     ],
-    "notr_index": "YOUR_DATA_DIR/Packages/Notr/example/my-index.ntr",
+    "notr_index": ".../Packages/Notr/example/my-index.ntr",
     "fixed_hl": [
         ["2DO", "and_a"],
         ["user", "and_b"],

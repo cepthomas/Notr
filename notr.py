@@ -76,7 +76,7 @@ class NotrEvent(sublime_plugin.EventListener):
 
     def on_init(self, views):
         ''' First thing that happens when plugin/window created. Initialize everything. '''
-        global _logger
+
         settings = sublime.load_settings(NOTR_SETTINGS_FILE)
         _logger.setLevel(settings.get('log_level'))
 
@@ -216,8 +216,6 @@ class NotrFindInFilesCommand(sublime_plugin.WindowCommand):
 #-----------------------------------------------------------------------------------
 class NotrGotoTargetCommand(sublime_plugin.TextCommand):
     ''' List all the tag(s) and/or target(s) for user selection then open corresponding file. '''
-
-    global _logger
 
     # Prepared lists for quick panel.
     _tags = []
@@ -760,7 +758,6 @@ def _update_mru(name):
 def _read_store():
     ''' Get everything. '''
     global _mru
-    global _logger
 
     # Get persisted info.
     store_fn = sc.get_store_fn(NOTR_STORAGE_FILE)
