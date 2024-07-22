@@ -18,6 +18,7 @@ NOTR_STORAGE_FILE = "notr.store"
 # Known file types.
 IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 
+print(f'>>> loaded notr.py {__package__}')
 
 
 #--------------------------- Types -------------------------------------------------
@@ -66,8 +67,20 @@ _parse_errors = []
 
 
 #-----------------------------------------------------------------------------------
-#-------------------------- Events -------------------------------------------------
+def plugin_loaded():
+    ''' Called once per plugin instance. '''
+
+    # Set up logging.
+    _logger = sc.init_log(__package__)
+    print(f'>>> plugin_loaded() {__package__} {id(_logger)}')
+
+
 #-----------------------------------------------------------------------------------
+def plugin_unloaded():
+    ''' Called once per plugin instance. '''
+
+    # Clean up logging.
+    sc.deinit_log(_logger)
 
 
 #-----------------------------------------------------------------------------------
@@ -76,6 +89,7 @@ class NotrEvent(sublime_plugin.EventListener):
 
     def on_init(self, views):
         ''' First thing that happens when plugin/window created. Initialize everything. '''
+        print(f'>>> on_init() {__package__}')
 
         settings = sublime.load_settings(NOTR_SETTINGS_FILE)
         _logger.setLevel(settings.get('log_level'))
