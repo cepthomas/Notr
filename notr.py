@@ -472,6 +472,9 @@ def _process_notr_file(ntr_fn):
             re_refs = re.compile(r'\[\* *([^\]]*)\]')
             re_sections = re.compile(r'^(#+ +[^\[]+) *(?:\[(.*)\])?')
 
+            settings = sublime.load_settings(NOTR_SETTINGS_FILE)
+            section_marker_size = settings.get('section_marker_size')
+
             for line in lines:
 
                 ### Directives/aliases.
@@ -559,7 +562,7 @@ def _process_notr_file(ntr_fn):
                         valid = False
 
                     if valid:
-                        if len(hashes) == 1:
+                        if len(hashes) <= section_marker_size:
                             sections.append(Target(name, "section", "", len(hashes), tags, "", ntr_fn, line_num))
                     else:
                         _user_error(ntr_fn, line_num, 'Invalid syntax')
