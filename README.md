@@ -87,7 +87,7 @@ To run the demo:
 | mru_size            | How many mru entries in selector              | default=5                            |
 | fixed_hl            | Three sets of user keywords                   |                                      |
 | fixed_hl_whole_word | Select fixed_hl by whole word                 | true/false                           |
-| log_level           | Min level to log                              | CRITICAL ERROR WARNING INFO DEBUG    |
+| log_level           | Min level to log                              | ERR WRN INF DBG TRC                  |
 | section_marker_size | Include these and higher sections in selector | default=1                            |
 
 

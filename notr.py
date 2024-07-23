@@ -3,13 +3,10 @@ import re
 import glob
 import random
 import json
-import logging
 from dataclasses import dataclass, field
 import sublime
 import sublime_plugin
 from . import sbot_common as sc
-
-_logger = logging.getLogger(__name__)
 
 
 NOTR_SETTINGS_FILE = "Notr.sublime-settings"
@@ -69,18 +66,13 @@ _parse_errors = []
 #-----------------------------------------------------------------------------------
 def plugin_loaded():
     ''' Called once per plugin instance. '''
-
-    # Set up logging.
-    _logger = sc.init_log(__package__)
-    print(f'>>> plugin_loaded() {__package__} {id(_logger)}')
+    print(f'>>> plugin_loaded() {__package__}')
 
 
 #-----------------------------------------------------------------------------------
 def plugin_unloaded():
     ''' Called once per plugin instance. '''
-
-    # Clean up logging.
-    sc.deinit_log(_logger)
+    print(f'>>> plugin_unloaded() {__package__}')
 
 
 #-----------------------------------------------------------------------------------
@@ -90,9 +82,8 @@ class NotrEvent(sublime_plugin.EventListener):
     def on_init(self, views):
         ''' First thing that happens when plugin/window created. Initialize everything. '''
         print(f'>>> on_init() {__package__}')
-
         settings = sublime.load_settings(NOTR_SETTINGS_FILE)
-        _logger.setLevel(settings.get('log_level'))
+        sc.set_log_level(settings.get('log_level'))
 
         _read_store()
 
@@ -257,14 +248,14 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
                     break
 
             if not valid:
-                _logger.error(f'Invalid reference: {self.view.file_name()} :{tref}')
+                sc.log_error(f'Invalid reference: {self.view.file_name()} :{tref}')
 
         # Explicit link. do immediate.
         elif tlink is not None:
             fn = sc.expand_vars(tlink)
             valid = sc.open_path(fn)
             if not valid:
-                _logger.error(f'Invalid link: {tlink}')
+                sc.log_error(f'Invalid link: {tlink}')
 
         # Show a quickpanel of all target names.
         else:
@@ -787,7 +778,7 @@ def _read_store():
                 _mru = store["mru"]
         except Exception as e:
             # Assume bad file.
-            _logger.error(f'Error processing {store_fn}: {e}')
+            sc.log_error(f'Error processing {store_fn}: {e}')
     else:  # Assume new file.
         _mru.clear()
 
