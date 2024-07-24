@@ -41,7 +41,7 @@ something like this:
 To run the demo:
 
 - Install the plugin.
-- Open `Preferences->Package Settings->Notr`.
+- Select `Preferences->Package Settings->Notr`.
 - Edit to something like this:
 ``` json
 {

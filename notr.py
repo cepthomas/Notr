@@ -425,7 +425,7 @@ def _process_notr_files(window):
         working_dir = ''  # os.path.dirname(window.active_view().file_name())
         prefs = sublime.load_settings("Preferences.sublime-settings")
         # use_panel = prefs.get("show_panel_on_build", True)
-        use_panel = False
+        use_panel = True
 
         # Create output to panel or view. Don't call get_output_panel until the regexes are assigned.
         if use_panel:
