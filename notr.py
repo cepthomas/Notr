@@ -189,8 +189,7 @@ class NotrFindInFilesCommand(sublime_plugin.WindowCommand):
     ''' Search in the .ntr files. '''
 
     def run(self):
-
-        # Assemble the search locations from users paths. Index directory also?
+        ''' Assemble the search locations from users paths. Index directory also? '''
         settings = sublime.load_settings(NOTR_SETTINGS_FILE)
         paths = ["*.ntr", "-<open files>"]
         notr_paths = settings.get('notr_paths')
@@ -737,7 +736,7 @@ def _get_selection_for_scope(view, scope):
 #-----------------------------------------------------------------------------------
 def _update_mru(name):
     ''' Update the mru list. Removes duplicate and invalid names. '''
-    global _mru
+    # global _mru
 
     settings = sublime.load_settings(NOTR_SETTINGS_FILE)
     mru_size = settings.get("mru_size")
@@ -783,7 +782,7 @@ def _read_store():
 #-----------------------------------------------------------------------------------
 def _write_store():
     ''' Save everything. '''
-    global _mru
+    # global _mru
 
     store_fn = sc.get_store_fn(NOTR_STORAGE_FILE)
     store = {"mru": _mru}
@@ -794,8 +793,8 @@ def _write_store():
 #-----------------------------------------------------------------------------------
 def _user_error(path, line, msg):
     ''' Error in user edited file. '''
-    if '(' in msg:
-        msg = msg + '   <<< Sorry, targets with parens not allowed'
+    if '(' in msg or ')' in msg:
+        msg = msg + '   <<< Targets with parens not allowed'
     _parse_errors.append((path, line, msg))
 
 
