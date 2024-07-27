@@ -12,8 +12,8 @@ from . import sbot_common as sc
 
 
 NOTR_SETTINGS_FILE = "Notr.sublime-settings"
-# NOTR_STORAGE_FILE = "notr.store" TODO1
-NOTR_STORAGE_FILE = "notrX.store"
+# NOTR_STORAGE_FILE = "notrX.store" TODO1
+NOTR_STORAGE_FILE = "notr.store"
 
 # Known file types.
 IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
@@ -21,7 +21,7 @@ IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 
 #--------------------------- Types -------------------------------------------------
 
-# One target of section or file/uri.
+# One target: section or file/uri.
 @dataclass(order=True)
 class Target:
     sort_index: str = field(init=False)
@@ -58,7 +58,7 @@ _current_project = None
 _store = None
 
 # Persisted mru.
-_current_mru = []
+_current_mru = None
 
 # All Targets found in all ntr files.
 _targets = []
@@ -83,10 +83,8 @@ def plugin_unloaded():
 
 
 #-----------------------------------------------------------------------------------
+#-------------------------- EventListener ------------------------------------------
 #-----------------------------------------------------------------------------------
-#-----------------------------------------------------------------------------------
-
-
 
 
 #-----------------------------------------------------------------------------------
@@ -99,7 +97,7 @@ class NotrEvent(sublime_plugin.EventListener):
         sc.set_log_level(settings.get('log_level'))
 
         # Get the dynamic stuff.
-        _read_store()
+        _open_store()
 
         # Open and process notr files.
         if len(views) > 0:
@@ -113,9 +111,9 @@ class NotrEvent(sublime_plugin.EventListener):
                 _open_project(project_fn)
                 _process_notr_files(views[0].window())
             else:
-                sc.log_error(f"TODO on_init() failed no project file - need to ")
+                sc.log_error(f"TODO1 on_init() failed no project file - need to ")
         else:
-            sc.log_error(f"TODO on_init() failed no views")
+            sc.log_error(f"TODO1 on_init() failed no views")
 
         # Views are all valid now so init them.
         for view in views:
@@ -128,7 +126,7 @@ class NotrEvent(sublime_plugin.EventListener):
 
     def on_pre_close(self, view):
         ''' Save anything. '''
-        _write_store()
+        _save_store()
 
     def on_post_save(self, view):
         ''' Called after a ntr view has been saved so reload all ntr files. Seems a bit brute force, how else? '''
@@ -139,32 +137,32 @@ class NotrEvent(sublime_plugin.EventListener):
         ''' Add any highlights. '''
         if view.is_scratch() is False and view.file_name() is not None and view.syntax().name == 'Notr':
             settings = sublime.load_settings(NOTR_SETTINGS_FILE)
-            fixed_hl = settings.get('fixed_hl')
             whole_word = settings.get('fixed_hl_whole_word')
+            fixed_hl = settings.get('fixed_hl')
+            if fixed_hl is None:
+                return
 
-            if fixed_hl is not None:
-                hl_info = sc.get_highlight_info('fixed')
-                for hl_index in range(len(fixed_hl)):
-                    hl = hl_info[hl_index]
-                    # Clean first.
-                    view.erase_regions(hl.region_name)
+            hl_info = sc.get_highlight_info('fixed')
+            for hl_index in range(len(fixed_hl)):
+                hl = hl_info[hl_index]
+                # Clean first.
+                view.erase_regions(hl.region_name)
 
-                    # New ones.
-                    hl_regions = []
+                # New ones.
+                hl_regions = []
 
-                    # Colorize one token.
-                    for token in fixed_hl[hl_index]:
-                        escaped = re.escape(token)
-                        if whole_word:  # and escaped[0].isalnum():
-                            escaped = r'\b%s\b' % escaped
-                        regs = view.find_all(escaped) if whole_word else view.find_all(token, sublime.LITERAL)
-                        # print(escaped, len(regs))
+                # Colorize one token.
+                for token in fixed_hl[hl_index]:
+                    escaped = re.escape(token)
+                    if whole_word:  # and escaped[0].isalnum():
+                        escaped = r'\b%s\b' % escaped
+                    regs = view.find_all(escaped) if whole_word else view.find_all(token, sublime.LITERAL)
+                    # print(escaped, len(regs))
+                    hl_regions.extend(regs)
 
-                        hl_regions.extend(regs)
-
-                    if len(hl_regions) > 0:
-                        view.add_regions(key=hl.region_name, regions=hl_regions, scope=hl.scope_name,
-                                         flags=sublime.RegionFlags.DRAW_STIPPLED_UNDERLINE)
+                if len(hl_regions) > 0:
+                    view.add_regions(key=hl.region_name, regions=hl_regions, scope=hl.scope_name,
+                                     flags=sublime.RegionFlags.DRAW_STIPPLED_UNDERLINE)
 
 
 #-----------------------------------------------------------------------------------
@@ -207,7 +205,7 @@ class NotrEditProjectCommand(sublime_plugin.WindowCommand):
             vnew = self.window.open_file(fn)
             vnew.assign_syntax('json')
         except Exception as e:
-            sc.log_error(f'Failed to open {fn}: {e} {traceback.format_exc()}')
+            sc.log_error(f'Failed to open {fn}: {e}\n{traceback.format_exc()}')
             vnew = None
 
     def is_visible(self):
@@ -315,7 +313,7 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
                     break
 
             if not valid:
-                sc.log_error(f'Invalid reference: {self.view.file_name()} :{tref}')
+                sc.log_error(f'Invalid reference: {self.view.file_name()}: {tref}')
 
         # Explicit link. do immediate.
         elif tlink is not None:
@@ -437,8 +435,49 @@ class NotrInsertRefCommand(sublime_plugin.TextCommand):
 
 
 #-----------------------------------------------------------------------------------
+def _open_store():
+    ''' Get everything. Patch up if necessary.'''
+    global _store
+    _store = None
+
+    # Get persisted info.
+    store_fn = sc.get_store_fn(NOTR_STORAGE_FILE)
+
+    if os.path.isfile(store_fn):
+        try:
+            with open("store_fn", 'r') as fp:
+                s = fp.read()
+                _store = json.loads(s)
+
+        except Exception as e:
+            # Assume bad file.
+            sc.log_error(f'Error processing {store_fn}: {e}\n{traceback.format_exc()}')
+
+    if _store is None:  # Assume new file with default fields.
+        _store = {}
+
+        settings = sublime.load_settings(NOTR_SETTINGS_FILE)
+        for p in settings.get("projects"):
+            _store[sc.expand_vars(p)] = {"active": {len(_store) == 0}, "mru": []}
+    else:
+        #TODO1 also remove dead/invalid ones
+        pass
+
+
+#-----------------------------------------------------------------------------------
+def _save_store():
+    ''' Save everything. '''
+    return #TODO1
+
+    store_fn = sc.get_store_fn(NOTR_STORAGE_FILE)
+    store = _store
+    with open(store_fn, 'w') as fp:
+        json.dump(store, fp, indent=4)
+
+
+#-----------------------------------------------------------------------------------
 def _open_project(project_fn):
-    global _current_project
+    global _current_project, _current_mru
 
     try:
         # Reset flags.
@@ -449,7 +488,6 @@ def _open_project(project_fn):
         with open(expfn, 'r') as fp:
             s = fp.read()
             _current_project = json.loads(s)
-
             _current_mru = _store[expfn]["mru"]
 
             if expfn not in _store:
@@ -459,7 +497,7 @@ def _open_project(project_fn):
 
     except Exception as e:
         # Assume bad file.
-        sc.log_error(f'Error processing project file {project_fn}: {e} {traceback.format_exc()}')
+        sc.log_error(f'Error processing project file {project_fn}: {e}\n{traceback.format_exc()}')
 
 
 #-----------------------------------------------------------------------------------
@@ -474,7 +512,7 @@ def _process_notr_files(window):
     settings = sublime.load_settings(NOTR_SETTINGS_FILE)
 
     # Index first.
-    notr_index = settings.get('notr_index')
+    notr_index = settings.get('notr_index') #TODO1 get from project
     if notr_index is not None:
         index_path = sc.expand_vars(notr_index)
         if index_path is not None and os.path.exists(index_path):
@@ -483,7 +521,7 @@ def _process_notr_files(window):
             _user_error(NOTR_SETTINGS_FILE, -1, f'Invalid path in settings {notr_index}')
 
     # Paths.
-    notr_paths = settings.get('notr_paths')
+    notr_paths = settings.get('notr_paths') #TODO1 get from project
     for npath in notr_paths:
         expath = sc.expand_vars(npath)
         if expath is not None and os.path.exists(expath):
@@ -675,7 +713,7 @@ def _process_notr_file(ntr_fn):
 
 #-----------------------------------------------------------------------------------
 def _build_selector(targets):
-    ''' ... '''
+    ''' Populate the selector. '''
 
     panel_items = []
     for target in targets:
@@ -711,7 +749,6 @@ def _build_selector(targets):
 #-----------------------------------------------------------------------------------
 def _get_all_tags():
     ''' Return all tags found in all ntr files. Honors sort_tags_alpha setting. '''
-
     settings = sublime.load_settings(NOTR_SETTINGS_FILE)
     sort_tags_alpha = settings.get('sort_tags_alpha')
     tags = {}  # k:tag text v:count
@@ -731,7 +768,6 @@ def _get_all_tags():
 #-----------------------------------------------------------------------------------
 def _get_all_ntr_files():
     ''' Return a sorted list of all processed .ntr file names. '''
-
     fns = []
     for target in _targets:
         if target.file not in fns:
@@ -749,9 +785,8 @@ def _filter_order_targets(**kwargs):
         tags: filter by tags
         returns a list of targets
     '''
-
     settings = sublime.load_settings(NOTR_SETTINGS_FILE)
-    stickies = settings.get("sticky")
+    stickies = settings.get("sticky") #TODO1 get from project
 
     current_file_targets = []
     other_targets = []
@@ -831,43 +866,8 @@ def _get_selection_for_scope(view, scope):
 
 
 #-----------------------------------------------------------------------------------
-def _read_store():
-    ''' Get everything. '''
-    # global _mru
-    global _store
-
-    # Get persisted info.
-    store_fn = sc.get_store_fn(NOTR_STORAGE_FILE)
-
-    if os.path.isfile(store_fn):
-        try:
-            with open(store_fn, 'r') as fp:
-                s = fp.read()
-                _store = json.loads(s)
-
-        except Exception as e:
-            # Assume bad file.
-            sc.log_error(f'Error processing {store_fn}: {e} {traceback.format_exc()}')
-    else:  # Assume new file with default fields.
-        _store = {}
-
-
-#-----------------------------------------------------------------------------------
-def _write_store():
-    ''' Save everything. '''
-    return #TODO1 also remove dead/invalid ones
-
-    store_fn = sc.get_store_fn(NOTR_STORAGE_FILE)
-    store = _store
-    with open(store_fn, 'w') as fp:
-        json.dump(store, fp, indent=4)
-
-
-#-----------------------------------------------------------------------------------
 def _update_mru(name):
     ''' Update the mru list. Removes duplicate and invalid names. '''
-    # global _mru
-
     settings = sublime.load_settings(NOTR_SETTINGS_FILE)
     mru_size = settings.get("mru_size")
 
@@ -885,7 +885,7 @@ def _update_mru(name):
             _current_mru.append(tname)
 
     # Persist.
-    _write_store()
+    _save_store()
 
 
 #-----------------------------------------------------------------------------------

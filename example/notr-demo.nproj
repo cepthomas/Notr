@@ -1,8 +1,8 @@
 {
     "notr_paths": [
-        "C:/Users/cepth/AppData/Roaming/Sublime Text/Packages/Notr/example"
+        "$APPDATA\\Roaming\\Sublime Text\\Packages\\Notr\\example"
     ],
-    "notr_index": "C:/Users/cepth/AppData/Roaming/Sublime Text/Packages/Notr/example/my-index.ntr",
+    "notr_index": "$APPDATA\\Roaming\\Sublime Text\\Packages\\Notr\\example\\my-index.ntr",
     "fixed_hl": [
         ["2DO", "and_a"],
         ["user", "and_b"],

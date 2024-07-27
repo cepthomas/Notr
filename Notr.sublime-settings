@@ -1,11 +1,6 @@
 {
     // All notr projects.
-    "projects":
-    [
-        // "C:\\Users\\cepth\\AppData\\Roaming\\Sublime Text\\Packages\\Notr\\example\\notr-demo.nproj"
-        "%APPDATA\\Sublime Text\\Packages\\Notr\\example\\notr-demo.nproj",
-        "$OneDrive\\OneDriveDocuments\\notes\\main.nproj",
-    ],
+    "projects": [],
 
     // Sort tags alphabetically or by frequency.
     "sort_tags_alpha": true,
