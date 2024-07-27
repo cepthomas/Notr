@@ -1,4 +1,5 @@
 # Notr
+TODO1 add multi projects
 
 Notr is a Sublime Text application plugin for managing and displaying collections of text notes.
 It is a plain text format with a lot of similarity to markdown without the powerful

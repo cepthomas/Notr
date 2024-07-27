@@ -3,18 +3,12 @@
     { "caption": "Notr",
         "children":
         [
-
-            { "caption": "Project",
-                "children":
-                [
-                    { "caption": "Open", "command": "notr_open_project" },
-                    // { "caption": "New", "command": "notr_new_project" },
-                    { "caption": "Edit", "command": "notr_edit_project" },
-                ],
-            },
+            { "caption": "Open Project", "command": "notr_open_project" },
+            { "caption": "Edit Project", "command": "notr_edit_project" },
+            { "caption": "-" },
             { "caption": "Find in Notr Files", "command": "notr_find_in_files" },
             { "caption": "Goto Target by Tag", "command": "notr_goto_target", "args" : {"filter_by_tag" : true} },
-            // { "caption": "Insert Target From Clipboard", "command": "notr_insert_target_from_clip" },
+            { "caption": "Insert Target From Clipboard", "command": "notr_insert_target_from_clip" },
             { "caption": "Insert Ref", "command": "notr_insert_ref" },
             { "caption": "Insert HRule", "command": "notr_insert_hrule", "args" : {"fill_str" : "=", "reps": 60} },
             { "caption": "-" },
