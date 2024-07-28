@@ -28,7 +28,7 @@ Built for ST4 on Windows and Linux.
 - After editing your color-scheme, you need to close and reopen affected views.
 - Multiple notr projects.
 
-## Example TODO1 fix all
+## Example
 
 [The spec](example/notr-spec.ntr) provides an example of the features. If the plugin is installed it will look
 something like this:
@@ -37,22 +37,19 @@ something like this:
 
 ![ex2](example/ex2.jpg)
 
-![ex2](example/ex3.jpg)
+![ex3](example/ex3.jpg)
 
 To run the demo:
-
 - Install the plugin.
 - Select `Preferences->Package Settings->Notr`.
-- Add this project name:
+- Add this project name to your settings:
 ``` json
-{
-    "projects":
-    [
-        "$APPDATA\\Sublime Text\\Packages\\Notr\\example\\notr-demo.nproj",
-    ]
-}
+"projects":
+[
+    "$APPDATA\\Sublime Text\\Packages\\Notr\\example\\notr-demo.nproj",
+]
 ```
-- Implement color scheme per [Color Scheme](#color-scheme).
+- Implement color scheme per Section Color Scheme.
 - Now open `example/notr-spec.ntr`. Test drive the various context menu selections.
 
 ## Commands
@@ -77,79 +74,30 @@ To run the demo:
 
 | Setting             | Description                                   | Options                              |
 | :--------           | :-------                                      | :------                              |
-| notr_paths          | List of where notr files live                 |                                      |
-| notr_index          | Main notr file                                |                                      |
 | sort_tags_alpha     | Sort tags alphabetically else by frequency    | true/false                           |
-| sticky              | These always appear at the top of selector    | list of section names                |
 | mru_size            | How many mru entries in selector              | default=5                            |
-| fixed_hl            | Three sets of user keywords                   |                                      |
 | fixed_hl_whole_word | Select fixed_hl by whole word                 | true/false                           |
 | log_level           | Min level to log                              | ERR WRN INF DBG TRC                  |
 | section_marker_size | Include these and higher sections in selector | default=1                            |
 
+## Project File
+
+A notr project file contains these elements. See [demo project](example/notr-demo.nproj)
+
+| Setting             | Description                                                     |
+| :--------           | :-------                                                        |
+| notr_paths          | List of where notr files live                                   |
+| notr_index          | Main notr file                                                  |
+| sticky              | list of section names that always appear at the top of selector |
+| fixed_hl            | Three sets of user keywords                                     |
 
 ## Color Scheme
 
-New scopes have been added to support this application. Adjust these to taste and add
+New scopes have been added to support this application. Adjust the values in
+
+[notr scopes](example/notr-scopes.sublime-color-scheme) to taste and add them
 to your `Packages\User\your.sublime-color-scheme` file. Note that `markup.fixed_hl*`
 and `markup.user_hl*` are also used by other members of the sbot family.
-
-``` json
-{
-    "rules":
-    [
-        // Existing scopes used by Notr.
-        { "scope": "meta.link.reference", "background": "lightgreen" },
-        { "scope": "meta.link.inline", "background": "lightblue" },
-        { "scope": "meta.table", "background": "lightblue" },
-        { "scope": "meta.table.header", "background": "deepskyblue" },
-        { "scope": "markup.underline.link", "background": "yellow" },
-        { "scope": "markup.italic", "font_style": "italic" },
-        { "scope": "markup.bold", "font_style": "bold" },
-        { "scope": "markup.underline", "font_style": "underline" },
-
-        // Scopes added for Notr.
-        { "scope": "text.notr", "foreground": "black" },
-        { "scope": "markup.directive.notr", "background": "lightsalmon" },
-        { "scope": "markup.underline.link.notr", "background": "chartreuse" },
-        { "scope": "markup.strikethrough", "background": "lightgray" },
-        { "scope": "markup.heading.content.notr", "background": "aquamarine", "font_style": "bold" },
-        { "scope": "markup.heading.tags.notr", "background": "bisque", "font_style": "italic" },
-        { "scope": "markup.hrule.notr", "background": "mediumaquamarine" },
-        { "scope": "markup.raw.inline.notr", "background": "aliceblue" },
-        { "scope": "markup.raw.block.notr", "background": "aliceblue" },
-        { "scope": "markup.quote.notr", "background": "lightcyan", "font_style": "italic" },
-
-        // The builtin list scopes don't fit well with notr so here's some new ones.
-        { "scope": "markup.list.indent.notr", "background": "snow" },
-        { "scope": "markup.list.marker.dash.notr", "background": "lightskyblue", "font_style": "bold" },
-        { "scope": "markup.list.marker.x.notr", "background": "pink", "font_style": "bold" },
-        { "scope": "markup.list.marker.question.notr", "background": "springgreen", "font_style": "bold" },
-        { "scope": "markup.list.marker.exclmation.notr", "background": "hotpink", "font_style": "bold" },
-        { "scope": "markup.list.content.notr", "background": "lightyellow" },
-
-        // New link scopes.
-        { "scope": "markup.link.target.notr", "background": "chartreuse" },
-        { "scope": "markup.link.tags.notr", "background": "bisque", "font_style": "italic" },
-        { "scope": "markup.link.name.notr", "background": "lemonchiffon", "font_style": "italic" },
-        { "scope": "markup.link.refname.notr", "background": "lavender", "font_style": "bold" },
-        { "scope": "markup.directive.notr", "background": "lightsalmon" },
-
-        // Notr specific highlighting.
-        { "scope": "markup.fixed_hl1", "background": "gainsboro", "foreground": "red" },
-        { "scope": "markup.fixed_hl2", "background": "gainsboro", "foreground": "green" },
-        { "scope": "markup.fixed_hl3", "background": "gainsboro", "foreground": "blue" },
-
-        // User highlighting. Only needed if you are also using SbotHighlight.
-        { "scope": "markup.user_hl1", "background": "red", "foreground": "white" },
-        { "scope": "markup.user_hl2", "background": "green", "foreground": "white" },
-        { "scope": "markup.user_hl3", "background": "blue", "foreground": "white" },
-        { "scope": "markup.user_hl4", "background": "yellow", "foreground": "black" },
-        { "scope": "markup.user_hl5", "background": "lime", "foreground": "black" },
-        { "scope": "markup.user_hl6", "background": "cyan", "foreground": "black" },
-    ]
-}
-```
 
 ## Caveats
 
