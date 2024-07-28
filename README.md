@@ -1,5 +1,4 @@
 # Notr
-TODO1 add multi projects
 
 Notr is a Sublime Text application plugin for managing and displaying collections of text notes.
 It is a plain text format with a lot of similarity to markdown without the powerful
@@ -23,12 +22,13 @@ Built for ST4 on Windows and Linux.
 - Lists with customizable bullets.
 - Markdown-like quotes and raw text also act like comments.
 - Tables with insert/delete column, fit, sort. Loosely based on https://github.com/wadetb/Sublime-Text-Advanced-CSV.
-  Note that this could be ported for general purpose use.
+  This could be ported for general purpose use.
 - Auto highlight - supplements [SbotHighlight](https://github.com/cepthomas/SbotHighlight) (recommended).
 - Render to html with [SbotRender](https://github.com/cepthomas/SbotRender) (recommended).
 - After editing your color-scheme, you need to close and reopen affected views.
+- Multiple notr projects.
 
-## Example
+## Example TODO1 fix all
 
 [The spec](example/notr-spec.ntr) provides an example of the features. If the plugin is installed it will look
 something like this:
@@ -43,39 +43,35 @@ To run the demo:
 
 - Install the plugin.
 - Select `Preferences->Package Settings->Notr`.
-- Edit to something like this:
+- Add this project name:
 ``` json
 {
-    "notr_paths": [
-        ".../Packages/Notr/example",
-    ],
-    "notr_index": ".../Packages/Notr/example/my-index.ntr",
-    "fixed_hl": [
-        ["2DO", "and_a"],
-        ["user", "and_b"],
-        ["dynamic", "and_c"],
-    ],
+    "projects":
+    [
+        "$APPDATA\\Sublime Text\\Packages\\Notr\\example\\notr-demo.nproj",
+    ]
 }
 ```
 - Implement color scheme per [Color Scheme](#color-scheme).
 - Now open `example/notr-spec.ntr`. Test drive the various context menu selections.
 
-
 ## Commands
 
-| Command                      | Type    | Description                                | Args                            |
-| :--------                    | :-----  | :-------                                   | :--------                       |
-| notr_insert_target_from_clip | Context | Insert a target from clipboard             |                                 |
-| notr_insert_ref              | Context | Insert a ref from selector                 |                                 |
-| notr_goto_target             | Context | Go to a target via selector or ref or link | filter_by_tag=select tag first  |
-| notr_insert_hrule            | Context | Make a line                                | fill_str="=", reps=20           |
-| notr_find_in_files           | Context | Search within the notr_paths in settings   |                                 |
-| table_fit                    | Context | Fit table contents to columns              |                                 |
-| table_insert_col             | Context | Insert column at caret                     |                                 |
-| table_delete_col             | Context | Remove column at caret                     |                                 |
-| table_sort_col               | Context | Sort column at caret - direction toggles   | asc=true/false                  |
-| notr_dump                    | Context | Diagnostic to show the internal info       |                                 |
-| notr_reload                  | Context | Force reload after editing colors etc.     |                                 |
+| Command                      | Type    | Description                                  | Args                            |
+| :--------                    | :-----  | :-------                                     | :--------                       |
+| notr_open_project            | Context | Open a project from settings using selector  |                                 |
+| notr_edit_project            | Context | Edit the current project                     |                                 |
+| notr_insert_target_from_clip | Context | Insert a target from clipboard               |                                 |
+| notr_insert_ref              | Context | Insert a ref from selector                   |                                 |
+| notr_goto_target             | Context | Go to a target via selector or ref or link   | filter_by_tag=select tag first  |
+| notr_insert_hrule            | Context | Make a line                                  | fill_str="=", reps=20           |
+| notr_find_in_files           | Context | Search within the notr_paths in settings     |                                 |
+| table_fit                    | Context | Fit table contents to columns                |                                 |
+| table_insert_col             | Context | Insert column at caret                       |                                 |
+| table_delete_col             | Context | Remove column at caret                       |                                 |
+| table_sort_col               | Context | Sort column at caret - direction toggles     | asc=true/false                  |
+| notr_dump                    | Context | Diagnostic to show the internal info         |                                 |
+| notr_reload                  | Context | Force reload after editing colors etc.       |                                 |
 
 ## Settings
 
@@ -167,6 +163,5 @@ and `markup.user_hl*` are also used by other members of the sbot family.
 ## Future
 
 - Publish somewhere for web access. Probably render html.
-- Support multiple notr projects. One would be the example.
 - Fancy stuff like image thumbnail phantom/hover, annotations, hover/popups, etc.
 - Unicode picker/inserter for symbols.
