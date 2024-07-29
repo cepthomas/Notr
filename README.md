@@ -49,7 +49,7 @@ To run the demo:
     "$APPDATA\\Sublime Text\\Packages\\Notr\\example\\notr-demo.nproj",
 ]
 ```
-- Implement color scheme per Section Color Scheme.
+- Implement color scheme per section Color Scheme.
 - Now open `example/notr-spec.ntr`. Test drive the various context menu selections.
 
 ## Commands

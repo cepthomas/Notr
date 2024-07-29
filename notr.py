@@ -163,8 +163,11 @@ class NotrEvent(sublime_plugin.EventListener):
 
     def _init_fixed_hl(self, view):
         ''' Add any highlights. '''
-        if (_current_project is not None and view.is_scratch() is False and view.file_name() is not None and
-            view.syntax() is not None and view.syntax().name == 'Notr'):
+        if (_current_project is not None and
+            view.is_scratch() is False and
+            view.file_name() is not None and
+            view.syntax() is not None and
+            view.syntax().name == 'Notr'):
             settings = sublime.load_settings(NOTR_SETTINGS_FILE)
             whole_word = settings.get('fixed_hl_whole_word')
             fixed_hl = _current_project['fixed_hl']
@@ -450,10 +453,9 @@ class NotrInsertRefCommand(sublime_plugin.TextCommand):
         self.view.window().show_quick_panel(panel_items, on_select=self.on_sel_ref)
 
     def on_sel_ref(self, *args, **kwargs):
-        if len(args) > 0:
-            if args[0] >= 0:
-                s = f'[*{self._targets_to_select[args[0]].name}]'
-                self.view.run_command("insert", {"characters": f'{s}'})  # Insert in view
+        if len(args) > 0 and args[0] >= 0:
+            s = f'[*{self._targets_to_select[args[0]].name}]'
+            self.view.run_command("insert", {"characters": f'{s}'})  # Insert in view
 
     def is_visible(self):
         return self.view.syntax() is not None and self.view.syntax().name == 'Notr'
@@ -533,7 +535,7 @@ def _process_notr_files(window):
     notr_index = _current_project['notr_index']
     if notr_index is not None:
         index_path = sc.expand_vars(notr_index)
-        print('>>>', index_path)
+        print('>x>', index_path)
         if index_path is not None and os.path.exists(index_path):
             ntr_files.append(index_path)
         else:
@@ -819,7 +821,9 @@ def _filter_order_targets(**kwargs):
     mru_first = True if "mru_first" in kwargs and kwargs["mru_first"] else False
 
     current_file = None
-    if "current_file" in kwargs and kwargs["current_file"] is not None and os.path.exists(kwargs["current_file"]):
+    if ("current_file" in kwargs and
+        kwargs["current_file"] is not None and
+        os.path.exists(kwargs["current_file"])):
         current_file = kwargs["current_file"]
 
     # Cache some targets to maintain order.
