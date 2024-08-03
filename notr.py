@@ -535,7 +535,6 @@ def _process_notr_files(window):
     notr_index = _current_project['notr_index']
     if notr_index is not None:
         index_path = sc.expand_vars(notr_index)
-        print('>x>', index_path)
         if index_path is not None and os.path.exists(index_path):
             ntr_files.append(index_path)
         else:
