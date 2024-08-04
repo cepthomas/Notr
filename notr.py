@@ -10,7 +10,6 @@ import sublime
 import sublime_plugin
 from . import sbot_common as sc
 
-# TODO1 icecream?
 
 NOTR_SETTINGS_FILE = "Notr.sublime-settings"
 NOTR_STORAGE_FILE = "notr.store"
