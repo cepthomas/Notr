@@ -95,13 +95,12 @@ class NotrEvent(sublime_plugin.EventListener):
         global _store
 
         settings = sublime.load_settings(NOTR_SETTINGS_FILE)
-        sc.set_log_level(settings.get('log_level'))
 
         # Check user projects.
         valid_projects = []
         for p in settings.get('projects'):
             if not os.path.isfile(sc.expand_vars(p)):
-                sc.log_warn(f'Invalid project file {p} - edit your settings')
+                sc.log_info(f'Invalid project file {p} - edit your settings')
             else:
                 valid_projects.append(sc.expand_vars(p))
 
@@ -114,7 +113,7 @@ class NotrEvent(sublime_plugin.EventListener):
                     s = fp.read()
                     _store = json.loads(s)
             except Exception as e:
-                sc.log_error(f'Error processing {store_fn}: {e}\n{traceback.format_exc()}')
+                sc.log_error(f'Error processing {store_fn}: {e}', e.__traceback__)
 
         if _store is None:  # Assume new file with default fields.
             _store = {}
@@ -237,7 +236,7 @@ class NotrEditProjectCommand(sublime_plugin.WindowCommand):
             vnew = self.window.open_file(fn)
             vnew.assign_syntax('Packages/JSON/JSON.sublime-syntax')
         except Exception as e:
-            sc.log_error(f'Failed to open {fn}: {e}\n{traceback.format_exc()}')
+            sc.log_error(f'Failed to open {fn}: {e}', e.__traceback__)
             vnew = None
 
     def is_visible(self):
@@ -513,7 +512,7 @@ def _open_project(project_fn):
 
     except Exception as e:
         # Assume bad project file.
-        sc.log_error(f'Error opening project file {project_fn}: {e}\n{traceback.format_exc()}')
+        sc.log_error(f'Error opening project file {project_fn}: {e}', e.__traceback__)
 
 
 #-----------------------------------------------------------------------------------
@@ -724,7 +723,8 @@ def _process_notr_file(ntr_fn):
                 line_num += 1
 
     except Exception as e:
-        _user_error(ntr_fn, line_num, f'Error processing file: {e} {traceback.format_exc()}')
+        _user_error(ntr_fn, line_num, f'Error processing file: {e}')
+        sc.log_error(f'Error processing file: {ntr_fn}:{line_num} {e}', e.__traceback__)
         return None
 
     return None if no_index else (sections, links, refs)

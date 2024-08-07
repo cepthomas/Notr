@@ -77,7 +77,6 @@ To run the demo:
 | sort_tags_alpha     | Sort tags alphabetically else by frequency    | true/false                           |
 | mru_size            | How many mru entries in selector              | default=5                            |
 | fixed_hl_whole_word | Select fixed_hl by whole word                 | true/false                           |
-| log_level           | Min level to log                              | ERR WRN INF DBG TRC                  |
 | section_marker_size | Include these and higher sections in selector | default=1                            |
 
 ## Project File

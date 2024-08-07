@@ -13,7 +13,4 @@
 
     // Include these and higher sections in selector.
     "section_marker_size": 1,
-    
-    // Min level to log - ERR WRN INF DBG TRC
-    "log_level": "INF",
 }
