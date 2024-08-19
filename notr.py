@@ -8,12 +8,7 @@ import traceback
 from dataclasses import dataclass, field
 import sublime
 import sublime_plugin
-from .SbotCommon import common as sc
-from .SbotCommon import logger as log
-from .SbotCommon.tracer import *
-
- # Initialize logging.
-log.init(sc.get_store_fn('sbot.log'))
+from . import sbot_common as sc
 
 
 NOTR_SETTINGS_FILE = "Notr.sublime-settings"
@@ -77,7 +72,7 @@ _parse_errors = []
 #-----------------------------------------------------------------------------------
 def plugin_loaded():
     '''Called per plugin instance.'''
-    log.info(f'plugin_loaded() {__package__}')
+    sc.info(f'plugin_loaded() {__package__}')
 
 
 #-----------------------------------------------------------------------------------
@@ -105,7 +100,7 @@ class NotrEvent(sublime_plugin.EventListener):
         valid_projects = []
         for p in settings.get('projects'):
             if not os.path.isfile(sc.expand_vars(p)):
-                log.info(f'Invalid project file {p} - edit your settings')
+                sc.info(f'Invalid project file {p} - edit your settings')
             else:
                 valid_projects.append(sc.expand_vars(p))
 
@@ -118,7 +113,7 @@ class NotrEvent(sublime_plugin.EventListener):
                     s = fp.read()
                     _store = json.loads(s)
             except Exception as e:
-                log.error(f'Error processing {store_fn}: {e}', e.__traceback__)
+                sc.error(f'Error processing {store_fn}: {e}', e.__traceback__)
 
         if _store is None:  # Assume new file with default fields.
             _store = {}
@@ -148,7 +143,7 @@ class NotrEvent(sublime_plugin.EventListener):
             for view in views:
                 self._init_fixed_hl(view)
         else:
-            log.error(f'No valid projects in your settings - please edit')
+            sc.error(f'No valid projects in your settings - please edit')
 
     def on_load(self, view):
         ''' Loaded a new file. '''
@@ -241,7 +236,7 @@ class NotrEditProjectCommand(sublime_plugin.WindowCommand):
             vnew = self.window.open_file(fn)
             vnew.assign_syntax('Packages/JSON/JSON.sublime-syntax')
         except Exception as e:
-            log.error(f'Failed to open {fn}: {e}', e.__traceback__)
+            sc.error(f'Failed to open {fn}: {e}', e.__traceback__)
             vnew = None
 
     def is_visible(self):
@@ -349,14 +344,14 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
                     break
 
             if not valid:
-                log.error(f'Invalid reference: {self.view.file_name()}: {tref}')
+                sc.error(f'Invalid reference: {self.view.file_name()}: {tref}')
 
         # Explicit link. do immediate.
         elif tlink is not None:
             fn = sc.expand_vars(tlink)
             valid = sc.open_path(fn)
             if not valid:
-                log.error(f'Invalid link: {tlink}')
+                sc.error(f'Invalid link: {tlink}')
 
         # Show a quickpanel of all target names.
         else:
@@ -490,7 +485,7 @@ def _open_project(project_fn):
             # Check file integrity.
             if "notr_paths" not in proj or "notr_index" not in proj:
                 # Broken file.
-                log.error(f'Invalid project file {expfn} - needs to be edited')
+                sc.error(f'Invalid project file {expfn} - needs to be edited')
                 return
 
             # Non-fatal patchups.
@@ -513,11 +508,11 @@ def _open_project(project_fn):
                 _store[expfn]['active'] = True
             _current_mru = _store[expfn]['mru']
 
-            log.info(f'Opened project file {project_fn}')
+            sc.info(f'Opened project file {project_fn}')
 
     except Exception as e:
         # Assume bad project file.
-        log.error(f'Error opening project file {project_fn}: {e}', e.__traceback__)
+        sc.error(f'Error opening project file {project_fn}: {e}', e.__traceback__)
 
 
 #-----------------------------------------------------------------------------------
@@ -729,7 +724,7 @@ def _process_notr_file(ntr_fn):
 
     except Exception as e:
         _user_error(ntr_fn, line_num, f'Error processing file: {e}')
-        log.error(f'Error processing file: {ntr_fn}:{line_num} {e}', e.__traceback__)
+        sc.error(f'Error processing file: {ntr_fn}:{line_num} {e}', e.__traceback__)
         return None
 
     return None if no_index else (sections, links, refs)

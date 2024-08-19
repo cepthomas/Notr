@@ -3,7 +3,7 @@
 
 import sublime
 import sublime_plugin
-from .SbotCommon import common as sc
+from . import sbot_common as sc
 
 
 DELIM = '|'
