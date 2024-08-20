@@ -1,3 +1,4 @@
+import sys
 import os
 import re
 import glob
@@ -5,10 +6,18 @@ import random
 import json
 import pathlib
 import traceback
+import shutil
+import subprocess
+import time
+
+
 from dataclasses import dataclass, field
 import sublime
 import sublime_plugin
 from . import sbot_common as sc
+
+# TODOB find in notr files broken a bit.
+# TODOB Probably fix the leading color like:    > > example.py(3)<module>()
 
 
 NOTR_SETTINGS_FILE = "Notr.sublime-settings"
@@ -24,14 +33,14 @@ IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 @dataclass(order=True)
 class Target:
     sort_index: str = field(init=False)
-    name: str  # section title or description
-    ttype: str  # 'section', 'uri', 'image', 'path' - maybe useful to discriminate file and dir?
+    name: str      # section title or description
+    ttype: str     # 'section', 'uri', 'image', 'path' - maybe useful to discriminate file and dir?
     category: str  # 'sticky', 'mru', 'none'
-    level: int  # for section only
-    tags: []  # tags for targets
+    level: int     # for section only
+    tags: []       # tags for targets
     resource: str  # what ttype points to
-    file: str  # .ntr file path
-    line: int  # .ntr file line
+    file: str      # .ntr file path
+    line: int      # .ntr file line
 
     def __post_init__(self):
         self.sort_index = self.name
@@ -143,7 +152,7 @@ class NotrEvent(sublime_plugin.EventListener):
             for view in views:
                 self._init_fixed_hl(view)
         else:
-            sc.error(f'No valid projects in your settings - please edit')
+            sc.warn(f'No valid projects in your settings - please edit')
 
     def on_load(self, view):
         ''' Loaded a new file. '''
@@ -226,7 +235,7 @@ class NotrOpenProjectCommand(sublime_plugin.WindowCommand):
 
 #-----------------------------------------------------------------------------------
 class NotrEditProjectCommand(sublime_plugin.WindowCommand):
-    ''' Open the file in a new view for editing. TODO polite to reload after user finished edits. '''
+    ''' Open the file in a new view for editing. TODO nice to reload after user finished edits. '''
 
     def run(self):
         # Open the file in a new view.
@@ -310,6 +319,40 @@ class NotrFindInFilesCommand(sublime_plugin.WindowCommand):
 
 
 #-----------------------------------------------------------------------------------
+class NotrPublishCommand(sublime_plugin.WindowCommand):
+    ''' A research project to publish the .ntr files somehow/somewhere. '''
+
+    def run(self):
+        onedrive_path = os.path.expandvars('$OneDrive')
+        docs_path = os.path.join(onedrive_path, 'OneDriveDocuments')
+        pub_path = os.path.join(onedrive_path, '_notr')
+        notes_path = os.path.join(docs_path, 'notes')
+        tech_path = os.path.join(docs_path, 'tech')
+        sports_path = os.path.join(docs_path, 'sports')
+
+        notes_to_pub = [
+            'activities.ntr',
+            # 'books.ntr',
+            'food-places.ntr',
+            # 'movies.ntr',
+            'shop.ntr',
+            'todo.ntr',
+            # 'tv.ntr',
+        ]
+
+        # Gen the pub files.
+        for p in notes_to_pub:
+            src = os.path.join(notes_path, p)
+            dest = os.path.join(pub_path, p.replace('.ntr', '.html'))
+            # TODO need to manage files in/out. Maybe use clipboard?
+            # self.window.run_command("sbot_render_to_html", {"group": 0})
+            time.sleep(0.5) # let st finish this first
+
+    def is_visible(self):
+        return False
+
+
+#-----------------------------------------------------------------------------------
 #-------------------------- TextCommands -------------------------------------------
 #-----------------------------------------------------------------------------------
 
@@ -344,14 +387,14 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
                     break
 
             if not valid:
-                sc.error(f'Invalid reference: {self.view.file_name()}: {tref}')
+                sc.warn(f'Invalid reference: {self.view.file_name()}: {tref}')
 
         # Explicit link. do immediate.
         elif tlink is not None:
             fn = sc.expand_vars(tlink)
             valid = sc.open_path(fn)
             if not valid:
-                sc.error(f'Invalid link: {tlink}')
+                sc.warn(f'Invalid link: {tlink}')
 
         # Show a quickpanel of all target names.
         else:
@@ -615,7 +658,7 @@ def _process_notr_file(ntr_fn):
     line_num = -1
 
     try:
-        with open(ntr_fn, 'r', encoding='utf-8') as file:
+        with open(ntr_fn, 'r', encoding='utf-8') as file:  # need to explicitly set encoding because default windows is ascii
             lines = file.read().splitlines()
             line_num = 1
 
