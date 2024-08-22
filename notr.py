@@ -320,7 +320,7 @@ class NotrFindInFilesCommand(sublime_plugin.WindowCommand):
 
 #-----------------------------------------------------------------------------------
 class NotrPublishCommand(sublime_plugin.WindowCommand):
-    ''' A research project to publish the .ntr files somehow/somewhere. '''
+    ''' TODO A research project to publish the .ntr files somehow/somewhere. '''
 
     def run(self):
         onedrive_path = os.path.expandvars('$OneDrive')
@@ -344,7 +344,7 @@ class NotrPublishCommand(sublime_plugin.WindowCommand):
         for p in notes_to_pub:
             src = os.path.join(notes_path, p)
             dest = os.path.join(pub_path, p.replace('.ntr', '.html'))
-            # TODO need to manage files in/out. Maybe use clipboard?
+            # need to manage files in/out. Maybe use clipboard?
             # self.window.run_command("sbot_render_to_html", {"group": 0})
             time.sleep(0.5) # let st finish this first
 
