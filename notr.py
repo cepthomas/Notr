@@ -16,8 +16,7 @@ import sublime
 import sublime_plugin
 from . import sbot_common as sc
 
-# TODOB find in notr files broken a bit.
-# TODOB Probably fix the leading color like:    > > example.py(3)<module>()
+# TODO find in notr files broken a bit.
 
 
 NOTR_SETTINGS_FILE = "Notr.sublime-settings"
