@@ -54,21 +54,46 @@ To run the demo:
 
 ## Commands
 
-| Command                      | Type    | Description                                  | Args                            |
-| :--------                    | :-----  | :-------                                     | :--------                       |
-| notr_open_project            | Context | Open a project from settings using selector  |                                 |
-| notr_edit_project            | Context | Edit the current project                     |                                 |
-| notr_insert_target_from_clip | Context | Insert a target from clipboard               |                                 |
-| notr_insert_ref              | Context | Insert a ref from selector                   |                                 |
-| notr_goto_target             | Context | Go to a target via selector or ref or link   | filter_by_tag=select tag first  |
-| notr_insert_hrule            | Context | Make a line                                  | fill_str="=", reps=20           |
-| notr_find_in_files           | Context | Search within the notr_paths in settings     |                                 |
-| table_fit                    | Context | Fit table contents to columns                |                                 |
-| table_insert_col             | Context | Insert column at caret                       |                                 |
-| table_delete_col             | Context | Remove column at caret                       |                                 |
-| table_sort_col               | Context | Sort column at caret - direction toggles     | asc=true/false                  |
-| notr_dump                    | Context | Diagnostic to show the internal info         |                                 |
-| notr_reload                  | Context | Force reload after editing colors etc.       |                                 |
+| Command                      | Description                                  | Args                            |
+| :--------                    | :-------                                     | :--------                       |
+| notr_open_project            | Open a project from settings using selector  |                                 |
+| notr_edit_project            | Edit the current project                     |                                 |
+| notr_insert_target_from_clip | Insert a target from clipboard               |                                 |
+| notr_insert_ref              | Insert a ref from selector                   |                                 |
+| notr_goto_target             | Go to a target via selector or ref or link   | filter_by_tag=select tag first  |
+| notr_insert_hrule            | Make a line                                  | fill_str="=", reps=20           |
+| notr_find_in_files           | Search within the notr_paths in settings     |                                 |
+| table_fit                    | Fit table contents to columns                |                                 |
+| table_insert_col             | Insert column at caret                       |                                 |
+| table_delete_col             | Remove column at caret                       |                                 |
+| table_sort_col               | Sort column at caret - direction toggles     | asc=true/false                  |
+| notr_dump                    | Diagnostic to show the internal info         |                                 |
+| notr_reload                  | Force reload after editing colors etc.       |                                 |
+
+There is no default `Context.sublime-menu` file in this plugin.
+Add the commands you like to your own `User\Context.sublime-menu` file. Typical entries are:
+``` json
+{ "caption": "Notr",
+    "children":
+    [
+        { "caption": "Open Project", "command": "notr_open_project" },
+        { "caption": "Edit Project", "command": "notr_edit_project" },
+        { "caption": "-" },
+        { "caption": "Find in Notr Files", "command": "notr_find_in_files" },
+        { "caption": "Goto Target", "command": "notr_goto_target", "args" : {"filter_by_tag" : false} },
+        { "caption": "Goto Target by Tag", "command": "notr_goto_target", "args" : {"filter_by_tag" : true} },
+        { "caption": "Insert Target From Clipboard", "command": "notr_insert_target_from_clip" },
+        { "caption": "Insert Ref", "command": "notr_insert_ref" },
+        { "caption": "Insert HRule", "command": "notr_insert_hrule", "args" : {"fill_str" : "=", "reps": 60} },
+        { "caption": "-" },
+        { "caption": "Fit Table", "command": "table_fit" },
+        { "caption": "Insert Column", "command": "table_insert_col" },
+        { "caption": "Delete Column", "command": "table_delete_col" },
+        { "caption": "Sort Asc", "command": "table_sort_col", "args" : {"asc" : true} },
+        { "caption": "Sort Desc", "command": "table_sort_col", "args" : {"asc" : false} },
+    ]
+}
+```
 
 ## Settings
 
