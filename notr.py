@@ -16,8 +16,6 @@ import sublime
 import sublime_plugin
 from . import sbot_common as sc
 
-# TODO find in notr files broken a bit.
-
 
 NOTR_SETTINGS_FILE = "Notr.sublime-settings"
 NOTR_STORAGE_FILE = "notr.store"
@@ -147,7 +145,7 @@ class NotrEvent(sublime_plugin.EventListener):
         if project_fn is not None:
             _open_project(project_fn)
             _process_notr_files(views[0].window())
-            # Views are all valid now so init them. TODO guaranteed valid views?
+            # Views are all valid now so init them.
             for view in views:
                 self._init_fixed_hl(view)
         else:
