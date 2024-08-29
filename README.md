@@ -23,8 +23,8 @@ Built for ST4 on Windows and Linux.
 - Markdown-like quotes and raw text also act like comments.
 - Tables with insert/delete column, fit, sort. Loosely based on https://github.com/wadetb/Sublime-Text-Advanced-CSV.
   This could be ported for general purpose use.
-- Auto highlight - supplements [SbotHighlight](https://github.com/cepthomas/SbotHighlight) (recommended).
-- Render to html with [SbotRender](https://github.com/cepthomas/SbotRender) (recommended).
+- Auto highlight - supplements [Highlight Token](https://github.com/cepthomas/SbotHighlight) (recommended).
+- Render to html with [Render View](https://github.com/cepthomas/SbotRender) (recommended).
 - After editing your color-scheme, you need to close and reopen affected views.
 - Multiple notr projects.
 
@@ -97,12 +97,12 @@ Add the commands you like to your own `User\Context.sublime-menu` file. Typical 
 
 ## Settings
 
-| Setting             | Description                                   | Options                              |
-| :--------           | :-------                                      | :------                              |
-| sort_tags_alpha     | Sort tags alphabetically else by frequency    | true/false                           |
-| mru_size            | How many mru entries in selector              | default=5                            |
-| fixed_hl_whole_word | Select fixed_hl by whole word                 | true/false                           |
-| section_marker_size | Include these and higher sections in selector | default=1                            |
+| Setting             | Description                                   | Options         |
+| :--------           | :-------                                      | :------         |
+| sort_tags_alpha     | Sort tags alphabetically else by frequency    | true OR false   |
+| mru_size            | How many mru entries in selector              | default=5       |
+| fixed_hl_whole_word | Select fixed_hl by whole word                 | true OR false   |
+| section_marker_size | Include these and higher sections in selector | default=1       |
 
 ## Project File
 

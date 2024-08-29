@@ -43,7 +43,7 @@
         { "scope": "markup.fixed_hl2", "background": "gainsboro", "foreground": "green" },
         { "scope": "markup.fixed_hl3", "background": "gainsboro", "foreground": "blue" },
 
-        // User highlighting. Only needed if you are also using SbotHighlight.
+        // User highlighting. Only needed if you are also using Highlight Token.
         { "scope": "markup.user_hl1", "background": "red", "foreground": "white" },
         { "scope": "markup.user_hl2", "background": "green", "foreground": "white" },
         { "scope": "markup.user_hl3", "background": "blue", "foreground": "white" },
