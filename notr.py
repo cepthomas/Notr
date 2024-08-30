@@ -161,9 +161,14 @@ class NotrEvent(sublime_plugin.EventListener):
         _save_store()
 
     def on_post_save(self, view):
-        ''' Called after a ntr view has been saved so reload all ntr files. Seems a bit brute force, how else? '''
+        ''' Called after a view has been saved.
+        If it is a notr file, reload all ntr files. Seems a bit brute force, how else?
+        If it is a notr project, reload the project.'''
         if view.syntax().name == 'Notr':
             _process_notr_files(view.window())
+        elif view.file_name() == _current_project['_fn']:
+            _open_project(view.file_name())
+            _process_notr_files(self.window)
 
     def _init_fixed_hl(self, view):
         ''' Add any highlights. '''
@@ -232,7 +237,7 @@ class NotrOpenProjectCommand(sublime_plugin.WindowCommand):
 
 #-----------------------------------------------------------------------------------
 class NotrEditProjectCommand(sublime_plugin.WindowCommand):
-    ''' Open the file in a new view for editing. TODO nice to reload after user finished edits. '''
+    ''' Open the file in a new view for editing.'''
 
     def run(self):
         # Open the file in a new view.

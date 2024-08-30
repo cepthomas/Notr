@@ -1,8 +1,8 @@
 # Notr
 
 Notr is a Sublime Text application plugin for managing and displaying collections of text notes.
-It is a plain text format with a lot of similarity to markdown without the powerful
-publication capabilities - the text itself is the whole point.
+It is a plain text format with some similarity to markdown. However there is not a rendering for
+publication step - the text itself is the whole point.
 
 The markup syntax provides file and section navigation and colorizing to provide visual clues for things like
 sections, links, tables, lists, etc.
@@ -11,27 +11,25 @@ Built for ST4 on Windows and Linux.
 
 ## Features
 
+- Multiple notr projects.
 - Notr files have the extension `.ntr`
 - Sections with tags and simple (non-hierarchal) folding.
 - Sections are identified like markdown `# ## ### etc`.
 - Various text decorations for visual indication.
 - Targets and references - targets can be section, file (image or other), uri.
-- Navigation to targets via goto anything. Has MRU and sticky entries.
+- Navigation to targets via quick panel. Has MRU and sticky entries.
 - Navigation to notr file errors.
-- Search in all notr files.
-- Lists with customizable bullets.
-- Markdown-like quotes and raw text also act like comments.
+- Search in all project notr files.
+- Lists with several bullet types.
+- Markdown-like quotes and raw text, toggle like comments.
 - Tables with insert/delete column, fit, sort. Loosely based on https://github.com/wadetb/Sublime-Text-Advanced-CSV.
-  This could be ported for general purpose use.
+  Could be ported for general purpose use.
 - Auto highlight - supplements [Highlight Token](https://github.com/cepthomas/SbotHighlight) (recommended).
 - Render to html with [Render View](https://github.com/cepthomas/SbotRender) (recommended).
-- After editing your color-scheme, you need to close and reopen affected views.
-- Multiple notr projects.
 
 ## Example
 
-[The spec](example/notr-spec.ntr) provides an example of the features. If the plugin is installed it will look
-something like this:
+[The spec](example/notr-spec.ntr) provides an example of the features. It will look something like this:
 
 ![ex1](example/ex1.jpg)
 
@@ -49,26 +47,26 @@ To run the demo:
     "$APPDATA\\Sublime Text\\Packages\\Notr\\example\\notr-demo.nproj",
 ]
 ```
-- Implement color scheme per section Color Scheme.
-- Now open `example/notr-spec.ntr`. Test drive the various context menu selections.
+- Implement color scheme per section `Color Scheme`.
+- Now open `example\notr-spec.ntr`. Test drive the various context menu selections.
 
-## Commands
+## Commands and Menus
 
-| Command                      | Description                                  | Args                            |
-| :--------                    | :-------                                     | :--------                       |
-| notr_open_project            | Open a project from settings using selector  |                                 |
-| notr_edit_project            | Edit the current project                     |                                 |
-| notr_insert_target_from_clip | Insert a target from clipboard               |                                 |
-| notr_insert_ref              | Insert a ref from selector                   |                                 |
-| notr_goto_target             | Go to a target via selector or ref or link   | filter_by_tag=select tag first  |
-| notr_insert_hrule            | Make a line                                  | fill_str="=", reps=20           |
-| notr_find_in_files           | Search within the notr_paths in settings     |                                 |
-| table_fit                    | Fit table contents to columns                |                                 |
-| table_insert_col             | Insert column at caret                       |                                 |
-| table_delete_col             | Remove column at caret                       |                                 |
-| table_sort_col               | Sort column at caret - direction toggles     | asc=true/false                  |
-| notr_dump                    | Diagnostic to show the internal info         |                                 |
-| notr_reload                  | Force reload after editing colors etc.       |                                 |
+| Command                      | Description                                  | Args                                 |
+| :--------                    | :-------                                     | :--------                            |
+| notr_open_project            | Open a project from settings using selector  |                                      |
+| notr_edit_project            | Edit the current project                     |                                      |
+| notr_insert_target_from_clip | Insert a target from clipboard               |                                      |
+| notr_insert_ref              | Insert a ref from selector                   |                                      |
+| notr_goto_target             | Go to a target via selector or ref or link   | filter_by_tag=select OR tag OR first |
+| notr_insert_hrule            | Make a line                                  | fill_str="=", reps=20                |
+| notr_find_in_files           | Search within the notr_paths in settings     |                                      |
+| table_fit                    | Fit table contents to columns                |                                      |
+| table_insert_col             | Insert column at caret                       |                                      |
+| table_delete_col             | Remove column at caret                       |                                      |
+| table_sort_col               | Sort column at caret - direction toggles     | asc=true OR false                    |
+| notr_dump                    | Diagnostic to show the internal info         |                                      |
+| notr_reload                  | Force reload after editing colors etc        |                                      |
 
 There is no default `Context.sublime-menu` file in this plugin.
 Add the commands you like to your own `User\Context.sublime-menu` file. Typical entries are:
@@ -118,10 +116,11 @@ A notr project file contains these elements. See [demo project](example/notr-dem
 ## Color Scheme
 
 New scopes have been added to support this application. Adjust the values in
-
 [notr scopes](example/notr-scopes.sublime-color-scheme) to taste and add them
 to your `Packages\User\your.sublime-color-scheme` file. Note that `markup.fixed_hl*`
 and `markup.user_hl*` are also used by other members of the sbot family.
+
+After editing your color-scheme, you need to close and reopen affected views.
 
 ## Caveats
 
@@ -134,6 +133,6 @@ and `markup.user_hl*` are also used by other members of the sbot family.
 
 ## Future
 
-- Publish somewhere for web access. Probably render html.
+- Publish somewhere for web access. Probably rendered html.
 - Fancy stuff like image thumbnail phantom/hover, annotations, hover/popups, etc.
 - Unicode picker/inserter for symbols.
