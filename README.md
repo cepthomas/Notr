@@ -1,8 +1,8 @@
 # Notr
 
 Notr is a Sublime Text application plugin for managing and displaying collections of text notes.
-It is a plain text format with some similarity to markdown. However there is not a rendering for
-publication step - the text itself is the whole point.
+It is a plain text format with some similarity to markdown. However there is no rendering-for-publication
+step: the text itself is the whole point.
 
 The markup syntax provides file and section navigation and colorizing to provide visual clues for things like
 sections, links, tables, lists, etc.
@@ -11,19 +11,18 @@ Built for ST4 on Windows and Linux.
 
 ## Features
 
-- Multiple notr projects.
 - Notr files have the extension `.ntr`
-- Sections with tags and simple (non-hierarchal) folding.
+- Multiple notr projects.
 - Sections are identified like markdown `# ## ### etc`.
-- Various text decorations for visual indication.
-- Targets and references - targets can be section, file (image or other), uri.
-- Navigation to targets via quick panel. Has MRU and sticky entries.
-- Navigation to notr file errors.
-- Search in all project notr files.
+- Sections with tags and simple (non-hierarchal) folding.
 - Lists with several bullet types.
 - Markdown-like quotes and raw text, toggle like comments.
 - Tables with insert/delete column, fit, sort. Loosely based on https://github.com/wadetb/Sublime-Text-Advanced-CSV.
   Could be ported for general purpose use.
+- Targets and references - targets can be section, file (image or other), uri.
+- Navigation to targets via quick panel. Has MRU and sticky entries.
+- Navigation to notr file errors.
+- Search in all project notr files.
 - Auto highlight - supplements [Highlight Token](https://github.com/cepthomas/SbotHighlight) (recommended).
 - Render to html with [Render View](https://github.com/cepthomas/SbotRender) (recommended).
 
@@ -37,7 +36,7 @@ Built for ST4 on Windows and Linux.
 
 ![ex3](example/ex3.jpg)
 
-To run the demo:
+To run the example:
 - Install the plugin.
 - Select `Preferences->Package Settings->Notr`.
 - Add this project name to your settings:
