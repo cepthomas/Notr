@@ -530,7 +530,7 @@ def _open_project(project_fn):
             # Check file integrity.
             if "notr_paths" not in proj or "notr_index" not in proj:
                 # Broken file.
-                sc.error(f'Invalid project file {expfn} - needs to be edited')
+                sc.error(f'Invalid notr project file {expfn} - needs to be edited')
                 return
 
             # Non-fatal patchups.
@@ -553,11 +553,11 @@ def _open_project(project_fn):
                 _store[expfn]['active'] = True
             _current_mru = _store[expfn]['mru']
 
-            sc.info(f'Opened project file {project_fn}')
+            sc.info(f'Opened notr project file {project_fn}')
 
     except Exception as e:
         # Assume bad project file.
-        sc.error(f'Error opening project file {project_fn}: {e}', e.__traceback__)
+        sc.error(f'Error opening notr project file {project_fn}: {e}', e.__traceback__)
 
 
 #-----------------------------------------------------------------------------------
