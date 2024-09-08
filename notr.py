@@ -784,7 +784,7 @@ def _build_selector(targets):
         ann = target.ttype
         if target.ttype == 'section':
             tt = "S"
-            ann = ''
+            # hide? ann = ''
         elif target.ttype == 'uri':
             tt = "R"
         elif target.ttype == 'image':

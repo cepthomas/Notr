@@ -7,7 +7,7 @@ step: the text itself is the whole point.
 The markup syntax provides file and section navigation and colorizing to provide visual clues for things like
 sections, links, tables, lists, etc.
 
-Built for ST4 on Windows and Linux.
+Built for ST4 on Windows and Linux (lightly tested).
 
 ## Features
 
@@ -129,6 +129,12 @@ After editing your color-scheme, you need to close and reopen affected views.
 - `view.add_regions()` apparently only supports colors, annotations, and icon. It does not support font style and region flags.
   Also they are not available via `extract_scope()`.
 - Doesn't handle targets with embedded parentheses (i.e. C:\Program Files (x86)\SomeApp). It exceeds my meager regex skills.
+
+
+## Notes
+
+- Log file is in $APPDATA\Sublime Text\Packages\User\.SbotStore\sbot.log.
+
 
 ## Future
 
