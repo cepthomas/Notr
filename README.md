@@ -133,7 +133,9 @@ After editing your color-scheme, you need to close and reopen affected views.
 
 ## Notes
 
-- Log file is in $APPDATA\Sublime Text\Packages\User\.SbotStore\sbot.log.
+- `sbot_common.py` contains miscellaneous common components primarily for internal use by the sbot family.
+  This includes a very simple logger primarily for user-facing information, syntax errors and the like.
+  Log file is in $APPDATA\Sublime Text\Packages\User\.SbotStore\sbot.log.
 
 
 ## Future
