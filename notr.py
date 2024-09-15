@@ -1,13 +1,9 @@
-import sys
 import os
 import re
 import glob
 import random
 import json
 import pathlib
-import traceback
-import shutil
-import subprocess
 import time
 
 
@@ -34,7 +30,7 @@ class Target:
     ttype: str     # 'section', 'uri', 'image', 'path' - maybe useful to discriminate file and dir?
     category: str  # 'sticky', 'mru', 'none'
     level: int     # for section only
-    tags: []       # tags for targets
+    tags: list     # tags for targets
     resource: str  # what ttype points to
     file: str      # .ntr file path
     line: int      # .ntr file line
@@ -60,10 +56,10 @@ class Ref:
 _current_project = None
 
 # The whole store file (notr.store) contents.
-_store = None
+_store = {}
 
 # Persisted mru.
-_current_mru = None
+_current_mru = []
 
 # All Targets found in all ntr files.
 _targets = []
@@ -149,7 +145,7 @@ class NotrEvent(sublime_plugin.EventListener):
             for view in views:
                 self._init_fixed_hl(view)
         else:
-            sc.warn(f'No valid projects in your settings - please edit')
+            sc.error(f'No valid projects in your settings - please edit')
 
     def on_load(self, view):
         ''' Loaded a new file. '''
@@ -166,9 +162,9 @@ class NotrEvent(sublime_plugin.EventListener):
         If it is a notr project, reload the project.'''
         if view.syntax().name == 'Notr':
             _process_notr_files(view.window())
-        elif view.file_name() == _current_project['_fn']:
+        elif _current_project is not None and view.file_name() == _current_project['_fn']:
             _open_project(view.file_name())
-            _process_notr_files(self.window)
+            _process_notr_files(view.window)
 
     def _init_fixed_hl(self, view):
         ''' Add any highlights. '''
@@ -242,13 +238,14 @@ class NotrEditProjectCommand(sublime_plugin.WindowCommand):
     def run(self):
         # Open the file in a new view.
         vnew = None
-        fn = _current_project['_fn']
-        try:
-            vnew = self.window.open_file(fn)
-            vnew.assign_syntax('Packages/JSON/JSON.sublime-syntax')
-        except Exception as e:
-            sc.error(f'Failed to open {fn}: {e}', e.__traceback__)
-            vnew = None
+        if _current_project is not None:
+            fn = _current_project['_fn']
+            try:
+                vnew = self.window.open_file(fn)
+                vnew.assign_syntax('Packages/JSON/JSON.sublime-syntax')
+            except Exception as e:
+                sc.error(f'Failed to open {fn}: {e}', e.__traceback__)
+                vnew = None
 
     def is_visible(self):
         return _store is not None and len(_store) > 0 and _current_project is not None
@@ -389,14 +386,14 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
                     break
 
             if not valid:
-                sc.warn(f'Invalid reference: {self.view.file_name()}: {tref}')
+                sc.error(f'Invalid reference: {self.view.file_name()}: {tref}')
 
         # Explicit link. do immediate.
         elif tlink is not None:
             fn = sc.expand_vars(tlink)
             valid = sc.open_path(fn)
             if not valid:
-                sc.warn(f'Invalid link: {tlink}')
+                sc.error(f'Invalid link: {tlink}')
 
         # Show a quickpanel of all target names.
         else:
@@ -456,14 +453,16 @@ class NotrInsertHruleCommand(sublime_plugin.TextCommand):
 
         # Start of current line.
         caret = sc.get_single_caret(v)
-        lst = v.line(caret)
-
-        s = fill_str * reps + '\n'
-        v.insert(edit, lst.a, s)
+        if caret is not None:
+            lst = v.line(caret)
+            s = fill_str * reps + '\n'
+            v.insert(edit, lst.a, s)
 
     def is_visible(self):
         v = self.view
-        return v.syntax() is not None and v.syntax().name == 'Notr' and sc.get_single_caret(v) is not None
+        return v.syntax() is not None and \
+               v.syntax().name == 'Notr' and \
+               sc.get_single_caret(v) is not None
 
 
 #-----------------------------------------------------------------------------------
@@ -474,14 +473,15 @@ class NotrInsertTargetFromClipCommand(sublime_plugin.TextCommand):
         random.seed()
         s = f'[]({sublime.get_clipboard()})'
         caret = sc.get_single_caret(self.view)
-        self.view.insert(edit, caret, s)
+        if caret is not None:
+            self.view.insert(edit, caret, s)
 
     def is_visible(self):
         v = self.view
         return v.syntax() is not None and \
-            v.syntax().name == 'Notr' and \
-            sc.get_single_caret(v) is not None and \
-            sublime.get_clipboard() != ''
+               v.syntax().name == 'Notr' and \
+               sc.get_single_caret(v) is not None and \
+               sublime.get_clipboard() != ''
 
 
 #-----------------------------------------------------------------------------------
@@ -501,7 +501,8 @@ class NotrInsertRefCommand(sublime_plugin.TextCommand):
             self.view.run_command("insert", {"characters": f'{s}'})  # Insert in view
 
     def is_visible(self):
-        return self.view.syntax() is not None and self.view.syntax().name == 'Notr'
+        return self.view.syntax() is not None and \
+        self.view.syntax().name == 'Notr'
 
 
 #-----------------------------------------------------------------------------------
@@ -575,6 +576,7 @@ def _process_notr_files(window):
     settings = sublime.load_settings(NOTR_SETTINGS_FILE)
 
     # Index first.
+    index_path = None
     notr_index = _current_project['notr_index']
     if notr_index is not None:
         index_path = sc.expand_vars(notr_index)
@@ -671,7 +673,7 @@ def _process_notr_file(ntr_fn):
             re_sections = re.compile(r'^(#+ +[^\[]+) *(?:\[(.*)\])?')
 
             settings = sublime.load_settings(NOTR_SETTINGS_FILE)
-            section_marker_size = settings.get('section_marker_size')
+            section_marker_size = int(str(settings.get('section_marker_size')))
 
             for line in lines:
 
@@ -744,6 +746,10 @@ def _process_notr_file(ntr_fn):
                 matches = re_sections.findall(line)
                 for m in matches:
                     valid = True
+                    hashes = ''
+                    name=''
+                    tags = []
+
                     if len(m) == 2:
                         content = m[0].strip().split(None, 1)
                         # print(content)
@@ -937,8 +943,9 @@ def _get_selection_for_scope(view, scope):
 #-----------------------------------------------------------------------------------
 def _update_mru(name):
     ''' Update the mru list. Removes duplicate and invalid names. '''
+    global _current_mru
     settings = sublime.load_settings(NOTR_SETTINGS_FILE)
-    mru_size = settings.get("mru_size")
+    mru_size = int(str(settings.get("mru_size")))
 
     # Clean up the mru.
     tmp = _current_mru.copy()

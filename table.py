@@ -77,7 +77,6 @@ class TableMatrix:
         return f'rows:{self.rows}'
 
     def validate_col_sel(self, table_col):
-        valid = True
         num_cols = self.count_columns()
         return table_col >= 0 and table_col < num_cols
 
@@ -113,15 +112,6 @@ class TableMatrix:
             for row in self.rows:
                 row.pop(table_col)
 
-    def measure_columns(self):
-        for row in self.rows:
-            for icol, value in enumerate(row):
-                text = value.text
-                # text = self.QuoteText(value.text)
-                width = len(text)
-                if width > self.column_widths[icol]:
-                    self.column_widths[icol] = width
-
     def count_columns(self):
         num_columns = 0
         for row in self.rows:
@@ -143,7 +133,7 @@ class TableMatrix:
                     column_widths[icol] = width
 
         # Generate the output text.
-        for row_index, row in enumerate(self.rows):
+        for _, row in enumerate(self.rows):
             row_text = []
             for icol, value in enumerate(row):
                 column_width = column_widths[icol] + 2  # add pad
@@ -199,6 +189,9 @@ class TableCommand(sublime_plugin.TextCommand):
         v = self.view
 
         caret = sc.get_single_caret(v)
+        if caret is None:
+            return None
+
         caret_row = v.rowcol(caret)[0]
         caret_col = v.rowcol(caret)[1]
 
