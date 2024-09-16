@@ -5,8 +5,6 @@ import random
 import json
 import pathlib
 import time
-
-
 from dataclasses import dataclass, field
 import sublime
 import sublime_plugin
@@ -56,7 +54,7 @@ class Ref:
 _current_project = None
 
 # The whole store file (notr.store) contents.
-_store = {}
+_store = None
 
 # Persisted mru.
 _current_mru = []
@@ -100,15 +98,19 @@ class NotrEvent(sublime_plugin.EventListener):
 
         # Check user projects.
         valid_projects = []
-        for p in settings.get('projects'):
-            if not os.path.isfile(sc.expand_vars(p)):
-                sc.info(f'Invalid project file {p} - edit your settings')
-            else:
-                valid_projects.append(sc.expand_vars(p))
+
+        projects = settings.get('projects')
+        if projects is not None:
+            for p in projects:  # pyright: ignore
+                sp = sc.expand_vars(p)
+                if sp is not None and os.path.isfile(sp):
+                    valid_projects.append(sc.expand_vars(p))
+                else:
+                    sc.error(f'Invalid project file in your settings: {p}')
 
         # Get persisted store info.
-        store_fn = sc.get_store_fn(NOTR_STORAGE_FILE)
         _store = None
+        store_fn = sc.get_store_fn(NOTR_STORAGE_FILE)
         if os.path.isfile(store_fn):
             try:
                 with open(store_fn, 'r') as fp:
@@ -154,6 +156,7 @@ class NotrEvent(sublime_plugin.EventListener):
 
     def on_pre_close(self, view):
         ''' Save anything. '''
+        del view
         _save_store()
 
     def on_post_save(self, view):
@@ -215,14 +218,15 @@ class NotrOpenProjectCommand(sublime_plugin.WindowCommand):
     def run(self):
         ''' Populate selector with user projects. '''
         self.panel_items.clear()
-        settings = sublime.load_settings(NOTR_SETTINGS_FILE)
 
-        for path, v in _store.items():
-            projnm = pathlib.Path(path).stem
-            self.panel_items.append(sublime.QuickPanelItem(trigger=projnm, details=path, kind=sublime.KIND_AMBIGUOUS))
-        self.window.show_quick_panel(self.panel_items, on_select=self.on_sel_project)
+        if _store is not None and len(_store) > 0:
+            for path, _ in _store.items():
+                projnm = pathlib.Path(path).stem
+                self.panel_items.append(sublime.QuickPanelItem(trigger=projnm, details=path, kind=sublime.KIND_AMBIGUOUS))
+            self.window.show_quick_panel(self.panel_items, on_select=self.on_sel_project)
 
     def on_sel_project(self, *args, **kwargs):
+        del kwargs
         if len(args) > 0 and args[0] >= 0:
             _open_project(self.panel_items[args[0]].details)
             _process_notr_files(self.window)
@@ -301,10 +305,11 @@ class NotrFindInFilesCommand(sublime_plugin.WindowCommand):
         settings = sublime.load_settings(NOTR_SETTINGS_FILE)
         paths = ["*.ntr", "-<open files>"]
         notr_paths = settings.get('notr_paths')
-        for npath in notr_paths:
-            expath = sc.expand_vars(npath)
-            if expath is not None and os.path.exists(expath):
-                paths.append(expath)
+        if notr_paths is not None:
+            for npath in notr_paths:  # pyright: ignore
+                expath = sc.expand_vars(npath)
+                if expath is not None and os.path.exists(expath):
+                    paths.append(expath)
 
         # Show it so the user can enter the pattern.
         # https://github.com/SublimeText/PackageDev/blob/master/plugins/command_completions/builtin_commands_meta_data.yaml
@@ -326,8 +331,6 @@ class NotrPublishCommand(sublime_plugin.WindowCommand):
         docs_path = os.path.join(onedrive_path, 'OneDriveDocuments')
         pub_path = os.path.join(onedrive_path, '_notr')
         notes_path = os.path.join(docs_path, 'notes')
-        tech_path = os.path.join(docs_path, 'tech')
-        sports_path = os.path.join(docs_path, 'sports')
 
         notes_to_pub = [
             'activities.ntr',
@@ -343,6 +346,7 @@ class NotrPublishCommand(sublime_plugin.WindowCommand):
         for p in notes_to_pub:
             src = os.path.join(notes_path, p)
             dest = os.path.join(pub_path, p.replace('.ntr', '.html'))
+            sc.debug(f'{src}->{dest}')
             # need to manage files in/out. Maybe use clipboard?
             # self.window.run_command("sbot_render_to_html", {"group": 0})
             time.sleep(0.5) # let st finish this first
@@ -364,6 +368,7 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
     _tags = []
 
     def run(self, edit, filter_by_tag):
+        del edit
         # Determine if user has selected a specific ref or link to follow, otherwise show the list of all.
         valid = True  # default
         tref = _get_selection_for_scope(self.view, 'markup.link.refname.notr')
@@ -409,6 +414,7 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
                 self.show_targets(targets)
 
     def on_sel_tag(self, *args, **kwargs):
+        del kwargs
         if len(args) > 0 and args[0] >= 0:
             # Hide current quick panel.
             self.view.window().run_command("hide_overlay")
@@ -427,9 +433,10 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
         ''' Present target options to user. '''
         self._targets_to_select = targets
         panel_items = _build_selector(self._targets_to_select)
-        self.view.window().show_quick_panel(panel_items, on_select=self.on_sel_target)
+        self.view.window().show_quick_panel(panel_items, on_select=self.on_sel_target)  # pyright: ignore
 
     def on_sel_target(self, *args, **kwargs):
+        del kwargs
         if len(args) > 0 and args[0] >= 0:
             # Locate the target record.
             target = self._targets_to_select[args[0]]
@@ -459,10 +466,7 @@ class NotrInsertHruleCommand(sublime_plugin.TextCommand):
             v.insert(edit, lst.a, s)
 
     def is_visible(self):
-        v = self.view
-        return v.syntax() is not None and \
-               v.syntax().name == 'Notr' and \
-               sc.get_single_caret(v) is not None
+        return _check_syntax(self.view)
 
 
 #-----------------------------------------------------------------------------------
@@ -477,11 +481,7 @@ class NotrInsertTargetFromClipCommand(sublime_plugin.TextCommand):
             self.view.insert(edit, caret, s)
 
     def is_visible(self):
-        v = self.view
-        return v.syntax() is not None and \
-               v.syntax().name == 'Notr' and \
-               sc.get_single_caret(v) is not None and \
-               sublime.get_clipboard() != ''
+        return _check_syntax(self.view) and sublime.get_clipboard() != ''
 
 
 #-----------------------------------------------------------------------------------
@@ -491,18 +491,19 @@ class NotrInsertRefCommand(sublime_plugin.TextCommand):
 
     def run(self, edit):
         # Show a quickpanel of all target names.
+        del edit
         self._targets_to_select = _filter_order_targets(sort=False, mru_first=True, current_file=self.view.file_name())
         panel_items = _build_selector(self._targets_to_select)
         self.view.window().show_quick_panel(panel_items, on_select=self.on_sel_ref)
 
     def on_sel_ref(self, *args, **kwargs):
+        del kwargs
         if len(args) > 0 and args[0] >= 0:
             s = f'[*{self._targets_to_select[args[0]].name}]'
             self.view.run_command("insert", {"characters": f'{s}'})  # Insert in view
 
     def is_visible(self):
-        return self.view.syntax() is not None and \
-        self.view.syntax().name == 'Notr'
+        return _check_syntax(self.view)
 
 
 #-----------------------------------------------------------------------------------
@@ -524,6 +525,10 @@ def _open_project(project_fn):
 
     try:
         expfn = sc.expand_vars(project_fn)
+        if expfn is None:
+            sc.error(f'Invalid project file: {project_fn}')
+            return
+
         with open(expfn, 'r') as fp:
             s = fp.read()
             proj = json.loads(s)
@@ -544,7 +549,7 @@ def _open_project(project_fn):
             _current_project['_fn'] = expfn  # for downstream
 
             # Reset flags first.
-            for path, v in _store.items():
+            for _, v in _store.items():
                 v['active'] = False
 
             # Get dynamic stuff. Add if not included.
@@ -858,7 +863,6 @@ def _filter_order_targets(**kwargs):
     if _current_project is None:
         return []
 
-    settings = sublime.load_settings(NOTR_SETTINGS_FILE)
     stickies = _current_project['sticky']
 
     current_file_targets = []
@@ -975,3 +979,8 @@ def _user_error(path, line, msg):
 #-----------------------------------------------------------------------------------
 def _get_froot(fn):
     return os.path.basename(os.path.splitext(fn)[0])
+
+
+#-----------------------------------------------------------------------------------
+def _check_syntax(v):
+    return v.syntax() is not None and v.syntax().name == 'Notr' and sc.get_single_caret(v) is not None  # pyright: ignore
