@@ -17,7 +17,6 @@ NOTR_STORAGE_FILE = "notr.store"
 # Known file types.
 IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 
-
 #--------------------------- Types -------------------------------------------------
 
 # One target: section or file/uri.
@@ -53,7 +52,7 @@ class Ref:
 # Current project file (*.nproj) contents.
 _current_project = None
 
-# The whole store file (notr.store) contents.
+# The whole store file (notr.store) contents. None means uninitialized.
 _store = None
 
 # Persisted mru.
@@ -96,12 +95,12 @@ class NotrEvent(sublime_plugin.EventListener):
 
         settings = sublime.load_settings(NOTR_SETTINGS_FILE)
 
-        # Check user projects.
+        # Check user project files.
         valid_projects = []
 
-        projects = settings.get('projects')
-        if projects is not None:
-            for p in projects:  # pyright: ignore
+        project_files = settings.get('project_files')
+        if project_files is not None:
+            for p in project_files:  # pyright: ignore
                 sp = sc.expand_vars(p)
                 if sp is not None and os.path.isfile(sp):
                     valid_projects.append(sc.expand_vars(p))
@@ -147,7 +146,7 @@ class NotrEvent(sublime_plugin.EventListener):
             for view in views:
                 self._init_fixed_hl(view)
         else:
-            sc.error(f'No valid projects in your settings - please edit')
+            sc.error(f'No valid project files in your settings - please edit')
 
     def on_load(self, view):
         ''' Loaded a new file. '''
@@ -157,7 +156,7 @@ class NotrEvent(sublime_plugin.EventListener):
     def on_pre_close(self, view):
         ''' Save anything. '''
         del view
-        _save_store()
+        _write_store()
 
     def on_post_save(self, view):
         ''' Called after a view has been saved.
@@ -216,13 +215,13 @@ class NotrOpenProjectCommand(sublime_plugin.WindowCommand):
     panel_items = []
 
     def run(self):
-        ''' Populate selector with user projects. '''
+        ''' Populate selector with user project files. '''
         self.panel_items.clear()
 
         if _store is not None and len(_store) > 0:
             for path, _ in _store.items():
-                projnm = pathlib.Path(path).stem
-                self.panel_items.append(sublime.QuickPanelItem(trigger=projnm, details=path, kind=sublime.KIND_AMBIGUOUS))
+                projfn = pathlib.Path(path).stem
+                self.panel_items.append(sublime.QuickPanelItem(trigger=projfn, details=path, kind=sublime.KIND_AMBIGUOUS))
             self.window.show_quick_panel(self.panel_items, on_select=self.on_sel_project)
 
     def on_sel_project(self, *args, **kwargs):
@@ -303,7 +302,7 @@ class NotrFindInFilesCommand(sublime_plugin.WindowCommand):
     def run(self):
         ''' Assemble the search locations from users paths. Index directory also? '''
         settings = sublime.load_settings(NOTR_SETTINGS_FILE)
-        paths = ["*.ntr", "-<open files>"]
+        paths = ["*.ntr", "-<open files>"]  # always
         notr_paths = settings.get('notr_paths')
         if notr_paths is not None:
             for npath in notr_paths:  # pyright: ignore
@@ -408,7 +407,9 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
 
                 for tag in self._tags:
                     panel_items.append(sublime.QuickPanelItem(trigger=tag, kind=sublime.KIND_AMBIGUOUS))
-                self.view.window().show_quick_panel(panel_items, on_select=self.on_sel_tag)
+                win = self.view.window()
+                if win is not None:
+                    win.show_quick_panel(panel_items, on_select=self.on_sel_tag)
             else:
                 targets = _filter_order_targets(mru_first=True, current_file=self.view.file_name())
                 self.show_targets(targets)
@@ -417,7 +418,9 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
         del kwargs
         if len(args) > 0 and args[0] >= 0:
             # Hide current quick panel.
-            self.view.window().run_command("hide_overlay")
+            win = self.view.window()
+            if win is not None:
+                win.run_command("hide_overlay")
 
             # Make a selector with target names, current file's first.
             sel_tag = self._tags[args[0]]
@@ -433,7 +436,9 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
         ''' Present target options to user. '''
         self._targets_to_select = targets
         panel_items = _build_selector(self._targets_to_select)
-        self.view.window().show_quick_panel(panel_items, on_select=self.on_sel_target)  # pyright: ignore
+        win = self.view.window()
+        if win is not None:
+            win.show_quick_panel(panel_items, on_select=self.on_sel_target)
 
     def on_sel_target(self, *args, **kwargs):
         del kwargs
@@ -494,7 +499,9 @@ class NotrInsertRefCommand(sublime_plugin.TextCommand):
         del edit
         self._targets_to_select = _filter_order_targets(sort=False, mru_first=True, current_file=self.view.file_name())
         panel_items = _build_selector(self._targets_to_select)
-        self.view.window().show_quick_panel(panel_items, on_select=self.on_sel_ref)
+        win = self.view.window()
+        if win is not None:
+            win.show_quick_panel(panel_items, on_select=self.on_sel_ref)
 
     def on_sel_ref(self, *args, **kwargs):
         del kwargs
@@ -512,7 +519,7 @@ class NotrInsertRefCommand(sublime_plugin.TextCommand):
 
 
 #-----------------------------------------------------------------------------------
-def _save_store():
+def _write_store():
     ''' Save everything. '''
     store_fn = sc.get_store_fn(NOTR_STORAGE_FILE)
     with open(store_fn, 'w') as fp:
@@ -521,12 +528,16 @@ def _save_store():
 
 #-----------------------------------------------------------------------------------
 def _open_project(project_fn):
-    global _current_project, _current_mru
+    global _store, _current_project, _current_mru
 
     try:
         expfn = sc.expand_vars(project_fn)
         if expfn is None:
             sc.error(f'Invalid project file: {project_fn}')
+            return
+
+        if _store is None:
+            sc.error(f'Store not initialized.')
             return
 
         with open(expfn, 'r') as fp:
@@ -965,7 +976,7 @@ def _update_mru(name):
             _current_mru.append(tname)
 
     # Persist.
-    _save_store()
+    _write_store()
 
 
 #-----------------------------------------------------------------------------------
@@ -983,4 +994,4 @@ def _get_froot(fn):
 
 #-----------------------------------------------------------------------------------
 def _check_syntax(v):
-    return v.syntax() is not None and v.syntax().name == 'Notr' and sc.get_single_caret(v) is not None  # pyright: ignore
+    return v.syntax() is not None and v.syntax().name == 'Notr' and sc.get_single_caret(v) is not None
