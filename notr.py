@@ -912,7 +912,7 @@ def _filter_order_targets(**kwargs):
                     target.category = 'mru'
                     mru_cache[target.name] = target
                 elif current_file is not None:
-                    if target.file is not None and os.path.samefile(target.file, current_file):
+                    if target.file is not None and os.path.exists(target.file) and os.path.samefile(target.file, current_file):
                         current_file_targets.append(target)
                     else:
                         other_targets.append(target)
