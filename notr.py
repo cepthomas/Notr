@@ -71,7 +71,7 @@ _parse_errors = []
 #-----------------------------------------------------------------------------------
 def plugin_loaded():
     '''Called per plugin instance.'''
-    sc.info(f'plugin_loaded() {__package__}')
+    sc.debug(f'plugin_loaded() {__package__}')
 
 
 #-----------------------------------------------------------------------------------
@@ -113,8 +113,7 @@ class NotrEvent(sublime_plugin.EventListener):
         if os.path.isfile(store_fn):
             try:
                 with open(store_fn, 'r') as fp:
-                    s = fp.read()
-                    _store = json.loads(s)
+                    _store = json.load(fp)
             except Exception as e:
                 sc.error(f'Error processing {store_fn}: {e}', e.__traceback__)
 
