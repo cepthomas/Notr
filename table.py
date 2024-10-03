@@ -6,6 +6,7 @@ import sublime_plugin
 from . import sbot_common as sc
 
 
+# TODO allow '|' in tables -> make delim configurable. maybe like '||'?
 DELIM = '|'
 
 

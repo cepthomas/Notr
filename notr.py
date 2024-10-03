@@ -17,6 +17,9 @@ NOTR_STORAGE_FILE = "notr.store"
 # Known file types.
 IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 
+# TODO goto section=next/prev/which in current file.
+
+
 #--------------------------- Types -------------------------------------------------
 
 # One target: section or file/uri.
