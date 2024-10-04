@@ -1,0 +1,95 @@
+
+# section name [tag1 tag2]
+A section of content.
+Starts in first column with number of `#` indicates level.
+Tag(s) are used for categorizing and selecting sections.
+Right click to select from a list of all sections or tags to navigate to.
+
+## section no tags
+Another section but without tags.
+
+
+### subject text [tag2 tag3]
+
+
+### Text Attributes [tag2 dds tag3]
+Basic things you can do with text.
+
+Text: *Bold*, /italic/, and _under line_ are as expected, ~strike through~ is a compromise.
+
+Auto-highlight things like:
+  2DO - from user list.
+  dynamic/runtime.
+bla and_a  bla and_b  bla and_c bla.
+Set the text tokens in your settings.
+
+`An inline chunk of raw text` and here is `another one` ok?
+
+```A block of raw text
+  - ServerName www.example.com
+  - DocumentRoot http://www/example1
+```
+and
+```
+Here is another block. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+```
+
+> Blockquotes are very handy.
+> This line is part of the same quote.
+
+Visual delimiters that don't do anything else. Like a horizontal rule:
+================================================================================
+
+
+IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+
+Hello! Welcome to my world. I have invincible walls.
+IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+
+
+## Lists [tag9 tagZZZ]
+
+- list category
+  - list item
+  ! list item Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+    - list item
+  - list item
+    X list item
+- list category
+  ? list item
+  - list item
+    - list item
+
+
+item states (in settings)
+  - = neutral
+  X = done 
+  ? = maybe
+  ! = priority
+
+
+## Links and References [tag3 tag4 tag9]
+
+Define a link and its ref name like [image felix le chat]($NOTR_PATH/test_files/felix1.jpg) or
+   [other type of file]($NOTR_PATH/notr.py)
+or... [nyt](https://nytimes.com)
+
+Define things like `$NOTR_PATH` before being referenced, usually in your `notr_index` file.
+
+Use `*` to identify references defined beforehand - above or in `notr_index` file. Right click to navigate to the ref.
+
+Ref to other file. [* image felix le chat] or [* other type of file] or [* another felix].
+Ref to URI. [* nyt]
+Ref section in this ntr file: [*#section no tags] end.
+Ref section in another ntr file: [*page2#P2 section 2]. `page2` is the pathless root of the ntr filename. Must be unique in all ntr files!
+
+## Tables [tag2]
+
+Very dumb table. Good enough for me. You can use the heading break like markdown if you want but it's not necessary.
+Note that coloring *should* stop at the right edge of the table but this is how ST regex does it.
+
+| Maine | Iowa | Colorado |
+|   1   |  4   |   10     |
+|  ME   |  IA  |   CO     |
+| Blue  | Red  | Brown    |
+

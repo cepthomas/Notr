@@ -1,0 +1,25 @@
+## section no tags
+Starts at 066 and ends at 260...
+
+
+remove this.
+|State |    Size    |Color|
+|   ME   |11|   Red     |
+|  IA   |  31    |Blue     |extra
+| CO  | 15  | |
+| NY     | 4  | Yellow  space after->| 
+|| 2  | Green    |
+| WY   | 45        | White    |
+
+### Fitted version of above
+Starts at 322 and ends at 664.
+
+| State | Size | Color                 |       |
+| ME    | 11   | Red                   |       |
+| IA    | 31   | Blue                  | extra |
+| CO    | 15   |                       |       |
+| NY    | 4    | Yellow  space after-> |       |
+|       | 2    | Green                 |       |
+| WY    | 45   | White                 |       |
+
+and so on...
