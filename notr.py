@@ -10,7 +10,7 @@ import sublime
 import sublime_plugin
 
 
-# TODO this works:
+# Kludge to make testing work.
 try:
     import sbot_common as sc
 except:
@@ -23,7 +23,7 @@ NOTR_STORAGE_FILE = "notr.store"
 # Known file types.
 IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 
-# TODO goto section=next/prev/which in current file.
+# TODOF goto section=next/prev/which in current file.
 
 
 #--------------------------- Types -------------------------------------------------
@@ -331,7 +331,7 @@ class NotrFindInFilesCommand(sublime_plugin.WindowCommand):
 
 #-----------------------------------------------------------------------------------
 class NotrPublishCommand(sublime_plugin.WindowCommand):
-    ''' TODO A research project to publish the .ntr files somehow/somewhere. '''
+    ''' TODOF A research project to publish the .ntr files somehow/somewhere. '''
 
     def run(self):
         onedrive_path = os.path.expandvars('$OneDrive')

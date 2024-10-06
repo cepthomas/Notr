@@ -88,7 +88,7 @@ class TestTable(unittest.TestCase):
 
         # Run the command.
         cmd = table.TableFitCommand(self.view)
-        cmd.run(None)
+        cmd.run(None)   #TODO1 fix all these sublime collisions, maybe.
 
         # Should look like this now.
         exptext = '\n'.join([
@@ -232,7 +232,7 @@ class TestTable(unittest.TestCase):
 
         # Run the command.
         cmd = table.TableInsertColCommand(self.view)
-        cmd.run(None) #TODO1 all these
+        cmd.run(None)
 
         # Should look like this now.
         exptext = '\n'.join([
@@ -287,9 +287,9 @@ class TestTable(unittest.TestCase):
 
 
     #------------------------------------------------------------
-    @unittest.skip('TODO')
+    @unittest.skip('TODOT Doesn\'t work perfectly for ragged - user should fit first.')
     def test_TableInsertColEnd(self):
-        ''' TableInsertColCommand at end of line. Doesn't work perfectly for ragged - user should fit first. '''
+        ''' TableInsertColCommand at end of line. '''
 
         self.view.insert(None, 0, self.test_text_str)
 
@@ -303,10 +303,8 @@ class TestTable(unittest.TestCase):
         self.view.sel = MagicMock(return_value=sel)
 
         # Run the command.
-        e = emu.Edit(1)
-
         cmd = table.TableInsertColCommand(self.view)
-        cmd.run(e)
+        cmd.run(None)
 
         # Should look like this now.
         exptext = '\n'.join([
@@ -368,10 +366,3 @@ class TestTable(unittest.TestCase):
         reg = cmd.get_table_region()
         gentext = self.view.substr(reg)
         self.assertEqual(gentext, exptext)
-
-
-#-----------------------------------------------------------------------------------
-if __name__ == '__main__':
-    # https://docs.python.org/3/library/unittest.html#unittest.main
-    tp = unittest.main(verbosity=2, exit=False)
-    print(tp.result)
