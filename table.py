@@ -50,7 +50,7 @@ import sublime_plugin
 # from . import sbot_common as sc
 
 
-# this works:
+# TODO this works:
 try:
     import sbot_common as sc
 except:

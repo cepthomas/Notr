@@ -8,7 +8,13 @@ import time
 from dataclasses import dataclass, field
 import sublime
 import sublime_plugin
-from . import sbot_common as sc
+
+
+# TODO this works:
+try:
+    import sbot_common as sc
+except:
+    from . import sbot_common as sc
 
 
 NOTR_SETTINGS_FILE = "Notr.sublime-settings"

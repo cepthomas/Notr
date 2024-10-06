@@ -3,20 +3,11 @@ import os
 import unittest
 from unittest.mock import MagicMock
 
-# Add path to code under test.
-cut_path = os.path.join(os.path.dirname(__file__), '..')
-if cut_path not in sys.path:
-    sys.path.insert(0, cut_path)
+# Set up the sublime emulation environment.
+import emu_sublime_api as emu
 
-# Now import the sublime emulation.
-import emu_sublime
-import emu_sublime_plugin
-sys.modules["sublime"] = emu_sublime
-sys.modules["sublime_plugin"] = emu_sublime_plugin
-
-# Now import the code under test.
-from Notr import notr, table
-
+# Import the code under test.
+import notr
 import sbot_common as sc
 
 
@@ -25,7 +16,7 @@ class TestNotr(unittest.TestCase):
 
     def setUp(self):
 
-        notr_files_path = os.path.join(sublime.packages_path(), 'Notr', 'files')
+        notr_files_path = os.path.join(emu.packages_path(), 'Notr', 'files')
 
         mock_settings = {
             "projects": [],
@@ -34,15 +25,15 @@ class TestNotr(unittest.TestCase):
             "fixed_hl_whole_word": True,
             "section_marker_size": 1,
         }
-        sublime.load_settings = MagicMock(return_value=mock_settings)
+        emu.load_settings = MagicMock(return_value=mock_settings)
 
         # Mock top level entities.
-        self.view = sublime.View(10)
-        self.window = sublime.Window(20)
+        self.view = emu.View(10)
+        self.window = emu.Window(20)
         self.view.window = MagicMock(return_value=self.window)
 
         # Mock syntax interrogation.
-        self.syntax = sublime.Syntax('', 'Notr', False, '')
+        self.syntax = emu.Syntax('', 'Notr', False, '')
         self.view.syntax = MagicMock(return_value=self.syntax)
 
     def tearDown(self):
@@ -73,6 +64,6 @@ class TestNotr(unittest.TestCase):
     # @unittest.skip('')
     # def test_InsertRef(self):
     #     cmd = notr.NotrInsertRefCommand(self.view)
-    #     edit = sublime.Edit
+    #     edit = emu.Edit
     #     cmd.run(edit)
 

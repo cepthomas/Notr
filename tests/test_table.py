@@ -3,65 +3,12 @@ import os
 import unittest
 from unittest.mock import MagicMock
 
+# Set up the sublime emulation environment.
+import emu_sublime_api as emu
 
-##### TODO1 bundle this generic code somehow?
-# Add path to code under test - parent.
-cut_path = os.path.join(os.path.dirname(__file__), '..')
-if cut_path not in sys.path:
-    sys.path.insert(0, cut_path)
-# print('>>> test_table sys.path', sys.path)
-# Now import the sublime emulation.
-import emu_sublime as sublime
-import emu_sublime_plugin as sublime_plugin
-sys.modules["sublime"] = sublime
-sys.modules["sublime_plugin"] = sublime_plugin
-# Now the plugin can use these willy-nilly:
-# import sublime
-# import sublime_plugin
-
-
-##### Now import the code under test.
-# import sublime
-# import sublime_plugin
+# Import the code under test.
 import table
 import sbot_common as sc
-
-
-
-
-# print('>>> sys.path', sys.path)
-# 
-# From test_table import table:
-# 'C:\\Users\\cepth\\AppData\\Roaming\\Sublime Text\\Packages\\Notr\\tests\\..',
-# 'C:\\Users\\cepth\\AppData\\Roaming\\Sublime Text\\Packages\\Notr\\tests',
-# 'C:\\Users\\cepth\\AppData\\Local\\Programs\\Python\\Python311\\python311.zip',
-# 'C:\\Users\\cepth\\AppData\\Local\\Programs\\Python\\Python311\\DLLs',
-# 'C:\\Users\\cepth\\AppData\\Local\\Programs\\Python\\Python311\\Lib',
-# 'C:\\Users\\cepth\\AppData\\Local\\Programs\\Python\\Python311',
-# 'C:\\Users\\cepth\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages',
-# 'C:\\Users\\cepth\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\win32',
-# 'C:\\Users\\cepth\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\win32\\lib',
-# 'C:\\Users\\cepth\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\Pythonwin'
-#
-# From ST load:
-# 'C:\\Program Files\\Sublime Text\\Lib\\python3.8.zip'
-# 'C:\\Program Files\\Sublime Text\\Lib\\python38'
-# 'C:\\Program Files\\Sublime Text\\Lib\\python3'
-# 'C:\\Users\\cepth\\AppData\\Roaming\\Sublime Text\\Lib\\python38'
-# 'C:\\Program Files\\Sublime Text\\Packages'
-# 'C:\\Users\\cepth\\AppData\\Roaming\\Sublime Text\\Packages'
-
-
-# os.getcwd()
-# os.chdir(path)
-# os.chdir(r'C:\Users\cepth\AppData\Roaming\Sublime Text\Packages\Notr')
-# print('>>> os.getcwd()', os.getcwd())
-# 
-# From test_table import table:
-# >>> os.getcwd() C:\Users\cepth\AppData\Roaming\Sublime Text\Packages\Notr\tests
-# 
-# From ST load:
-# >>> os.getcwd() C:\Program Files\Sublime Text
 
 
 #-----------------------------------------------------------------------------------
@@ -94,12 +41,12 @@ class TestTable(unittest.TestCase):
         self.test_text_str = ''.join(self.test_text)
 
         # Mock top level entities.
-        self.view = sublime.View(10)
-        self.window = sublime.Window(20)
+        self.view = emu.View(10)
+        self.window = emu.Window(20)
         self.view._window = MagicMock(return_value=self.window)
 
         # Mock syntax interrogation.
-        self.syntax = sublime.Syntax('', 'Notr', False, '')
+        self.syntax = emu.Syntax('', 'Notr', False, '')
         self.view.syntax = MagicMock(return_value=self.syntax)
 
 
@@ -135,8 +82,8 @@ class TestTable(unittest.TestCase):
         self.view.scope_name = MagicMock(side_effect=self.mock_scope_name)
 
         # Mock view selection.
-        sel = sublime.Selection(self.view.id())
-        sel.add(sublime.Region(130, 140)) # somewhere in table
+        sel = emu.Selection(self.view.id())
+        sel.add(emu.Region(130, 140)) # somewhere in table
         self.view.sel = MagicMock(return_value=sel)
 
         # Run the command.
@@ -170,8 +117,8 @@ class TestTable(unittest.TestCase):
         self.view.scope_name = MagicMock(side_effect=self.mock_scope_name)
 
         # Mock view selection for column 0.
-        sel = sublime.Selection(self.view.id())
-        sel.add(sublime.Region(175, 175))
+        sel = emu.Selection(self.view.id())
+        sel.add(emu.Region(175, 175))
         self.view.sel = MagicMock(return_value=sel)
 
         # Run the command.
@@ -196,7 +143,7 @@ class TestTable(unittest.TestCase):
 
         # Run command again to sort opposite order. Tweak caret to match fitted table.
         sel.clear()
-        sel.add(sublime.Region(266, 266))
+        sel.add(emu.Region(266, 266))
         cmd.run(None, asc=False)
 
         exptext = '\n'.join([
@@ -225,8 +172,8 @@ class TestTable(unittest.TestCase):
         self.view.scope_name = MagicMock(side_effect=self.mock_scope_name)
 
         # Mock view selection for column 1.
-        sel = sublime.Selection(self.view.id())
-        sel.add(sublime.Region(216, 216))
+        sel = emu.Selection(self.view.id())
+        sel.add(emu.Region(216, 216))
         self.view.sel = MagicMock(return_value=sel)
 
         # Run the command.
@@ -251,7 +198,7 @@ class TestTable(unittest.TestCase):
 
         # Run command again to sort opposite order. Tweak caret to match fitted table.
         sel.clear()
-        sel.add(sublime.Region(324, 324))
+        sel.add(emu.Region(324, 324))
         cmd.run(None, asc=False)
 
         exptext = '\n'.join([
@@ -279,13 +226,13 @@ class TestTable(unittest.TestCase):
         self.view.scope_name = MagicMock(side_effect=self.mock_scope_name)
 
         # Mock view selection before first column.
-        sel = sublime.Selection(self.view.id())
-        sel.add(sublime.Region(121, 121))
+        sel = emu.Selection(self.view.id())
+        sel.add(emu.Region(121, 121))
         self.view.sel = MagicMock(return_value=sel)
 
         # Run the command.
         cmd = table.TableInsertColCommand(self.view)
-        cmd.run(None)
+        cmd.run(None) #TODO1 all these
 
         # Should look like this now.
         exptext = '\n'.join([
@@ -314,8 +261,8 @@ class TestTable(unittest.TestCase):
         self.view.scope_name = MagicMock(side_effect=self.mock_scope_name)
 
         # Mock view selection for column 1.
-        sel = sublime.Selection(self.view.id())
-        sel.add(sublime.Region(105, 105))
+        sel = emu.Selection(self.view.id())
+        sel.add(emu.Region(105, 105))
         self.view.sel = MagicMock(return_value=sel)
 
         # Run the command.
@@ -350,13 +297,13 @@ class TestTable(unittest.TestCase):
         self.view.scope_name = MagicMock(side_effect=self.mock_scope_name)
 
         # Mock view selection at end.
-        sel = sublime.Selection(self.view.id())
-        #sel.add(sublime.Region(154, 154)) # row 7
-        sel.add(sublime.Region(210, 210)) # row 9
+        sel = emu.Selection(self.view.id())
+        #sel.add(emu.Region(154, 154)) # row 7
+        sel.add(emu.Region(210, 210)) # row 9
         self.view.sel = MagicMock(return_value=sel)
 
         # Run the command.
-        e = sublime.Edit(1)
+        e = emu.Edit(1)
 
         cmd = table.TableInsertColCommand(self.view)
         cmd.run(e)
@@ -388,8 +335,8 @@ class TestTable(unittest.TestCase):
         self.view.scope_name = MagicMock(side_effect=self.mock_scope_name)
 
         # Mock view selection at column 0.
-        sel = sublime.Selection(self.view.id())
-        sel.add(sublime.Region(125, 125))
+        sel = emu.Selection(self.view.id())
+        sel.add(emu.Region(125, 125))
         self.view.sel = MagicMock(return_value=sel)
 
         # Run the command.
