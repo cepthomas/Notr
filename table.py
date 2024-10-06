@@ -1,9 +1,61 @@
 # Some of this is loosely based on https://github.com/wadetb/Sublime-Text-Advanced-CSV.
 # Source licenses are MIT so all is good. Steal This Code.
 
+import sys
+import os
+
+
+# print('>>> sys.path', sys.path)
+# 
+# From test_table import table:
+# 'C:\\Users\\cepth\\AppData\\Roaming\\Sublime Text\\Packages\\Notr\\tests\\..',
+# 'C:\\Users\\cepth\\AppData\\Roaming\\Sublime Text\\Packages\\Notr\\tests',
+# 'C:\\Users\\cepth\\AppData\\Local\\Programs\\Python\\Python311\\python311.zip',
+# 'C:\\Users\\cepth\\AppData\\Local\\Programs\\Python\\Python311\\DLLs',
+# 'C:\\Users\\cepth\\AppData\\Local\\Programs\\Python\\Python311\\Lib',
+# 'C:\\Users\\cepth\\AppData\\Local\\Programs\\Python\\Python311',
+# 'C:\\Users\\cepth\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages',
+# 'C:\\Users\\cepth\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\win32',
+# 'C:\\Users\\cepth\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\win32\\lib',
+# 'C:\\Users\\cepth\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\Pythonwin'
+#
+# From ST load:
+# 'C:\\Program Files\\Sublime Text\\Lib\\python3.8.zip'
+# 'C:\\Program Files\\Sublime Text\\Lib\\python38'
+# 'C:\\Program Files\\Sublime Text\\Lib\\python3'
+# 'C:\\Users\\cepth\\AppData\\Roaming\\Sublime Text\\Lib\\python38'
+# 'C:\\Program Files\\Sublime Text\\Packages'
+# 'C:\\Users\\cepth\\AppData\\Roaming\\Sublime Text\\Packages'
+
+
+# os.getcwd()
+# os.chdir(path)
+# print('>>> os.getcwd()', os.getcwd())
+# 
+# From test_table import table:
+# >>> os.getcwd() C:\Users\cepth\AppData\Roaming\Sublime Text\Packages\Notr\tests
+# 
+# From ST load:
+# >>> os.getcwd() C:\Program Files\Sublime Text
+
+
 import sublime
 import sublime_plugin
-from . import sbot_common as sc
+
+
+# os.chdir(r'C:\Users\cepth\AppData\Roaming\Sublime Text\Packages\Notr')
+# print('>>> os.getcwd()', os.getcwd())
+
+# import sbot_common as sc
+# from . import sbot_common as sc
+
+
+# this works:
+try:
+    import sbot_common as sc
+except:
+    from . import sbot_common as sc
+
 
 
 # TODO allow '|' in tables -> make delim configurable. maybe like '||'?

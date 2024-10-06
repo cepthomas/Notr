@@ -6,7 +6,7 @@ from unittest.mock import MagicMock
 # Add path to code under test.
 cut_path = os.path.join(os.path.dirname(__file__), '..')
 if cut_path not in sys.path:
-      sys.path.insert(0, cut_path)
+    sys.path.insert(0, cut_path)
 
 # Now import the sublime emulation.
 import emu_sublime

@@ -3,21 +3,66 @@ import os
 import unittest
 from unittest.mock import MagicMock
 
-# Add path to code under test.
+
+##### TODO1 bundle this generic code somehow?
+# Add path to code under test - parent.
 cut_path = os.path.join(os.path.dirname(__file__), '..')
 if cut_path not in sys.path:
-      sys.path.insert(0, cut_path)
-
+    sys.path.insert(0, cut_path)
+# print('>>> test_table sys.path', sys.path)
 # Now import the sublime emulation.
-import emu_sublime
-import emu_sublime_plugin
-sys.modules["sublime"] = emu_sublime
-sys.modules["sublime_plugin"] = emu_sublime_plugin
+import emu_sublime as sublime
+import emu_sublime_plugin as sublime_plugin
+sys.modules["sublime"] = sublime
+sys.modules["sublime_plugin"] = sublime_plugin
+# Now the plugin can use these willy-nilly:
+# import sublime
+# import sublime_plugin
 
-# Now import the code under test.
-from Notr import table
 
+##### Now import the code under test.
+# import sublime
+# import sublime_plugin
+import table
 import sbot_common as sc
+
+
+
+
+# print('>>> sys.path', sys.path)
+# 
+# From test_table import table:
+# 'C:\\Users\\cepth\\AppData\\Roaming\\Sublime Text\\Packages\\Notr\\tests\\..',
+# 'C:\\Users\\cepth\\AppData\\Roaming\\Sublime Text\\Packages\\Notr\\tests',
+# 'C:\\Users\\cepth\\AppData\\Local\\Programs\\Python\\Python311\\python311.zip',
+# 'C:\\Users\\cepth\\AppData\\Local\\Programs\\Python\\Python311\\DLLs',
+# 'C:\\Users\\cepth\\AppData\\Local\\Programs\\Python\\Python311\\Lib',
+# 'C:\\Users\\cepth\\AppData\\Local\\Programs\\Python\\Python311',
+# 'C:\\Users\\cepth\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages',
+# 'C:\\Users\\cepth\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\win32',
+# 'C:\\Users\\cepth\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\win32\\lib',
+# 'C:\\Users\\cepth\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\Pythonwin'
+#
+# From ST load:
+# 'C:\\Program Files\\Sublime Text\\Lib\\python3.8.zip'
+# 'C:\\Program Files\\Sublime Text\\Lib\\python38'
+# 'C:\\Program Files\\Sublime Text\\Lib\\python3'
+# 'C:\\Users\\cepth\\AppData\\Roaming\\Sublime Text\\Lib\\python38'
+# 'C:\\Program Files\\Sublime Text\\Packages'
+# 'C:\\Users\\cepth\\AppData\\Roaming\\Sublime Text\\Packages'
+
+
+# os.getcwd()
+# os.chdir(path)
+# os.chdir(r'C:\Users\cepth\AppData\Roaming\Sublime Text\Packages\Notr')
+# print('>>> os.getcwd()', os.getcwd())
+# 
+# From test_table import table:
+# >>> os.getcwd() C:\Users\cepth\AppData\Roaming\Sublime Text\Packages\Notr\tests
+# 
+# From ST load:
+# >>> os.getcwd() C:\Program Files\Sublime Text
+
 
 #-----------------------------------------------------------------------------------
 class TestTable(unittest.TestCase):
@@ -29,7 +74,7 @@ class TestTable(unittest.TestCase):
 
 
     #------------------------------------------------------------
-    # Mock scope interrogation by row. Corresponds to table in test_table.ntr.
+    # Mock scope interrogation by row. Corresponds to table in table1.ntr.
     def mock_scope_name(self, *args, **kwargs):
         rc = self.view.rowcol(args[0])
         if rc[0] == 5:
@@ -43,7 +88,7 @@ class TestTable(unittest.TestCase):
     #------------------------------------------------------------
     def setUp(self):
         # Get test text.
-        with open('SbotDev/test_files/test_table.ntr', 'r') as f:
+        with open('table1.ntr', 'r') as f:
             self.test_text = f.readlines()
         # String version.
         self.test_text_str = ''.join(self.test_text)
@@ -64,7 +109,6 @@ class TestTable(unittest.TestCase):
 
 
     #------------------------------------------------------------
-    #@unittest.skip
     def test_table_internal(self):
         ''' Some basic tests. '''
 
@@ -82,7 +126,6 @@ class TestTable(unittest.TestCase):
 
 
     #------------------------------------------------------------
-    #@unittest.skip
     def test_TableFit(self):
         ''' TableFitCommand. Fitting column widths. '''
 
@@ -118,7 +161,6 @@ class TestTable(unittest.TestCase):
 
 
     #------------------------------------------------------------
-    #@unittest.skip
     def test_TableSortByColAlpha(self):
         ''' TableSortByColCommand for text. '''
 
@@ -174,7 +216,6 @@ class TestTable(unittest.TestCase):
 
 
     #------------------------------------------------------------
-    #@unittest.skip
     def test_TableSortByColNumeric(self):
         ''' TableSortByColCommand for numbers. '''
 
@@ -229,7 +270,6 @@ class TestTable(unittest.TestCase):
         self.assertEqual(gentext, exptext)
 
     #------------------------------------------------------------
-    #@unittest.skip
     def test_TableInsertColBeginning(self):
         ''' TableInsertColCommand at beginning of line. '''
 
@@ -265,7 +305,6 @@ class TestTable(unittest.TestCase):
 
 
      #------------------------------------------------------------
-    #@unittest.skip
     def test_TableInsertColMiddle(self):
         ''' TableInsertColCommand in middle of line. '''
 
@@ -301,7 +340,7 @@ class TestTable(unittest.TestCase):
 
 
     #------------------------------------------------------------
-    @unittest.skip
+    @unittest.skip('TODO')
     def test_TableInsertColEnd(self):
         ''' TableInsertColCommand at end of line. Doesn't work perfectly for ragged - user should fit first. '''
 
@@ -317,8 +356,10 @@ class TestTable(unittest.TestCase):
         self.view.sel = MagicMock(return_value=sel)
 
         # Run the command.
+        e = sublime.Edit(1)
+
         cmd = table.TableInsertColCommand(self.view)
-        cmd.run(None)
+        cmd.run(e)
 
         # Should look like this now.
         exptext = '\n'.join([
@@ -338,7 +379,6 @@ class TestTable(unittest.TestCase):
 
 
    #------------------------------------------------------------
-    #@unittest.skip
     def test_TableDeleteCol(self):
         ''' TableDeleteColCommand. '''
 
