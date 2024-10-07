@@ -309,9 +309,12 @@ class NotrFindInFilesCommand(sublime_plugin.WindowCommand):
 
     def run(self):
         ''' Assemble the search locations from users paths. Index directory also? '''
-        settings = sublime.load_settings(NOTR_SETTINGS_FILE)
+
+        if _current_project is None:
+            return
+
         paths = ["*.ntr", "-<open files>"]  # always
-        notr_paths = settings.get('notr_paths')
+        notr_paths = _current_project['notr_paths']
         if notr_paths is not None:
             for npath in notr_paths:  # pyright: ignore
                 expath = sc.expand_vars(npath)
@@ -882,7 +885,7 @@ def _filter_order_targets(**kwargs):
     if _current_project is None:
         return []
 
-    stickies = _current_project['sticky']
+    sticky = _current_project['sticky']
 
     current_file_targets = []
     other_targets = []
@@ -905,7 +908,7 @@ def _filter_order_targets(**kwargs):
     for target in _targets:
         target.category = ''  # default
         # Sticky always wins.
-        if target.name in stickies:
+        if target.name in sticky:
             target.category = 'sticky'
             sticky_cache[target.name] = target
         else:  # The others.
@@ -935,7 +938,7 @@ def _filter_order_targets(**kwargs):
     # Collect and return.
     ret = []
     # Order these.
-    for st in stickies:  # by position in settings
+    for st in sticky:  # by position in settings
         if st in sticky_cache:
             ret.append(sticky_cache[st])
     for mru in _current_mru:  # by recent first

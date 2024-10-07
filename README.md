@@ -41,7 +41,7 @@ To run the example:
 - Select `Preferences->Package Settings->Notr`.
 - Add this project name to your settings:
 ``` json
-"projects":
+"project_files":
 [
     "$APPDATA\\Sublime Text\\Packages\\Notr\\example\\notr-demo.nproj",
 ]
@@ -96,6 +96,7 @@ Add the commands you like to your own `User\Context.sublime-menu` file. Typical 
 
 | Setting             | Description                                   | Options         |
 | :--------           | :-------                                      | :------         |
+| project_files       | List of project filenames                     |                 |
 | sort_tags_alpha     | Sort tags alphabetically else by frequency    | true OR false   |
 | mru_size            | How many mru entries in selector              | default=5       |
 | fixed_hl_whole_word | Select fixed_hl by whole word                 | true OR false   |

@@ -1,6 +1,6 @@
 {
-    // All notr projects.
-    "projects": [],
+    // All notr project filenames.
+    "project_files": [],
 
     // Sort tags alphabetically or by frequency.
     "sort_tags_alpha": true,
