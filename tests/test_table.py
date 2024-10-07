@@ -1,7 +1,7 @@
 import sys
 import os
 import unittest
-from unittest.mock import MagicMock
+
 
 # Set up the sublime emulation environment.
 import emu_sublime_api as emu
@@ -19,7 +19,6 @@ class TestTable(unittest.TestCase):
     # String version.
     test_text_str = None
 
-
     #------------------------------------------------------------
     # Mock scope interrogation by row. Corresponds to table in table1.ntr.
     def mock_scope_name(self, *args, **kwargs):
@@ -31,11 +30,12 @@ class TestTable(unittest.TestCase):
         else:
             return 'text.notr'
 
-
     #------------------------------------------------------------
     def setUp(self):
         # Get test text.
-        with open('table1.ntr', 'r') as f:
+        my_dir = os.path.dirname(__file__)
+        fn = os.path.join(my_dir, 'table1.ntr')
+        with open(fn, 'r') as f:
             self.test_text = f.readlines()
         # String version.
         self.test_text_str = ''.join(self.test_text)
@@ -43,17 +43,17 @@ class TestTable(unittest.TestCase):
         # Mock top level entities.
         self.view = emu.View(10)
         self.window = emu.Window(20)
-        self.view._window = MagicMock(return_value=self.window)
+        self.view._window = self.window
 
         # Mock syntax interrogation.
         self.syntax = emu.Syntax('', 'Notr', False, '')
-        self.view.syntax = MagicMock(return_value=self.syntax)
+        self.view._syntax = self.syntax
 
+        emu.aaaaaaaaaaaaaaaaaaa = 9
 
     #------------------------------------------------------------
     def tearDown(self):
         pass
-
 
     #------------------------------------------------------------
     def test_table_internal(self):
@@ -71,7 +71,6 @@ class TestTable(unittest.TestCase):
         self.assertEqual(self.view.text_point(11, 27), 257)
         self.assertEqual(self.view.text_point(13, 0), 263)
 
-
     #------------------------------------------------------------
     def test_TableFit(self):
         ''' TableFitCommand. Fitting column widths. '''
@@ -79,16 +78,16 @@ class TestTable(unittest.TestCase):
         self.view.insert(None, 0, self.test_text_str)
 
         # Mock scope interrogation.
-        self.view.scope_name = MagicMock(side_effect=self.mock_scope_name)
+        self.view.scope_name = self.mock_scope_name
 
         # Mock view selection.
         sel = emu.Selection(self.view.id())
         sel.add(emu.Region(130, 140)) # somewhere in table
-        self.view.sel = MagicMock(return_value=sel)
+        self.view._sel = sel
 
         # Run the command.
         cmd = table.TableFitCommand(self.view)
-        cmd.run(None)   #TODO1 fix all these sublime collisions, maybe.
+        cmd.run(None)
 
         # Should look like this now.
         exptext = '\n'.join([
@@ -99,13 +98,12 @@ class TestTable(unittest.TestCase):
             '| NY    | 4    | Yellow  space after-> |       |',
             '|       | 2    | Green                 |       |',
             '| WY    | 45   | White                 |       |',
-            ''
-            ])
+            ''])
 
         reg = cmd.get_table_region()
+
         gentext = self.view.substr(reg)
         self.assertEqual(gentext, exptext)
-
 
     #------------------------------------------------------------
     def test_TableSortByColAlpha(self):
@@ -114,12 +112,12 @@ class TestTable(unittest.TestCase):
         self.view.insert(None, 0, self.test_text_str)
 
         # Mock scope interrogation.
-        self.view.scope_name = MagicMock(side_effect=self.mock_scope_name)
+        self.view.scope_name = self.mock_scope_name
 
         # Mock view selection for column 0.
         sel = emu.Selection(self.view.id())
         sel.add(emu.Region(175, 175))
-        self.view.sel = MagicMock(return_value=sel)
+        self.view._sel = sel
 
         # Run the command.
         cmd = table.TableSortColCommand(self.view)
@@ -134,8 +132,7 @@ class TestTable(unittest.TestCase):
             '| ME    | 11   | Red                   |       |',
             '| NY    | 4    | Yellow  space after-> |       |',
             '| WY    | 45   | White                 |       |',
-            ''
-            ])
+            ''])
 
         reg = cmd.get_table_region()
         gentext = self.view.substr(reg)
@@ -154,13 +151,11 @@ class TestTable(unittest.TestCase):
             '| IA    | 31   | Blue                  | extra |',
             '| CO    | 15   |                       |       |',
             '|       | 2    | Green                 |       |',
-            ''
-            ])
+            ''])
 
         reg = cmd.get_table_region()
         gentext = self.view.substr(reg)
         self.assertEqual(gentext, exptext)
-
 
     #------------------------------------------------------------
     def test_TableSortByColNumeric(self):
@@ -169,12 +164,12 @@ class TestTable(unittest.TestCase):
         self.view.insert(None, 0, self.test_text_str)
 
         # Mock scope interrogation.
-        self.view.scope_name = MagicMock(side_effect=self.mock_scope_name)
+        self.view.scope_name = self.mock_scope_name
 
         # Mock view selection for column 1.
         sel = emu.Selection(self.view.id())
         sel.add(emu.Region(216, 216))
-        self.view.sel = MagicMock(return_value=sel)
+        self.view._sel = sel
 
         # Run the command.
         cmd = table.TableSortColCommand(self.view)
@@ -189,8 +184,7 @@ class TestTable(unittest.TestCase):
             '| CO    | 15   |                       |       |',
             '| IA    | 31   | Blue                  | extra |',
             '| WY    | 45   | White                 |       |',
-            ''
-            ])
+            ''])
 
         reg = cmd.get_table_region()
         gentext = self.view.substr(reg)
@@ -209,8 +203,7 @@ class TestTable(unittest.TestCase):
             '| ME    | 11   | Red                   |       |',
             '| NY    | 4    | Yellow  space after-> |       |',
             '|       | 2    | Green                 |       |',
-            ''
-            ])
+            ''])
 
         reg = cmd.get_table_region()
         gentext = self.view.substr(reg)
@@ -223,12 +216,12 @@ class TestTable(unittest.TestCase):
         self.view.insert(None, 0, self.test_text_str)
 
         # Mock scope interrogation.
-        self.view.scope_name = MagicMock(side_effect=self.mock_scope_name)
+        self.view.scope_name = self.mock_scope_name
 
         # Mock view selection before first column.
         sel = emu.Selection(self.view.id())
         sel.add(emu.Region(121, 121))
-        self.view.sel = MagicMock(return_value=sel)
+        self.view._sel = sel
 
         # Run the command.
         cmd = table.TableInsertColCommand(self.view)
@@ -243,27 +236,25 @@ class TestTable(unittest.TestCase):
             '|  | NY    | 4    | Yellow  space after-> |       |',
             '|  |       | 2    | Green                 |       |',
             '|  | WY    | 45   | White                 |       |',
-            ''
-            ])
+            ''])
 
         reg = cmd.get_table_region()
         gentext = self.view.substr(reg)
         self.assertEqual(gentext, exptext)
 
-
-     #------------------------------------------------------------
+    #------------------------------------------------------------
     def test_TableInsertColMiddle(self):
         ''' TableInsertColCommand in middle of line. '''
 
         self.view.insert(None, 0, self.test_text_str)
 
         # Mock scope interrogation.
-        self.view.scope_name = MagicMock(side_effect=self.mock_scope_name)
+        self.view.scope_name = self.mock_scope_name
 
         # Mock view selection for column 1.
         sel = emu.Selection(self.view.id())
         sel.add(emu.Region(105, 105))
-        self.view.sel = MagicMock(return_value=sel)
+        self.view._sel = sel
 
         # Run the command.
         cmd = table.TableInsertColCommand(self.view)
@@ -278,13 +269,11 @@ class TestTable(unittest.TestCase):
             '| NY    |  | 4    | Yellow  space after-> |       |',
             '|       |  | 2    | Green                 |       |',
             '| WY    |  | 45   | White                 |       |',
-            ''
-            ])
+            ''])
 
         reg = cmd.get_table_region()
         gentext = self.view.substr(reg)
         self.assertEqual(gentext, exptext)
-
 
     #------------------------------------------------------------
     @unittest.skip('TODOT Doesn\'t work perfectly for ragged - user should fit first.')
@@ -294,13 +283,13 @@ class TestTable(unittest.TestCase):
         self.view.insert(None, 0, self.test_text_str)
 
         # Mock scope interrogation.
-        self.view.scope_name = MagicMock(side_effect=self.mock_scope_name)
+        self.view.scope_name = self.mock_scope_name
 
         # Mock view selection at end.
         sel = emu.Selection(self.view.id())
         #sel.add(emu.Region(154, 154)) # row 7
         sel.add(emu.Region(210, 210)) # row 9
-        self.view.sel = MagicMock(return_value=sel)
+        self.view._sel = sel
 
         # Run the command.
         cmd = table.TableInsertColCommand(self.view)
@@ -315,30 +304,30 @@ class TestTable(unittest.TestCase):
             '| NY    | 4    | Yellow  space after-> |       |  |',
             '|       | 2    | Green                 |       |  |',
             '| WY    | 45   | White                 |       |  |',
-            ''
-            ])
+            ''])
 
         reg = cmd.get_table_region()
         gentext = self.view.substr(reg)
         self.assertEqual(gentext, exptext)
 
-
-   #------------------------------------------------------------
+    #------------------------------------------------------------
     def test_TableDeleteCol(self):
         ''' TableDeleteColCommand. '''
 
         self.view.insert(None, 0, self.test_text_str)
 
         # Mock scope interrogation.
-        self.view.scope_name = MagicMock(side_effect=self.mock_scope_name)
+        self.view.scope_name = self.mock_scope_name
 
         # Mock view selection at column 0.
         sel = emu.Selection(self.view.id())
         sel.add(emu.Region(125, 125))
-        self.view.sel = MagicMock(return_value=sel)
+        self.view._sel = sel
+        # self.view._selection.add(emu.Region(105, 105))
 
         # Run the command.
         cmd = table.TableDeleteColCommand(self.view)
+
         cmd.run(None)
 
         # Should look like this now.
@@ -350,19 +339,14 @@ class TestTable(unittest.TestCase):
             '| 4    | Yellow  space after-> |       |',
             '| 2    | Green                 |       |',
             '| 45   | White                 |       |',
-            ''
-            ])
-        #exptext = '\n'.join([
-        #    '| State | Size | Color                 |       |',
-        #    '| ME    | 11   | Red                   |       |',
-        #    '| IA    | 31   | Blue                  | extra |',
-        #    '| CO    | 15   |                       |       |',
-        #    '| NY    | 4    | Yellow  space after-> |       |',
-        #    '|       | 2    | Green                 |       |',
-        #    '| WY    | 45   | White                 |       |',
-        #    ''
-        #    ])
+            ''])
 
         reg = cmd.get_table_region()
         gentext = self.view.substr(reg)
         self.assertEqual(gentext, exptext)
+
+#-----------------------------------------------------------------------------------
+if __name__ == '__main__':
+    # https://docs.python.org/3/library/unittest.html#unittest.main
+    tp = unittest.main()  # verbosity=2, exit=False)
+    print(tp.result)

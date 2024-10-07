@@ -33,48 +33,44 @@ sys.modules["sublime"] = emu_sublime_api
 sys.modules["sublime_plugin"] = emu_sublime_api
 
 
-_settings = None
-_clipboard = ''
-_window = None
-_view_id = 0
+# Internal state.
+__active_window = None
+__next_id = 0
+# __throw_for_bad_call = True
 
-_throw_for_bad_call = True
+# Client settable.
+__settings = None
+__clipboard = ''
 
-_FIND_WORD = 1
-_FIND_LINE = 2
-_FIND_FULL_LINE = 3
 
-def _etrace(*args):
+def __setattr__(self, attribute, value):
+    if attribute not in self.__dict__:
+        # print "Cannot set %s" % attribute
+        raise RuntimeError('Cannot set %s' % attribute) 
+    else:
+        self.__dict__[attribute] = value
+
+
+def __emu_trace(*args):
     s = ' | '.join(map(str, args))
     print(f'EMU {s}')
 
-def _next_view_id():
-    global _view_id
-    _view_id += 1
-    return _view_id
+def __next_view_id():
+    global __next_id
+    __next_id += 1
+    return __next_id
 
-def _reset():
-    global _settings, _clipboard, _window, _view_id
-    _settings = None
-    _clipboard = ''
-    _window = None
-    _view_id = 0
+# def _reset():
+#     global __settings, __clipboard, __active_window, __next_id
+#     __settings = None
+#     __clipboard = ''
+#     __active_window = None
+#     __next_id = 0
 
 
 #------------------------------------------------------------
 #---------------- sublime_plugin emmulation -----------------
 #------------------------------------------------------------
-
-# https://www.sublimetext.com/docs/api_reference.html
-
-# If you are going to interact with the current view, use TextCommand,
-# otherwise use WindowCommand. Unknown use for ApplicationCommand.
-#
-# EventListener Class: Note that many of these events are triggered by the buffer underlying the view,
-# and thus the method is only called once, with the first view as the parameter.
-#
-# ViewEventListener Class: A class that provides similar event handling to EventListener, but bound
-# to a specific view. Provides class method-based filtering to control what views objects are created for.
 
 class CommandInputHandler():
     pass
@@ -150,16 +146,16 @@ def installed_packages_path():
     raise NotImplementedError()
 
 def status_message(msg):
-    _etrace(f'status_message():{msg}')
+    __emu_trace(f'status_message():{msg}')
 
 def error_message(msg):
-    _etrace(f'error_message():{msg}')
+    __emu_trace(f'error_message():{msg}')
 
 def message_dialog(msg):
-    _etrace(f'message_dialog():{msg}')
+    __emu_trace(f'message_dialog():{msg}')
 
 def ok_cancel_dialog(msg, ok_title=""):
-    _etrace(f'ok_cancel_dialog():{msg}')
+    __emu_trace(f'ok_cancel_dialog():{msg}')
     return True
 
 def run_command(cmd, args=None):
@@ -167,20 +163,20 @@ def run_command(cmd, args=None):
     raise NotImplementedError()
 
 def set_clipboard(text):
-    global _clipboard
-    _clipboard = text
+    global __clipboard
+    __clipboard = text
 
 def get_clipboard():
-    global _clipboard
-    return _clipboard
+    global __clipboard
+    return __clipboard
 
 def load_settings(base_name):
-    global _settings
-    if _settings is None:  # lazy init
+    global __settings
+    if __settings is None:  # lazy init
         with open(base_name) as fp:
-            _settings = Settings()
-            _settings.settings_storage = json.load(fp)
-    return _settings
+            __settings = Settings()
+            __settings.settings_storage = json.load(fp)
+    return __settings
 
 def set_timeout(f, timeout_ms=0):
     # Schedules a function to be called in the future. Sublime Text will block while the function is running.
@@ -188,8 +184,8 @@ def set_timeout(f, timeout_ms=0):
     f()
 
 def active_window():
-    global _window
-    return _window
+    global __active_window
+    return __active_window
 
 
 #------------------------------------------------------------
@@ -218,7 +214,7 @@ class View():
         return self._view_id != 0
 
     def __repr__(self):
-        return f'View({self._view_id})'
+        return f'View view_id:{self._view_id} file_name:{self._file_name}'
 
     def id(self):
         return self._view_id
@@ -233,7 +229,7 @@ class View():
         return False
 
     def close(self):
-        _etrace('View.close()')
+        __emu_trace('View.close()')
         return True
 
     def is_scratch(self):
@@ -249,24 +245,24 @@ class View():
         return self._syntax
 
     def settings(self):
-        global _settings
-        return _settings
+        global __settings
+        return __settings
 
     def show_popup(self, content, flags=0, location=-1, max_width=320, max_height=240, on_navigate=None, on_hide=None):
-        _etrace(f'View.show_popup():{content}')
+        __emu_trace(f'View.show_popup():{content}')
         raise NotImplementedError()
 
     def run_command(self, cmd, args=None):
         # Run the named TextCommand TODO need to be smarter with this.
         # raise NotImplementedError()
-        _etrace(f'View.run_command():{cmd} {args}')
+        __emu_trace(f'View.run_command():{cmd} {args}')
 
     def sel(self):
         return self._selection
         # raise NotImplementedError()
 
     def set_status(self, key, value):
-        _etrace(f'set_status(): key:{key} value:{value}')
+        __emu_trace(f'set_status(): key:{key} value:{value}')
 
     ##### translation between row/col and index
 
@@ -341,17 +337,17 @@ class View():
     def word(self, x):
         # The word Region that contains the Point. If a Region is provided its beginning/end are expanded to word boundaries.
         region = self._validate(x)
-        return self._find(region.a, region.b, _FIND_WORD)
+        return self._find(region.a, region.b, 'word')
 
     def line(self, x):
         # Returns The line Region that contains the Point or an expanded Region to the beginning/end of lines, excluding the newline character.
         region = self._validate(x)
-        return self._find(region.a, region.b, _FIND_LINE)
+        return self._find(region.a, region.b, 'line')
 
     def full_line(self, x):
         # full_line(x: Region | Point) ret: Region The line that contains the Point or an expanded Region to the beginning/end of lines, including the newline character.
         region = self._validate(x)
-        return self._find(region.a, region.b, _FIND_FULL_LINE)
+        return self._find(region.a, region.b, 'full_line')
 
     ##### edit ops
 
@@ -431,7 +427,7 @@ class View():
             elif self._buffer[ind - 1] == '\n':
                 region.a = ind
                 done = True
-            elif mode == _FIND_WORD and self._buffer[ind] - 1 in string.whitespace:
+            elif mode == 'word' and self._buffer[ind] - 1 in string.whitespace:
                 region.a = ind
                 done = True
             else:
@@ -446,9 +442,9 @@ class View():
                 region.b = ind - 1
                 done = True
             elif self._buffer[ind] == '\n':
-                region.b = ind + 1 if mode == _FIND_FULL_LINE else ind
+                region.b = ind + 1 if mode == 'full_line' else ind
                 done = True
-            elif mode == _FIND_WORD and self._buffer[ind] in string.whitespace:
+            elif mode == 'word' and self._buffer[ind] in string.whitespace:
                 region.b = ind
                 done = True
             else:
@@ -465,13 +461,13 @@ class Window():
 
     def __init__(self, id):
         self._id = id
-        self._settings = None
+        self.__settings = None
         self._views = []
         self._active_view = -1  # index into _views
         self._project_data = None
 
     def __repr__(self):
-        return f'Window({self._id})'
+        return f'Window id:{self._id}'
 
     def id(self):
         return self._id
@@ -486,19 +482,19 @@ class Window():
             return None
 
     def show_input_panel(self, caption, initial_text, on_done, on_change, on_cancel):
-        _etrace(f'Window.show_input_panel(): {caption}')
+        __emu_trace(f'Window.show_input_panel(): {caption}')
         raise NotImplementedError()
 
     def show_quick_panel(self, items, on_select, flags=0, selected_index=-1, on_highlight=None):
-        _etrace(f'Window.show_quick_panel(): {items}')
+        __emu_trace(f'Window.show_quick_panel(): {items}')
         raise NotImplementedError()
 
     def project_file_name(self):
         return 'StPluginTester.sublime-project'
 
     def settings(self):
-        global _settings
-        return _settings
+        global __settings
+        return __settings
 
     def run_command(self, cmd, args=None):
         # Run the named WindowCommand with the (optional) given args.
@@ -510,7 +506,7 @@ class Window():
         if flags != 0 or syntax != '':
             raise NotImplementedError('args')
 
-        view = View(_next_view_id())
+        view = View(__next_view_id())
         view._file_name = ''
         view._window = self
         self._views.append(view)
@@ -521,7 +517,7 @@ class Window():
             raise NotImplementedError('args')
 
         with open(fname, 'r') as file:
-            view = View(_next_view_id())
+            view = View(__next_view_id())
             view._file_name = fname  # hack
             view._window = self
             view.insert(None, 0, file.read())
@@ -568,7 +564,7 @@ class Edit:
         self.edit_token = token
 
     def __repr__(self):
-        return f'Edit({self.edit_token})'
+        return f'Edit token:{self.edit_token}'
 
 
 #------------------------------------------------------------
@@ -584,7 +580,7 @@ class Region():
         self.xpos = xpos
 
     def __repr__(self):
-        return f'Region({self.a, self.b})'
+        return f'Region a:{self.a} b:{self.b}'
 
     def __len__(self):
         return self.size()
@@ -686,7 +682,7 @@ class Selection():
         return self.view_id != 0
 
     def __repr__(self):
-        return f'Selection({self.view_id})'
+        return f'Selection view_id:{self.view_id} regions:{self.regions})'
 
     def is_valid(self):
         return self.view_id != 0
@@ -727,7 +723,7 @@ class Settings():
         return len(self.settings_storage)
 
     def __repr__(self):
-        return f'Settings({self.settings_storage})'
+        return f'Settings:{self.settings_storage}'
 
     def get(self, key, default=None):
         return self.settings_storage.get(key, default)

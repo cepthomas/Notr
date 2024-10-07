@@ -6,7 +6,6 @@ import os
 import sublime
 import sublime_plugin
 
-
 # Kludge to make testing work.
 try:
     import sbot_common as sc

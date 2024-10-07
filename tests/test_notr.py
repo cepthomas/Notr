@@ -1,7 +1,6 @@
 import sys
 import os
 import unittest
-from unittest.mock import MagicMock
 
 # Set up the sublime emulation environment.
 import emu_sublime_api as emu
@@ -15,8 +14,15 @@ import sbot_common as sc
 class TestNotr(unittest.TestCase):
 
     def setUp(self):
+        pass
 
-        notr_files_path = os.path.join(emu.packages_path(), 'Notr', 'files')
+    def tearDown(self):
+        pass
+
+    def test_parsing(self):
+        ''' Tests the .ntr file parsing. '''
+        self.window = emu.Window(900)
+        self.view = emu.View(901)
 
         mock_settings = {
             "projects": [],
@@ -25,41 +31,20 @@ class TestNotr(unittest.TestCase):
             "fixed_hl_whole_word": True,
             "section_marker_size": 1,
         }
-        emu.load_settings = MagicMock(return_value=mock_settings)
+        emu._settings = mock_settings
 
-        # Mock top level entities.
-        self.view = emu.View(10)
-        self.window = emu.Window(20)
-        self.view.window = MagicMock(return_value=self.window)
+        notr._process_notr_files(self.window)
+        for e in notr._parse_errors:
+            print(f'parse error:{e}')
 
-        # Mock syntax interrogation.
-        self.syntax = emu.Syntax('', 'Notr', False, '')
-        self.view.syntax = MagicMock(return_value=self.syntax)
+        evt = notr.NotrEvent()
+        evt.on_init([self.view])
 
-    def tearDown(self):
-        pass
-
-    # @unittest.skip('')
-    def test_parsing(self):
-        ''' Tests the .ntr file parsing. '''
-
-        # notr._process_notr_files()
-        # for e in notr._parse_errors:
-        #     print(f'parse error:{e}')
-
-        # evt = notr.NotrEvent()
-        # evt.on_init([self.view])
-
-        # self.assertEqual(len(notr._tags), 7)
-        # self.assertEqual(len(notr._links), 6)
-        # self.assertEqual(len(notr._refs), 6)
-        # self.assertEqual(len(notr._sections), 13)
-        # self.assertEqual(len(notr._parse_errors), 0)
-
-    @unittest.skip('')
-    def test_GotoRef(self):
-        cmd = notr.NotrGotoTargetCommand(self.view)
-        cmd.run(None, False)
+        self.assertEqual(len(notr._tags), 7)
+        self.assertEqual(len(notr._links), 6)
+        self.assertEqual(len(notr._refs), 6)
+        self.assertEqual(len(notr._sections), 13)
+        self.assertEqual(len(notr._parse_errors), 0)
 
     # @unittest.skip('')
     # def test_InsertRef(self):
@@ -67,3 +52,7 @@ class TestNotr(unittest.TestCase):
     #     edit = emu.Edit
     #     cmd.run(edit)
 
+    @unittest.skip('')
+    def test_GotoRef(self):
+        cmd = notr.NotrGotoTargetCommand(self.view)
+        cmd.run(None, False)
