@@ -1,6 +1,7 @@
 import sys
 import os
 import unittest
+from unittest.mock import MagicMock
 
 
 # Set up the sublime emulation environment.
@@ -18,6 +19,8 @@ class TestTable(unittest.TestCase):
     test_text = None
     # String version.
     test_text_str = None
+
+    print('=== TestTable')
 
     #------------------------------------------------------------
     # Mock scope interrogation by row. Corresponds to table in table1.ntr.
@@ -40,16 +43,10 @@ class TestTable(unittest.TestCase):
         # String version.
         self.test_text_str = ''.join(self.test_text)
 
-        # Mock top level entities.
+        # Create top level entities.
         self.view = emu.View(10)
-        self.window = emu.Window(20)
-        self.view._window = self.window
-
-        # Mock syntax interrogation.
-        self.syntax = emu.Syntax('', 'Notr', False, '')
-        self.view._syntax = self.syntax
-
-        emu.aaaaaaaaaaaaaaaaaaa = 9
+        self.view.set_window(emu.Window(20))
+        self.view.set_syntax(emu.Syntax('', 'Notr', False, ''))
 
     #------------------------------------------------------------
     def tearDown(self):
@@ -78,12 +75,12 @@ class TestTable(unittest.TestCase):
         self.view.insert(None, 0, self.test_text_str)
 
         # Mock scope interrogation.
-        self.view.scope_name = self.mock_scope_name
+        self.view.scope_name = MagicMock(side_effect=self.mock_scope_name)
 
         # Mock view selection.
         sel = emu.Selection(self.view.id())
         sel.add(emu.Region(130, 140)) # somewhere in table
-        self.view._sel = sel
+        self.view.set_selection(sel)
 
         # Run the command.
         cmd = table.TableFitCommand(self.view)
@@ -112,12 +109,12 @@ class TestTable(unittest.TestCase):
         self.view.insert(None, 0, self.test_text_str)
 
         # Mock scope interrogation.
-        self.view.scope_name = self.mock_scope_name
+        self.view.scope_name = MagicMock(side_effect=self.mock_scope_name)
 
         # Mock view selection for column 0.
         sel = emu.Selection(self.view.id())
         sel.add(emu.Region(175, 175))
-        self.view._sel = sel
+        self.view.set_selection(sel)
 
         # Run the command.
         cmd = table.TableSortColCommand(self.view)
@@ -164,12 +161,12 @@ class TestTable(unittest.TestCase):
         self.view.insert(None, 0, self.test_text_str)
 
         # Mock scope interrogation.
-        self.view.scope_name = self.mock_scope_name
+        self.view.scope_name = MagicMock(side_effect=self.mock_scope_name)
 
         # Mock view selection for column 1.
         sel = emu.Selection(self.view.id())
         sel.add(emu.Region(216, 216))
-        self.view._sel = sel
+        self.view.set_selection(sel)
 
         # Run the command.
         cmd = table.TableSortColCommand(self.view)
@@ -216,12 +213,12 @@ class TestTable(unittest.TestCase):
         self.view.insert(None, 0, self.test_text_str)
 
         # Mock scope interrogation.
-        self.view.scope_name = self.mock_scope_name
+        self.view.scope_name = MagicMock(side_effect=self.mock_scope_name)
 
         # Mock view selection before first column.
         sel = emu.Selection(self.view.id())
         sel.add(emu.Region(121, 121))
-        self.view._sel = sel
+        self.view.set_selection(sel)
 
         # Run the command.
         cmd = table.TableInsertColCommand(self.view)
@@ -249,12 +246,12 @@ class TestTable(unittest.TestCase):
         self.view.insert(None, 0, self.test_text_str)
 
         # Mock scope interrogation.
-        self.view.scope_name = self.mock_scope_name
+        self.view.scope_name = MagicMock(side_effect=self.mock_scope_name)
 
         # Mock view selection for column 1.
         sel = emu.Selection(self.view.id())
         sel.add(emu.Region(105, 105))
-        self.view._sel = sel
+        self.view.set_selection(sel)
 
         # Run the command.
         cmd = table.TableInsertColCommand(self.view)
@@ -283,13 +280,13 @@ class TestTable(unittest.TestCase):
         self.view.insert(None, 0, self.test_text_str)
 
         # Mock scope interrogation.
-        self.view.scope_name = self.mock_scope_name
+        self.view.scope_name = MagicMock(side_effect=self.mock_scope_name)
 
         # Mock view selection at end.
         sel = emu.Selection(self.view.id())
         #sel.add(emu.Region(154, 154)) # row 7
         sel.add(emu.Region(210, 210)) # row 9
-        self.view._sel = sel
+        self.view.set_selection(sel)
 
         # Run the command.
         cmd = table.TableInsertColCommand(self.view)
@@ -317,13 +314,12 @@ class TestTable(unittest.TestCase):
         self.view.insert(None, 0, self.test_text_str)
 
         # Mock scope interrogation.
-        self.view.scope_name = self.mock_scope_name
+        self.view.scope_name = MagicMock(side_effect=self.mock_scope_name)
 
         # Mock view selection at column 0.
         sel = emu.Selection(self.view.id())
         sel.add(emu.Region(125, 125))
-        self.view._sel = sel
-        # self.view._selection.add(emu.Region(105, 105))
+        self.view.set_selection(sel)
 
         # Run the command.
         cmd = table.TableDeleteColCommand(self.view)
@@ -344,6 +340,7 @@ class TestTable(unittest.TestCase):
         reg = cmd.get_table_region()
         gentext = self.view.substr(reg)
         self.assertEqual(gentext, exptext)
+
 
 #-----------------------------------------------------------------------------------
 if __name__ == '__main__':
