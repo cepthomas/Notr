@@ -13,7 +13,7 @@ import sbot_common as sc
 
 
 #-----------------------------------------------------------------------------------
-class TestNotr(unittest.TestCase):  # TODOT fix for multiple projects.
+class TestNotr(unittest.TestCase):
 
     def setUp(self):
         pass
@@ -25,39 +25,33 @@ class TestNotr(unittest.TestCase):  # TODOT fix for multiple projects.
         ''' Tests the .ntr file parsing. '''
         self.window = emu.Window(900)
         self.view = emu.View(901)
+        self.view.set_window(self.window)
 
+        # Use the demo project for testing.
+
+        # Mock settings.
         mock_settings = {
-            "projects": [],
+            "project_files": ["$APPDATA\\Sublime Text\\Packages\\Notr\\example\\notr-demo.nproj"],
             "sort_tags_alpha": True,
             "mru_size": 5,
             "fixed_hl_whole_word": True,
             "section_marker_size": 1,
         }
-        # emu.set_settings(mock_settings)
+        emu.set_settings(mock_settings)
 
-
-        # Mock settings.
-        emu.settings = MagicMock(return_value=mock_settings)
-        emu.load_settings = MagicMock(return_value=mock_settings)
-
-        notr._process_notr_files(self.window)
-        for e in notr._parse_errors:
-            print(f'parse error:{e}')
-
+        # Trigger the code under test.
         evt = notr.NotrEvent()
         evt.on_init([self.view])
 
-        # self.assertEqual(len(notr._get_all_tags()), 7)
-        # self.assertEqual(len(notr._links), 6)
-        # self.assertEqual(len(notr._refs), 6)
-        # self.assertEqual(len(notr._sections), 13)
-        self.assertEqual(len(notr._parse_errors), 0)
+        self.assertEqual(len(notr._get_all_tags()), 5)
+        self.assertEqual(len(notr._targets), 16)
+        self.assertEqual(len(notr._refs), 6)
+        self.assertEqual(len(notr._parse_errors), 2)
+        # self.assertEqual(len(notr._store), 13)
 
-    # @unittest.skip('')
-    # def test_InsertRef(self):
-    #     cmd = notr.NotrInsertRefCommand(self.view)
-    #     edit = emu.Edit
-    #     cmd.run(edit)
+        self.assertEqual(len(notr._current_project['notr_paths']), 1)
+        self.assertEqual(len(notr._current_project['fixed_hl']), 3)
+        self.assertEqual(len(notr._current_project['sticky']), 2)
 
     @unittest.skip('')
     def test_GotoRef(self):

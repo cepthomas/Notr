@@ -12,7 +12,7 @@ try:
 except:
     from . import sbot_common as sc
 
-# TODO Make into a generic component?
+# TODO2 Make into a generic component?
 
 # TODOF allow '|' in tables -> make delim configurable. maybe like '||'?
 DELIM = '|'

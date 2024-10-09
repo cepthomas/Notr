@@ -101,7 +101,6 @@ class NotrEvent(sublime_plugin.EventListener):
     def on_init(self, views):
         ''' First thing that happens when plugin/window created. Initialize everything. '''
         global _store
-
         settings = sublime.load_settings(NOTR_SETTINGS_FILE)
 
         # Check user project files.
