@@ -5,12 +5,11 @@ import sys
 import os
 import sublime
 import sublime_plugin
-
-# Kludge to make testing work.
 try:
-    import sbot_common as sc
+    from . import sbot_common as sc  # normal import
 except:
-    from . import sbot_common as sc
+    import sbot_common as sc  # unittest import
+
 
 # TODO2 Make into a generic component?
 

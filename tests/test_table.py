@@ -3,7 +3,6 @@ import os
 import unittest
 from unittest.mock import MagicMock
 
-
 # Set up the sublime emulation environment.
 import emu_sublime_api as emu
 

@@ -5,16 +5,13 @@ import random
 import json
 import pathlib
 import time
-from dataclasses import dataclass, field
+import dataclasses
 import sublime
 import sublime_plugin
-
-
-# Kludge to make testing work.
 try:
-    import sbot_common as sc
+    from . import sbot_common as sc  # normal import
 except:
-    from . import sbot_common as sc
+    import sbot_common as sc  # unittest import
 
 
 NOTR_SETTINGS_FILE = "Notr.sublime-settings"
@@ -29,9 +26,9 @@ IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 #--------------------------- Types -------------------------------------------------
 
 # One target: section or file/uri.
-@dataclass(order=True)
+@dataclasses.dataclass(order=True)
 class Target:
-    sort_index: str = field(init=False)
+    sort_index: str = dataclasses.field(init=False)
     name: str      # section title or description
     ttype: str     # 'section', 'uri', 'image', 'path' - maybe useful to discriminate file and dir?
     category: str  # 'sticky', 'mru', 'none'
@@ -45,9 +42,9 @@ class Target:
         self.sort_index = self.name
 
 # A reference to a Target.
-@dataclass(order=True)
+@dataclasses.dataclass(order=True)
 class Ref:
-    sort_index: str = field(init=False)
+    sort_index: str = dataclasses.field(init=False)
     name: str  # "target#name"
     file: str  # .ntr file path
     line: int  # .ntr file line
