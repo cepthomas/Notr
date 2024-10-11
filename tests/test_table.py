@@ -19,8 +19,6 @@ class TestTable(unittest.TestCase):
     # String version.
     test_text_str = None
 
-    print('=== TestTable')
-
     #------------------------------------------------------------
     # Mock scope interrogation by row. Corresponds to table in table1.ntr.
     def mock_scope_name(self, *args, **kwargs):

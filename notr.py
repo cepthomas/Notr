@@ -9,7 +9,6 @@ import time
 import dataclasses
 import sublime
 import sublime_plugin
-
 try:
     from . import sbot_common as sc  # normal import
 except:
