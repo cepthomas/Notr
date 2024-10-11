@@ -339,10 +339,3 @@ class TestTable(unittest.TestCase):
         reg = cmd.get_table_region()
         gentext = self.view.substr(reg)
         self.assertEqual(gentext, exptext)
-
-
-#-----------------------------------------------------------------------------------
-if __name__ == '__main__':
-    # https://docs.python.org/3/library/unittest.html#unittest.main
-    tp = unittest.main()  # verbosity=2, exit=False)
-    print(tp.result)
