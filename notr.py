@@ -21,8 +21,7 @@ NOTR_STORAGE_FILE = "notr.store"
 # Known file types.
 IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 
-# TODOF goto section=next/prev/which in current file.
-# TODO1 broken: ```A block of raw text
+# TODOF goto next/prev section in current ntr file.
 
 
 #--------------------------- Types -------------------------------------------------
@@ -412,13 +411,15 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
         else:
             if filter_by_tag:
                 self._tags = _get_all_tags()
-                panel_items = []
-
-                for tag in self._tags:
-                    panel_items.append(sublime.QuickPanelItem(trigger=tag, kind=sublime.KIND_AMBIGUOUS))
-                win = self.view.window()
-                if win is not None:
-                    win.show_quick_panel(panel_items, on_select=self.on_sel_tag)
+                if len(self._tags) > 0:
+                    panel_items = []
+                    for tag in self._tags:
+                        panel_items.append(sublime.QuickPanelItem(trigger=tag, kind=sublime.KIND_AMBIGUOUS))
+                    win = self.view.window()
+                    if win is not None:
+                        win.show_quick_panel(panel_items, on_select=self.on_sel_tag)
+                else:
+                    sublime.status_message('No tags in project')
             else:
                 targets = _filter_order_targets(mru_first=True, current_file=self.view.file_name())
                 self.show_targets(targets)
