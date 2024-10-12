@@ -70,11 +70,11 @@ contexts:
     - match: '^( *> +)(.*)'
       scope: markup.quote.notr
 
-    - match: '^(`>)'
+    - match: '^(```)'
       scope: punctuation.definition.block.begin.notr
       push:
         - meta_scope: markup.raw.block.notr
-        - match: '^(`<)'
+        - match: '^(```)'
           scope: punctuation.definition.block.end.notr
           pop: true
 

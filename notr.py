@@ -22,6 +22,7 @@ NOTR_STORAGE_FILE = "notr.store"
 IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 
 # TODOF goto section=next/prev/which in current file.
+# TODO1 broken: ```A block of raw text
 
 
 #--------------------------- Types -------------------------------------------------
