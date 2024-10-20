@@ -22,7 +22,6 @@ NOTR_STORAGE_FILE = "notr.store"
 IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 
 # TODOF goto next/prev section in current ntr file.
-# TODO1 goto target, filename sort of broken.
 
 
 #--------------------------- Types -------------------------------------------------
@@ -399,14 +398,18 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
                     break
 
             if not valid:
-                sc.error(f'Invalid reference: {self.view.file_name()}: {tref}')
+                sc.error(f'Invalid reference in {self.view.file_name()}: [{tref}]')
 
         # Explicit link. do immediate.
         elif tlink is not None:
+            valid = True
             fn = sc.expand_vars(tlink)
-            valid = sc.open_path(fn)
+            if fn is None:
+                valid = False
+            else:
+                valid = sc.open_path(fn)
             if not valid:
-                sc.error(f'Invalid link: {tlink}')
+                sc.error(f'Invalid link: [{tlink}]')
 
         # Show a quickpanel of all target names.
         else:

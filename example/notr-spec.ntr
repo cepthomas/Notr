@@ -123,9 +123,9 @@ Note that coloring *should* stop at the right edge of the table but this is how 
 
 # Bad links
 
-I let you know about these invalid links:
+Notr lets you know about these invalid links:
 
-[noneistent](C:my\bad\file.txt)
+[nonexistent](C:my\bad\file.txt)
 
 [embedded paren](C:\Program Files (x86)\ASIO4ALL v2)
 
