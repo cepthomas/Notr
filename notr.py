@@ -22,6 +22,7 @@ NOTR_STORAGE_FILE = "notr.store"
 IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 
 # TODOF goto next/prev section in current ntr file.
+# TODO1 goto target, filename sort of broken.
 
 
 #--------------------------- Types -------------------------------------------------
