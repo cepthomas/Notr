@@ -7,7 +7,7 @@ step: the text itself is the whole point.
 The markup syntax provides file and section navigation and colorizing to provide visual clues for things like
 sections, links, tables, lists, etc.
 
-Built for ST4 on Windows and Linux (lightly tested).
+Built for ST4 on Windows. Linux and OSX should be ok but are minimally tested - PRs welcome.
 
 ## Features
 
@@ -136,7 +136,7 @@ After editing your color-scheme, you need to close and reopen affected views.
 
 - `sbot_common.py` contains miscellaneous common components primarily for internal use by the sbot family.
   This includes a very simple logger primarily for user-facing information, syntax errors and the like.
-  Log file is in $APPDATA\Sublime Text\Packages\User\.SbotStore\sbot.log.
+  Log file is in $APPDATA\Sublime Text\Packages\User\Notr\Notr.log.
 
 
 ## Future
