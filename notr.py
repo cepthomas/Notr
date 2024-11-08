@@ -15,9 +15,6 @@ except:
     import sbot_common as sc  # unittest import
 
 
-NOTR_SETTINGS_FILE = "Notr.sublime-settings"
-NOTR_STORAGE_FILE = "notr.store"
-
 # Known file types.
 IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 
@@ -59,7 +56,7 @@ class Ref:
 # Current project file (*.nproj) contents.
 _current_project = None
 
-# The whole store file (notr.store) contents. None means uninitialized.
+# The whole store file (Notr.store) contents. None means uninitialized.
 _store = None
 
 # Persisted mru.
@@ -78,6 +75,7 @@ _parse_errors = []
 #-----------------------------------------------------------------------------------
 def plugin_loaded():
     '''Called per plugin instance.'''
+    sc.init('Notr')
     sc.debug(f'plugin_loaded() {__package__}')
 
 
@@ -99,7 +97,8 @@ class NotrEvent(sublime_plugin.EventListener):
     def on_init(self, views):
         ''' First thing that happens when plugin/window created. Initialize everything. '''
         global _store
-        settings = sublime.load_settings(NOTR_SETTINGS_FILE)
+        fn = sc.get_settings_fn()
+        settings = sublime.load_settings(sc.get_settings_fn())
 
         # Check user project files.
         valid_projects = []
@@ -115,7 +114,7 @@ class NotrEvent(sublime_plugin.EventListener):
 
         # Get persisted store info.
         _store = None
-        store_fn = sc.get_store_fn(NOTR_STORAGE_FILE)
+        store_fn = sc.get_store_fn()
         if os.path.isfile(store_fn):
             try:
                 with open(store_fn, 'r') as fp:
@@ -140,6 +139,7 @@ class NotrEvent(sublime_plugin.EventListener):
                 v['active'] = False
         for p in dead:
             del _store[p]
+
 
         if project_fn is None and len(valid_projects) > 0:
             project_fn = valid_projects[0]
@@ -180,7 +180,7 @@ class NotrEvent(sublime_plugin.EventListener):
             view.file_name() is not None and
             view.syntax() is not None and
             view.syntax().name == 'Notr'):
-            settings = sublime.load_settings(NOTR_SETTINGS_FILE)
+            settings = sublime.load_settings(sc.get_settings_fn())
             whole_word = settings.get('fixed_hl_whole_word')
             fixed_hl = _current_project['fixed_hl']
             if fixed_hl is None:
@@ -450,6 +450,9 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
         ''' Present target options to user. '''
         self._targets_to_select = targets
         panel_items = _build_selector(self._targets_to_select)
+        # for pi in panel_items:
+        #     print(pi.trigger)
+
         win = self.view.window()
         if win is not None:
             win.show_quick_panel(panel_items, on_select=self.on_sel_target)
@@ -535,10 +538,9 @@ class NotrInsertRefCommand(sublime_plugin.TextCommand):
 #-----------------------------------------------------------------------------------
 def _write_store():
     ''' Save everything. '''
-    store_fn = sc.get_store_fn(NOTR_STORAGE_FILE)
+    store_fn = sc.get_store_fn()
     with open(store_fn, 'w') as fp:
         json.dump(_store, fp, indent=4)
-
 
 #-----------------------------------------------------------------------------------
 def _open_project(project_fn):
@@ -603,7 +605,7 @@ def _process_notr_files(window):
         return
 
     # Open and process all notr files.
-    settings = sublime.load_settings(NOTR_SETTINGS_FILE)
+    settings = sublime.load_settings(sc.get_settings_fn())
 
     # Index first.
     index_path = None
@@ -613,7 +615,7 @@ def _process_notr_files(window):
         if index_path is not None and os.path.exists(index_path):
             ntr_files.append(index_path)
         else:
-            _user_error(NOTR_SETTINGS_FILE, -1, f'Invalid path in settings {notr_index}')
+            _user_error(sc.get_settings_fn(), -1, f'Invalid path in settings {notr_index}')
 
     # Paths.
     notr_paths = _current_project['notr_paths']
@@ -624,7 +626,7 @@ def _process_notr_files(window):
                 if index_path is None or not os.path.samefile(nfile, index_path):  # don't do index twice
                     ntr_files.append(nfile)
         else:
-            _user_error(NOTR_SETTINGS_FILE, -1, f'Invalid path in settings {npath}')
+            _user_error(sc.get_settings_fn(), -1, f'Invalid path in settings {npath}')
 
     # Process the files. Targets are ordered by sections then files/uris.
     sections = []
@@ -702,7 +704,7 @@ def _process_notr_file(ntr_fn):
             re_refs = re.compile(r'\[\* *([^\]]*)\]')
             re_sections = re.compile(r'^(#+ +[^\[]+) *(?:\[(.*)\])?')
 
-            settings = sublime.load_settings(NOTR_SETTINGS_FILE)
+            settings = sublime.load_settings(sc.get_settings_fn())
             section_marker_size = int(str(settings.get('section_marker_size')))
 
             for line in lines:
@@ -849,7 +851,7 @@ def _build_selector(targets):
 #-----------------------------------------------------------------------------------
 def _get_all_tags():
     ''' Return all tags found in all ntr files. Honors sort_tags_alpha setting. '''
-    settings = sublime.load_settings(NOTR_SETTINGS_FILE)
+    settings = sublime.load_settings(sc.get_settings_fn())
     sort_tags_alpha = settings.get('sort_tags_alpha')
     tags = {}  # k:tag text v:count
 
@@ -973,7 +975,7 @@ def _get_selection_for_scope(view, scope):
 def _update_mru(name):
     ''' Update the mru list. Removes duplicate and invalid names. '''
     global _current_mru
-    settings = sublime.load_settings(NOTR_SETTINGS_FILE)
+    settings = sublime.load_settings(sc.get_settings_fn())
     mru_size = int(str(settings.get("mru_size")))
 
     # Clean up the mru.
