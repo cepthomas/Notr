@@ -32,6 +32,8 @@ class TestTable(unittest.TestCase):
 
     #------------------------------------------------------------
     def setUp(self):
+        sc.init('_Test')
+
         # Get test text.
         my_dir = os.path.dirname(__file__)
         fn = os.path.join(my_dir, 'table1.ntr')

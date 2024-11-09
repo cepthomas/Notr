@@ -15,7 +15,7 @@ import sbot_common as sc
 class TestNotr(unittest.TestCase):
 
     def setUp(self):
-        pass
+        sc.init('_Test')
 
     def tearDown(self):
         pass
@@ -23,8 +23,8 @@ class TestNotr(unittest.TestCase):
     #------------------------------------------------------------
     # Mock scope interrogation by row. Corresponds to table in table1.ntr.
     def mock_run_command(self, *args, **kwargs):
-        print('args:', args)
-        print('kwargs:', kwargs)
+        emu.ext_trace(f'args:{args}')
+        emu.ext_trace(f'kwargs:{kwargs}')
 
     #------------------------------------------------------------
     def test_parsing(self):
