@@ -8,14 +8,14 @@ import emu_sublime_api as emu
 
 # Import the code under test.
 import notr
-import sbot_common as sc
+# import sbot_common as sc
 
 
 #-----------------------------------------------------------------------------------
 class TestNotr(unittest.TestCase):
 
     def setUp(self):
-        sc.init('_Test')
+        pass
 
     def tearDown(self):
         pass

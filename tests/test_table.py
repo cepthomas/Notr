@@ -8,7 +8,7 @@ import emu_sublime_api as emu
 
 # Import the code under test.
 import table
-import sbot_common as sc
+# import sbot_common as sc
 
 
 #-----------------------------------------------------------------------------------
@@ -32,8 +32,6 @@ class TestTable(unittest.TestCase):
 
     #------------------------------------------------------------
     def setUp(self):
-        sc.init('_Test')
-
         # Get test text.
         my_dir = os.path.dirname(__file__)
         fn = os.path.join(my_dir, 'table1.ntr')

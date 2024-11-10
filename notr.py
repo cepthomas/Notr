@@ -75,7 +75,6 @@ _parse_errors = []
 #-----------------------------------------------------------------------------------
 def plugin_loaded():
     '''Called per plugin instance.'''
-    sc.init('Notr')
     sc.debug(f'plugin_loaded() {__package__}')
 
 
