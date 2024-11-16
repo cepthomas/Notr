@@ -70,8 +70,8 @@ Item states
   + = user
 
 Stuff in lists
-  - link [nyt](https://nytimes.com)[tag2 tag9]
-  - ref [* image felix le chat].
+  - link <nyt>(https://nytimes.com)[tag2 tag9]
+  - ref <* image felix le chat>.
   - aaa *text abcdefg*   _text abcdefg_    /text abcdefg/    ~text abcdefg~.
 
 
@@ -80,23 +80,22 @@ Stuff in lists
 Define things like `$NOTR_PATH` before being referenced, usually in your `notr_index` file.
 Like `:AN_ALIAS="abcde"`
 
-Define a link and its ref name like [image felix le chat]($NOTR_PATH/example/felix1.jpg)[tag4 tag3] or
-   [other type of file]($NOTR_PATH/notr.py)
-or... [nyt](https://nytimes.com)[tag2 tag9]
+Define a link and its ref name like <image felix le chat>($NOTR_PATH/example/felix1.jpg)[tag4 tag3] or <other type of file>($NOTR_PATH/notr.py)
+or... <nyt>(https://nytimes.com)[tag2 tag9]
 
 Note: use forward slash separator if compatibility with linux is important.
 
 Link without id:
-[]($NOTR_PATH/example/felix1.jpg)
+<>($NOTR_PATH/example/felix1.jpg)
 
-- Highlight links in lists like [booga](https://google.com).
-> Also [See](https://www.sublimetext.com/docs/syntax.html#include-patterns).
+- Highlight links in lists like <booga>(https://google.com).
+> Also <See>(https://www.sublimetext.com/docs/syntax.html#include-patterns).
 
 Use `*` to identify references defined beforehand - above or in `notr_index` file. Right click to navigate to the ref.
-Ref to other file. [* image felix le chat] or [* other type of file].
-Ref to URI. [* nyt]
-Ref section in this ntr file: [* #section no tags] end.
-Ref section in *another* ntr file: [*page2#P2 section 2]. `page2` is the _pathless root of_ the ntr filename. Must be unique in all ntr files!
+Ref to other file. <*image felix le chat> or <*other type of file>.
+Ref to URI. <*nyt>
+Ref section in this ntr file: <*#section no tags> end.
+Ref section in another ntr file: <*page2#P2 section 2>. `page2` is the _pathless root of_ the ntr filename. Must be unique in all ntr files!
 
 ## Tables [tag2]
 
@@ -112,9 +111,9 @@ Note that coloring *should* stop at the right edge of the table but this is how 
 
 Notr lets you know about these invalid links:
 
-[nonexistent](C:my\bad\file.txt)
+<nonexistent>(C:my\bad\file.txt)
 
-[embedded paren](C:\Program Files (x86)\ASIO4ALL v2)
+<embedded paren>(C:\Program Files (x86)\ASIO4ALL v2)
 
 
 # End

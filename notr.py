@@ -28,7 +28,7 @@ IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 class Target:
     sort_index: str = dataclasses.field(init=False)
     name: str      # section title or description
-    ttype: str     # 'section', 'uri', 'image', 'path' - maybe useful to discriminate file and dir?
+    ttype: str     # 'section', 'uri', 'image', 'path' - discriminate file and dir?
     category: str  # 'sticky', 'mru', 'none'
     level: int     # for section only
     tags: list     # tags for targets
@@ -696,10 +696,10 @@ def _process_notr_file(ntr_fn):
             lines = file.read().splitlines()
             line_num = 1
 
-            # Get the things of interest defined in the file.
+            # Get the things of interest defined in the file. Must match the syntax.
             re_directives = re.compile(r'^:(.*)')
-            re_links = re.compile(r'\[(.*)\]\(([^\)]*)\)')
-            re_refs = re.compile(r'\[\* *([^\]]*)\]')
+            re_links = re.compile(r'<([^>)]+)>\(([^\)]+)\)')
+            re_refs = re.compile(r'<\* *([^\>]+)>')
             re_sections = re.compile(r'^(#+ +[^\[]+) *(?:\[(.*)\])?')
 
             settings = sublime.load_settings(sc.get_settings_fn())

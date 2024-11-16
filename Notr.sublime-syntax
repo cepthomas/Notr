@@ -141,17 +141,18 @@ contexts:
 
 
   #################### link ###########################################
-
+  # Note - if these are edited so must the corresponding code in notr.py.
+  
   link:
-    # link def [abc](https://www.abc.com)[tag1 tag2] or [look](Z:mypath\myfile.txt).
-    - match: '\[(.*)\]\(([^\)]*)\)'
+    # link definition
+    - match: '<([^>)]+)>\(([^\)]+)\)'
       captures:
         1: markup.link.name.notr
         2: markup.link.target.notr
         3: markup.link.tags.notr
 
-    # ref to a link  [*linux-install#Install stuff] or [*abc] or [*look]
-    - match: '\[\* *([^\]]*)\]'
+    # ref to a link
+    - match: '<\* *([^\>]+)>'    
       captures:
         1: markup.link.refname.notr
 
