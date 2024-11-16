@@ -108,6 +108,12 @@ contexts:
         2: markup.list.marker.dash.notr
       push: list-content
 
+    - match: '^([ ]*)([+])[ ]+'
+      captures:
+        1: markup.list.indent.notr
+        2: markup.list.marker.plus.notr
+      push: list-content
+
     - match: '^([ ]*)([X])[ ]+'
       captures:
         1: markup.list.indent.notr

@@ -340,12 +340,8 @@ class NotrPublishCommand(sublime_plugin.WindowCommand):
 
         notes_to_pub = [
             'activities.ntr',
-            # 'books.ntr',
-            'food-places.ntr',
-            # 'movies.ntr',
             'shop.ntr',
             'todo.ntr',
-            # 'tv.ntr',
         ]
 
         # Gen the pub files.
@@ -415,7 +411,7 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
             if filter_by_tag:
                 self._tags = _get_all_tags()
                 if len(self._tags) > 0:
-                    panel_items = []
+                    panel_items = [] # TODO1 ST doesn't honor order of my item list.
                     for tag in self._tags:
                         panel_items.append(sublime.QuickPanelItem(trigger=tag, kind=sublime.KIND_AMBIGUOUS))
                     win = self.view.window()
@@ -585,7 +581,10 @@ def _open_project(project_fn):
                 _store[expfn]['active'] = True
             _current_mru = _store[expfn]['mru']
 
-            sc.info(f'Opened notr project file {project_fn}')
+            s = f'Opened notr project file {project_fn}'
+            sc.info(s)
+            sublime.status_message(s)
+            # sublime.message_dialog(s)
 
     except Exception as e:
         # Assume bad project file.
