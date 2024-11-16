@@ -98,6 +98,7 @@ class NotrEvent(sublime_plugin.EventListener):
         global _store
         fn = sc.get_settings_fn()
         settings = sublime.load_settings(sc.get_settings_fn())
+        random.seed()
 
         # Check user project files.
         valid_projects = []
@@ -491,8 +492,7 @@ class NotrInsertTargetFromClipCommand(sublime_plugin.TextCommand):
     ''' Insert target from clipboard. Assumes user clipped appropriate string. '''
 
     def run(self, edit):
-        random.seed()
-        s = f'[]({sublime.get_clipboard()})'
+        s = f'<give_me_a_ref_name>({sublime.get_clipboard()})'
         caret = sc.get_single_caret(self.view)
         if caret is not None:
             self.view.insert(edit, caret, s)
@@ -518,8 +518,8 @@ class NotrInsertRefCommand(sublime_plugin.TextCommand):
     def on_sel_ref(self, *args, **kwargs):
         del kwargs
         if len(args) > 0 and args[0] >= 0:
-            s = f'[*{self._targets_to_select[args[0]].name}]'
-            self.view.run_command("insert", {"characters": f'{s}'})  # Insert in view
+            s = f'<*{self._targets_to_select[args[0]].name}>'
+            self.view.run_command("insert", {"characters": s})  # Insert in view
 
     def is_visible(self):
         return _check_syntax(self.view)
