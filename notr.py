@@ -18,7 +18,7 @@ except:
 # Known file types.
 IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 
-# TODOF goto next/prev section in current ntr file.
+# TODO1 goto next/prev section in current ntr file.
 
 
 #--------------------------- Types -------------------------------------------------
@@ -62,7 +62,11 @@ _store = None
 # Persisted mru.
 _current_mru = []
 
-# All Targets found in all ntr files.
+# All Targets found in all ntr files. They are ordered as:
+#   for dir in project.notr_paths
+#     for notr_file in dir
+#       for section in notr_file
+#         _targets.add(section)
 _targets = []
 
 # All Refs found in all ntr files.
@@ -412,7 +416,7 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
             if filter_by_tag:
                 self._tags = _get_all_tags()
                 if len(self._tags) > 0:
-                    panel_items = [] # TODO1 ST doesn't honor order of my item list.
+                    panel_items = []
                     for tag in self._tags:
                         panel_items.append(sublime.QuickPanelItem(trigger=tag, kind=sublime.KIND_AMBIGUOUS))
                     win = self.view.window()
@@ -443,7 +447,7 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
                 sublime.status_message('No targets with that tag')
 
     def show_targets(self, targets):
-        ''' Present target options to user. '''
+        '''Present target options to user.'''
         self._targets_to_select = targets
         panel_items = _build_selector(self._targets_to_select)
         # for pi in panel_items:
@@ -817,6 +821,7 @@ def _build_selector(targets):
 
     panel_items = []
     for target in targets:
+        # ann = f'{target.ttype} ({target.category})'
         ann = target.ttype
         if target.ttype == 'section':
             tt = "S"
@@ -880,7 +885,7 @@ def _filter_order_targets(**kwargs):
     ''' Get filtered/ordered list of targets.
         Options facilitate usage for UI presentation or internal consumption:
         sort: T/F asc only
-        mru_first: Put the mru first, then the ones in the current file
+        mru_first: Put the mru first
         current_file: If provided put these after mru and before the rest
         tags: filter by tags
         returns a list of targets
@@ -933,7 +938,7 @@ def _filter_order_targets(**kwargs):
                 else:
                     other_targets.append(target)
 
-    # Sort the bulk?
+    # Sort the rest?
     if sort:
         current_file_targets = sorted(current_file_targets)
         other_targets = sorted(other_targets)
