@@ -18,8 +18,6 @@ except:
 # Known file types.
 IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 
-# TODO1 goto next/prev section in current ntr file.
-
 
 #--------------------------- Types -------------------------------------------------
 
@@ -471,6 +469,55 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
 
     def is_visible(self):
         return True
+
+
+#-----------------------------------------------------------------------------------
+class NotrGotoSectionCommand(sublime_plugin.TextCommand):
+    ''' Go to next or previous section.'''
+
+    def run(self, edit, where):
+        del edit
+        next = where == 'next'
+        view = self.view
+        fn = view.file_name()
+
+        if fn is None:
+            return  # --- early return
+
+        caret = sc.get_single_caret(view)
+        if caret is None:
+            return  # -- early return
+        sel_row, _ = view.rowcol(caret)  # current selected row
+        sel_line = sel_row + 1
+
+        # Create a list of all section line numbers in file.
+        # Should be cached but that gets into detecting file changes. Maybe later...
+        section_lines = []
+        for target in _targets:
+            if target.file == fn:
+                section_lines.append(target.line)
+        if len(section_lines) == 0:
+            return  # --- early return
+
+        section_lines.sort()
+        if next: # Find the next section line.
+            new_line = section_lines[0] # default is first line
+            for sl in section_lines:
+                if sl > sel_line:
+                    new_line = sl
+                    break;
+        else:
+            # Find the previous section line.
+            new_line = section_lines[-1] # default is last line
+            for sl in reversed(section_lines):
+                if sl < sel_line:
+                    new_line = sl
+                    break;
+
+        view.run_command("goto_line", {"line": new_line})
+
+    def is_visible(self):
+        return _check_syntax(self.view)
 
 
 #-----------------------------------------------------------------------------------
