@@ -27,16 +27,16 @@ contexts:
 
   simple-text:
     - match: '(?:^|\s)(\*[^\*]+\*)(?:[\s,.:;-])'
-      scope: markup.bold
+      scope: markup.bold.notr
 
     - match: '(?:^|\s)(/[^/]+/)(?:[\s,.:;-])'
-      scope: markup.italic
+      scope: markup.italic.notr
 
     - match: '(?:^|\s)(_[^_]+_)(?:[\s,.:;-])'
-      scope: markup.underline
+      scope: markup.underline.notr
 
     - match: '(?:^|\s)(~[^~]+~)(?:[\s,.:;-])'
-      scope: markup.strikethrough
+      scope: markup.strikethrough.notr
 
     - match: '^(?:[-=\+IXx]{5,}.*)$'
       scope: markup.hrule.notr
