@@ -1060,4 +1060,4 @@ def _get_froot(fn):
 
 #-----------------------------------------------------------------------------------
 def _check_syntax(v):
-    return v.syntax() is not None and v.syntax().name == 'Notr' and sc.get_single_caret(v) is not None
+    return v.syntax() is not None and 'text.notr' in v.scope_name(0) and sc.get_single_caret(v) is not None
