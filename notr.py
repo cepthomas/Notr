@@ -14,6 +14,9 @@ try:
 except:
     import sbot_common as sc  # unittest import
 
+# FUTURE embed pics, other docs, ...
+# FUTURE keep a backup or track changes?
+
 
 # Known file types.
 IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
@@ -497,6 +500,7 @@ class NotrGotoSectionCommand(sublime_plugin.TextCommand):
             if target.file == fn:
                 section_lines.append(target.line)
         if len(section_lines) == 0:
+            sublime.message_dialog("No tracked sections.\nIs this file in the current notr project?")
             return  # --- early return
 
         section_lines.sort()
