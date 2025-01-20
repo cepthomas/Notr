@@ -270,7 +270,7 @@ class TestTable(unittest.TestCase):
         self.assertEqual(gentext, exptext)
 
     #------------------------------------------------------------
-    @unittest.skip('TODO2 Doesn\'t work perfectly for ragged - user should fit first.')
+    @unittest.skip('TODO Doesn\'t work perfectly for ragged - user should fit first.')
     def test_TableInsertColEnd(self):
         ''' TableInsertColCommand at end of line. '''
 

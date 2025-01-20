@@ -11,9 +11,9 @@ except:
     import sbot_common as sc  # unittest import
 
 
-# TODO2 Make into a generic component?
+# FUTURE Make into a generic component?
 
-# TODOF allow '|' in tables -> make delim configurable. maybe like '||'?
+# TODO allow '|' in tables -> make delim configurable. maybe like '||'?
 DELIM = '|'
 
 

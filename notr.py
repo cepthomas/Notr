@@ -333,7 +333,7 @@ class NotrFindInFilesCommand(sublime_plugin.WindowCommand):
 
 #-----------------------------------------------------------------------------------
 class NotrPublishCommand(sublime_plugin.WindowCommand):
-    ''' TODOF A research project to publish the .ntr files somehow/somewhere. '''
+    ''' TODO A research project to publish the .ntr files somehow/somewhere. '''
 
     def run(self):
         onedrive_path = os.path.expandvars('$OneDrive')
