@@ -668,7 +668,7 @@ def _process_notr_files(window):
         if index_path is not None and os.path.exists(index_path):
             ntr_files.append(index_path)
         else:
-            _user_error(sc.get_settings_fn(), -1, f'Invalid path in settings {notr_index}')
+            _user_error(sc.get_settings_fn(), -1, f'Invalid path in project: {index_path}')
 
     # Paths.
     notr_paths = _current_project['notr_paths']
@@ -679,7 +679,7 @@ def _process_notr_files(window):
                 if index_path is None or not os.path.samefile(nfile, index_path):  # don't do index twice
                     ntr_files.append(nfile)
         else:
-            _user_error(sc.get_settings_fn(), -1, f'Invalid path in settings {npath}')
+            _user_error(sc.get_settings_fn(), -1, f'Invalid path in project: {npath}')
 
     # Process the files. Targets are ordered by sections then files/uris.
     sections = []
