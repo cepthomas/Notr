@@ -131,7 +131,7 @@ After editing your color-scheme, you need to close and reopen affected views.
 - Coloring for `markup.user_hls` and `markup.fixed_hls` only supports fore and back colors, not font_style.
 - `view.add_regions()` apparently only supports colors, annotations, and icon. It does not support font style and region flags.
   Also they are not available via `extract_scope()`.
-- Doesn't handle targets with embedded parentheses (i.e. C:\Program Files (x86)\SomeApp). It exceeds my meager regex skills.
+- Doesn't handle targets with embedded parentheses (i.e. C:\Program Files (x86)\SomeApp). It exceeds my meager regex skills. TODO fix this.
 - If you move or rename a `.ntr` file you need to restart Notr.
 
 ## Notes
