@@ -19,7 +19,7 @@ Built for ST4 on Windows. Linux and OSX should be ok but are minimally tested - 
 - Markdown-like quotes and raw text, toggle like comments.
 - Tables with insert/delete column, fit, sort. Loosely based on https://github.com/wadetb/Sublime-Text-Advanced-CSV.
   Could be ported for general purpose use.
-- Targets and references - targets can be section, file (image or other), uri.
+- Targets and references - targets can be section, file (image or other), url.
 - Navigation to targets via quick panel. Has MRU and sticky entries.
 - Navigation to notr file errors.
 - Search in all project notr files.

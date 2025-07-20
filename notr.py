@@ -24,12 +24,12 @@ IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 
 #--------------------------- Types -------------------------------------------------
 
-# One target: section or file/uri.
+# One target: section or file/url.
 @dataclasses.dataclass(order=True)
 class Target:
     sort_index: str = dataclasses.field(init=False)
     name: str      # section title or description
-    ttype: str     # 'section', 'uri', 'image', 'path' - discriminate file and dir?
+    ttype: str     # 'section', 'url', 'image', 'path' - discriminate file and dir?
     category: str  # 'sticky', 'mru', 'none'
     level: int     # for section only
     tags: list     # tags for targets
@@ -80,7 +80,7 @@ _parse_errors = []
 #-----------------------------------------------------------------------------------
 def plugin_loaded():
     '''Called per plugin instance.'''
-    sc.debug(f'plugin_loaded() {__package__}')
+    pass
 
 
 #-----------------------------------------------------------------------------------
@@ -394,7 +394,7 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
                         # Open the notr file and position it.
                         sc.wait_load_file(self.view.window(), target.file, target.line)
                         valid = True
-                    else:  # 'image', 'uri', 'path'
+                    else:  # 'image', 'url', 'path'
                         valid = sc.open_path(target.resource)
                     break
 
@@ -467,7 +467,7 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
             if target.ttype == 'section':
                 # Open the notr file and position it.
                 sc.wait_load_file(self.view.window(), target.file, target.line)
-            else:  # 'image', 'uri', 'path'
+            else:  # 'image', 'url', 'path'
                 sc.open_path(target.resource)
 
     def is_visible(self):
@@ -800,7 +800,7 @@ def _process_notr_file(ntr_fn):
                             if ext in IMAGE_TYPES:
                                 ttype = 'image'
                             elif res.startswith('http'):
-                                ttype = 'uri'
+                                ttype = 'url'
                             elif os.path.exists(res):
                                 ttype = 'path'
                             else:
@@ -877,7 +877,7 @@ def _build_selector(targets):
         if target.ttype == 'section':
             tt = "S"
             # hide? ann = ''
-        elif target.ttype == 'uri':
+        elif target.ttype == 'url':
             tt = "R"
         elif target.ttype == 'image':
             tt = "R"

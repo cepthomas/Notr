@@ -93,7 +93,7 @@ Link without id:
 
 Use `*` to identify references defined beforehand - above or in `notr_index` file. Right click to navigate to the ref.
 Ref to other file. <*image felix le chat> or <*other type of file>.
-Ref to URI. <*nyt>
+Ref to URL. <*nyt>
 Ref section in this ntr file: <*#section no tags> end.
 Ref section in another ntr file: <*page2#P2 section 2>. `page2` is the _pathless root of_ the ntr filename. Must be unique in all ntr files!
 
