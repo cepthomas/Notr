@@ -118,7 +118,7 @@ class NotrEvent(sublime_plugin.EventListener):
                 else:
                     sc.error(f'Invalid project file in your settings: {p}')
 
-        # Get persisted store info.
+        # Get persisted store info. TODO somewhat broken.
         _store = None
         store_fn = sc.get_store_fn()
         if os.path.isfile(store_fn):
