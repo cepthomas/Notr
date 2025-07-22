@@ -13,7 +13,8 @@ except:
 
 # FUTURE Make into a generic component?
 
-# TODO allow '|' in tables -> make delim configurable. maybe like '||'?
+# TODO1 allow '|' in tables -> make delim configurable/directive. maybe like '||'?. Also tree output becomes a table.
+
 DELIM = '|'
 
 
