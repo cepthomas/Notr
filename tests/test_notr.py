@@ -35,7 +35,7 @@ class TestNotr(unittest.TestCase):
 
         # Mock settings.
         mock_settings = {
-            "project_files": ["$APPDATA\\Sublime Text\\Packages\\Notr\\example\\notr-demo.nproj"], # TODO1
+            "project_files": ["$APPDATA\\Sublime Text\\Packages\\Notr\\example\\notr-demo.nproj"],
             "sort_tags_alpha": True,
             "mru_size": 5,
             "fixed_hl_whole_word": True,

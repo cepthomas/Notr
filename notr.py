@@ -14,9 +14,10 @@ try:
 except:
     import sbot_common as sc  # unittest import
 
+
+# TODO Open project looks at settings.projects which can get out of sync with _store. Harmonize the two?
 # FUTURE embed pics, other docs, ...
 # FUTURE keep a backup or track changes?
-# TODO1 F7 list should be in order on the page or at least 'Top' should be first. may not be possible...
 
 
 # Known file types.
@@ -58,7 +59,7 @@ class Ref:
 # Current project file (*.nproj) contents.
 _current_project = None
 
-# The whole store file (Notr.store) contents. None means uninitialized.
+# The whole store file ('Notr.store') contents. None means uninitialized.
 _store = None
 
 # Persisted mru.
@@ -118,7 +119,7 @@ class NotrEvent(sublime_plugin.EventListener):
                 else:
                     sc.error(f'Invalid project file in your settings: {p}')
 
-        # Get persisted store info. TODO1 somewhat broken.
+        # Get persisted store info.
         _store = None
         store_fn = sc.get_store_fn()
         if os.path.isfile(store_fn):
