@@ -1,4 +1,5 @@
 {
+    // Windows flavor, adjust to taste.
     "notr_paths": [
         "$APPDATA\\Sublime Text\\Packages\\Notr\\example"
     ],

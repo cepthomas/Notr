@@ -39,11 +39,11 @@ Built for ST4 on Windows. Linux and OSX should be ok but are minimally tested - 
 To run the example:
 - Install the plugin.
 - Select `Preferences->Package Settings->Notr`.
-- Add this project name to your settings:
+- Add this project name to your settings (adjusted for platform):
 ``` json
 "project_files":
 [
-    "$APPDATA\\Sublime Text\\Packages\\Notr\\example\\notr-demo.nproj",
+    "<ST_PACKAGES_DIR>\\Notr\\example\\notr-demo.nproj",
 ]
 ```
 - Implement color scheme per section `Color Scheme`.
@@ -138,7 +138,7 @@ After editing your color-scheme, you need to close and reopen affected views.
 
 - `sbot_common.py` contains miscellaneous common components primarily for internal use by the sbot family.
   This includes a very simple logger primarily for user-facing information, syntax errors and the like.
-  Log file is in $APPDATA\Sublime Text\Packages\User\Notr\Notr.log.
+  Log file is in <ST_PACKAGES_DIR>\User\Notr\Notr.log.
 
 
 ## Future

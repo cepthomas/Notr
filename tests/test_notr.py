@@ -28,14 +28,14 @@ class TestNotr(unittest.TestCase):
 
     #------------------------------------------------------------
     def test_parsing(self):
-        ''' Tests the .ntr file parsing. Uses the demo project.'''
+        ''' Tests the .ntr file parsing. Uses the demo project on Windows.'''
         self.window = emu.Window(900)
         self.view = emu.View(901)
         self.view.set_window(self.window)
 
         # Mock settings.
         mock_settings = {
-            "project_files": ["$APPDATA\\Sublime Text\\Packages\\Notr\\example\\notr-demo.nproj"],
+            "project_files": ["$APPDATA\\Sublime Text\\Packages\\Notr\\example\\notr-demo.nproj"], # TODO1
             "sort_tags_alpha": True,
             "mru_size": 5,
             "fixed_hl_whole_word": True,
