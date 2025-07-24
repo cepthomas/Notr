@@ -1,5 +1,5 @@
+# import sys
 import os
-import sys
 import re
 import glob
 import random
@@ -15,9 +15,7 @@ except:
     import sbot_common as sc  # unittest import
 
 
-# TODO Open project looks at settings.projects which can get out of sync with _store. Harmonize the two?
-# FUTURE embed pics, other docs, ...
-# FUTURE keep a backup or track changes?
+# TODO Open project looks at settings.projects which could get out of sync with _store. Harmonize the two?
 
 
 # Known file types.
@@ -104,7 +102,7 @@ class NotrEvent(sublime_plugin.EventListener):
         ''' First thing that happens when plugin/window created. Initialize everything. '''
         global _store
         fn = sc.get_settings_fn()
-        settings = sublime.load_settings(sc.get_settings_fn())
+        settings = sublime.load_settings(fn)
         random.seed()
 
         # Check user project files.
@@ -338,7 +336,7 @@ class NotrFindInFilesCommand(sublime_plugin.WindowCommand):
 
 #-----------------------------------------------------------------------------------
 class NotrPublishCommand(sublime_plugin.WindowCommand):
-    ''' TODO A research project to publish the .ntr files somehow/somewhere. '''
+    ''' TODO Publish the .ntr files somehow/somewhere. '''
 
     def run(self):
         onedrive_path = os.path.expandvars('$OneDrive')

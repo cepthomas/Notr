@@ -1,19 +1,12 @@
 # Some of this is loosely based on https://github.com/wadetb/Sublime-Text-Advanced-CSV.
-# Source licenses are MIT so all is good. Steal This Code.
+# Source licenses are MIT so all is good. It's generic so easy stealy.
 
-import sys
-import os
+# import sys
 import sublime
 import sublime_plugin
-try:
-    from . import sbot_common as sc  # normal import
-except:
-    import sbot_common as sc  # unittest import
 
 
-# FUTURE Make into a generic component?
-
-DELIM = '|' # TODO make configurable
+DELIM = '|'
 
 
 #-----------------------------------------------------------------------------------
@@ -164,7 +157,7 @@ class TableCommand(sublime_plugin.TextCommand):
 
     def is_visible(self):
         ''' Show this? '''
-        caret = sc.get_single_caret(self.view)
+        caret = self.get_single_caret(self.view)
         vis = caret is not None and self.is_table(caret)
         return vis 
 
@@ -195,7 +188,7 @@ class TableCommand(sublime_plugin.TextCommand):
         region = None
         v = self.view
 
-        caret = sc.get_single_caret(v)
+        caret = self.get_single_caret(v)
         if caret is None:
             return None
 
@@ -248,6 +241,16 @@ class TableCommand(sublime_plugin.TextCommand):
 
         return region
 
+    def get_single_caret(self, view):
+        '''Get current caret position for one only region. If multiples, return None.'''
+        if len(view.sel()) == 0:
+            # raise RuntimeError('No data')
+            return None
+        elif len(view.sel()) == 1:  # single sel
+            return view.sel()[0].b
+        else:  # multi sel
+            return None
+
 
 #-----------------------------------------------------------------------------------
 class TableFitCommand(TableCommand):
@@ -277,7 +280,7 @@ class TableSortColCommand(TableCommand):
         super().finish(edit)
         
 
-#-----------------------------------------------------------------------------------
+#-------------------------------------------------------    ----------------------------
 class TableInsertColCommand(TableCommand):
 
     def __init__(self, view):

@@ -1,4 +1,4 @@
-import sys
+# import sys
 import os
 import unittest
 from unittest.mock import MagicMock
@@ -22,6 +22,7 @@ class TestTable(unittest.TestCase):
     #------------------------------------------------------------
     # Mock scope interrogation by row. Corresponds to table in table1.ntr.
     def mock_scope_name(self, *args, **kwargs):
+        del kwargs
         rc = self.view.rowcol(args[0])
         if rc[0] == 5:
             return 'text.notr meta.table.header'
@@ -81,7 +82,7 @@ class TestTable(unittest.TestCase):
 
         # Run the command.
         cmd = table.TableFitCommand(self.view)
-        cmd.run(None)
+        cmd.run(None) # pyright: ignore
 
         # Should look like this now.
         exptext = '\n'.join([
@@ -219,7 +220,7 @@ class TestTable(unittest.TestCase):
 
         # Run the command.
         cmd = table.TableInsertColCommand(self.view)
-        cmd.run(None)
+        cmd.run(None) # pyright: ignore
 
         # Should look like this now.
         exptext = '\n'.join([
@@ -252,7 +253,7 @@ class TestTable(unittest.TestCase):
 
         # Run the command.
         cmd = table.TableInsertColCommand(self.view)
-        cmd.run(None)
+        cmd.run(None) # pyright: ignore
 
         # Should look like this now.
         exptext = '\n'.join([
@@ -287,7 +288,7 @@ class TestTable(unittest.TestCase):
 
         # Run the command.
         cmd = table.TableInsertColCommand(self.view)
-        cmd.run(None)
+        cmd.run(None) # pyright: ignore
 
         # Should look like this now.
         exptext = '\n'.join([
@@ -321,7 +322,7 @@ class TestTable(unittest.TestCase):
         # Run the command.
         cmd = table.TableDeleteColCommand(self.view)
 
-        cmd.run(None)
+        cmd.run(None) # pyright: ignore
 
         # Should look like this now.
         exptext = '\n'.join([
