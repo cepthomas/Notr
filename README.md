@@ -106,7 +106,8 @@ Add the commands you like to your own `User\Context.sublime-menu` file. Typical 
 
 ## Project File
 
-A notr project file contains these elements. See [demo project](example/notr-demo.nproj)
+A notr project file (e.g. [demo project](example/notr-demo.nproj)) contains the following elements.
+Note: currently this file is pure json and doesn't support comments or trailing commas.
 
 | Setting             | Description                                                     |
 | :--------           | :-------                                                        |
@@ -114,6 +115,7 @@ A notr project file contains these elements. See [demo project](example/notr-dem
 | notr_index          | Main notr file                                                  |
 | sticky              | list of section names that always appear at the top of selector |
 | fixed_hl            | Three sets of user keywords                                     |
+
 
 ## Color Scheme
 

@@ -608,7 +608,7 @@ def _open_project(project_fn):
 
         with open(expfn, 'r') as fp:
             s = fp.read()
-            proj = json.loads(s)
+            proj = json.loads(s) # TODO handle comments, commas.
 
             # Check file integrity.
             if "notr_paths" not in proj or "notr_index" not in proj:
