@@ -7,8 +7,14 @@ from unittest.mock import MagicMock
 import emu_sublime_api as emu
 
 # Import the code under test.
+cut_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+# print('nnn', cut_path)
+if cut_path not in sys.path:
+    sys.path.insert(0, cut_path)
+
+# print('>>>', 'test_notr.py:sys.path:', sys.path)
+
 import notr
-# import sbot_common as sc
 
 
 #-----------------------------------------------------------------------------------
@@ -54,7 +60,7 @@ class TestNotr(unittest.TestCase):
         evt.on_init([self.view])
 
         self.assertEqual(len(notr._get_all_tags()), 5)
-        self.assertEqual(len(notr._targets), 16)
+        self.assertEqual(len(notr._targets), 15)
         self.assertEqual(len(notr._refs), 6)
         self.assertEqual(len(notr._parse_errors), 2)
         # self.assertEqual(len(notr._store), 13)

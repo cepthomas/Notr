@@ -8,7 +8,6 @@ import emu_sublime_api as emu
 
 # Import the code under test.
 import table
-# import sbot_common as sc
 
 
 #-----------------------------------------------------------------------------------

@@ -8,8 +8,11 @@ import shutil
 import subprocess
 import sublime
 import sublime_plugin
-from . import config
 
+try: # normal import?
+    from . import config
+except: # unittest import!
+    import config
 
 # Data type for shared scopes.
 HighlightInfo = collections.namedtuple('HighlightInfo', 'scope_name, region_name, type')

@@ -1,4 +1,4 @@
-# import sys
+import sys
 import os
 import re
 import glob
@@ -9,6 +9,9 @@ import time
 import dataclasses
 import sublime
 import sublime_plugin
+
+# print('>>>', 'notr.py:sys.path:', sys.path)
+
 try:
     from . import sbot_common as sc  # normal import
 except:
