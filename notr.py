@@ -10,12 +10,10 @@ import dataclasses
 import sublime
 import sublime_plugin
 
-# print('>>>', 'notr.py:sys.path:', sys.path)
+# my_path = os.path.dirname(__file__)
+# if my_path not in sys.path: sys.path.insert(0, my_path)
 
-try:
-    from . import sbot_common as sc  # normal import
-except:
-    import sbot_common as sc  # unittest import
+from . import sbot_common as sc
 
 
 # TODO Open project looks at settings.projects which could get out of sync with _store. Harmonize the two?

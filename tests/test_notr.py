@@ -8,12 +8,7 @@ import emu_sublime_api as emu
 
 # Import the code under test.
 cut_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-# print('nnn', cut_path)
-if cut_path not in sys.path:
-    sys.path.insert(0, cut_path)
-
-# print('>>>', 'test_notr.py:sys.path:', sys.path)
-
+if cut_path not in sys.path: sys.path.insert(0, cut_path)
 import notr
 
 

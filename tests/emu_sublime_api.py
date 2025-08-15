@@ -30,11 +30,6 @@ Some guessing as to how ST validates args - seems to be clamping not throwing.
 # Get a reference to myself. Seems like it shouldn't work but, python...
 import emu_sublime_api
 
-# # Add path to code under test - assumed it's the parent dir.
-# _cut_path = os.path.join(os.path.dirname(__file__), '..')
-# if _cut_path not in sys.path:
-#     sys.path.insert(0, _cut_path)
-
 # Thunk the system modules so code under test sees this emulation rather than the real libs.
 sys.modules["sublime"] = emu_sublime_api
 sys.modules["sublime_plugin"] = emu_sublime_api
