@@ -9,10 +9,6 @@ import time
 import dataclasses
 import sublime
 import sublime_plugin
-
-# my_path = os.path.dirname(__file__)
-# if my_path not in sys.path: sys.path.insert(0, my_path)
-
 from . import sbot_common as sc
 
 
@@ -609,7 +605,7 @@ def _open_project(project_fn):
 
         with open(expfn, 'r') as fp:
             s = fp.read()
-            proj = json.loads(s) # TODO handle comments, commas.
+            proj = json.loads(s) # TODO handle comments, commas. Use jsonc.
 
             # Check file integrity.
             if "notr_paths" not in proj or "notr_index" not in proj:
