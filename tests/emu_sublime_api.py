@@ -25,6 +25,7 @@ Position is always 0-based.
 Some guessing as to how ST validates args - seems to be clamping not throwing.
 '''
 
+
 #---------- Replace sublime api -----------
 
 # Get a reference to myself. Seems like it shouldn't work but, python...
