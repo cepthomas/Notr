@@ -752,7 +752,7 @@ def _process_notr_file(ntr_fn):
             re_directives = re.compile(r'^:(.*)')
             re_links = re.compile(r'<([^>)]+)>\(([^\)]+)\)')
             re_refs = re.compile(r'<\* *([^\>]+)>')
-            re_sections = re.compile(r'^(#+ +[^\[]+) *(?:\[(.*)\])?')
+            re_sections = re.compile(r'^(#+ +[^\[]+) *(?:\[(.*)\])?') # TODO1 finds # in comment blocks.
 
             settings = sublime.load_settings(sc.get_settings_fn())
             section_marker_size = int(str(settings.get('section_marker_size')))
