@@ -494,7 +494,7 @@ class NotrGotoSectionCommand(sublime_plugin.TextCommand):
         # Should be cached but that gets into detecting file changes. Maybe later...
         section_lines = []
         for target in _targets:
-            if target.file == fn:
+            if target.file == fn and target.ttype == 'section':
                 section_lines.append(target.line)
         if len(section_lines) == 0:
             sublime.message_dialog("No tracked sections.\nIs this file in the current notr project?")
@@ -646,13 +646,6 @@ def _open_project(project_fn):
 
 
 #-----------------------------------------------------------------------------------
-def _set_status(view):
-    ''' Save everything. '''
-    proj_st = 'none' if _current_project is None else pathlib.Path(_current_project['_fn']).stem
-    view.set_status('notr', f'Notr ({proj_st})')
-
-
-#-----------------------------------------------------------------------------------
 def _process_notr_files(window):
     ''' Get all ntr files and grab their goodies. '''
     _targets.clear()
@@ -757,7 +750,7 @@ def _process_notr_file(ntr_fn):
             lines = file.read().splitlines()
             line_num = 1
 
-            # Get the things of interest defined in the file. Must match Notr.sublime-syntax.
+            # Regex to get the things of interest defined in the file. Roughly corresponds to Notr.sublime-syntax.
             re_directives = re.compile(r'^:(.*)')
             re_links = re.compile(r'<([^>)]+)>\(([^\)]+)\)')
             re_refs = re.compile(r'<\* *([^\>]+)>')
@@ -766,8 +759,19 @@ def _process_notr_file(ntr_fn):
             settings = sublime.load_settings(sc.get_settings_fn())
             section_marker_size = int(str(settings.get('section_marker_size')))
 
+            in_block_comment = False
+
             for line in lines:
-                #  TODO1 finds # in comment blocks. Track in/out ```
+                ### Ignore false triggers in comments.
+                if in_block_comment:
+                    if line.startswith("```"):
+                        in_block_comment = False
+                    line_num += 1
+                    continue # ignore
+                elif line.startswith("```"):
+                    in_block_comment = True
+                    line_num += 1
+                    continue # ignore
 
                 ### Directives/aliases.
                 # :MY_PATH=some/where/my
@@ -844,7 +848,7 @@ def _process_notr_file(ntr_fn):
 
                     if len(m) == 2:
                         content = m[0].strip().split(None, 1)
-                        print(content)
+                        # print(content)
 
                         if len(content) == 2:
                             hashes = content[0].strip()
@@ -926,6 +930,13 @@ def _get_all_tags():
     else:  # Sort by frequency.
         sorted_tags = [x[0] for x in sorted(tags.items(), key=lambda x:x[1], reverse=True)]
     return sorted_tags
+
+
+#-----------------------------------------------------------------------------------
+def _set_status(view):
+    ''' Add name to status bar. '''
+    proj_st = 'none' if _current_project is None else pathlib.Path(_current_project['_fn']).stem
+    view.set_status('notr', f'Notr ({proj_st})')
 
 
 #-----------------------------------------------------------------------------------
