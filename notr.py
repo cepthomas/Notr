@@ -159,6 +159,7 @@ class NotrEvent(sublime_plugin.EventListener):
         ''' Loaded a new file. '''
         # View is valid so init it.
         self._init_fixed_hl(view)
+        _set_status(view)
 
     def on_pre_close(self, view):
         ''' Save anything. '''
@@ -266,7 +267,6 @@ class NotrReloadCommand(sublime_plugin.WindowCommand):
     ''' Reload after editing. '''
 
     def run(self):
-        # Open and process notr files.
         _process_notr_files(self.window)
 
     def is_visible(self):
@@ -605,7 +605,7 @@ def _open_project(project_fn):
 
         with open(expfn, 'r') as fp:
             s = fp.read()
-            proj = json.loads(s) # TODO handle comments, commas. Use jsonc.
+            proj = json.loads(s) # TODO jsonc?
 
             # Check file integrity.
             if "notr_paths" not in proj or "notr_index" not in proj:
@@ -620,7 +620,7 @@ def _open_project(project_fn):
                 proj['sticky'] = []
 
             _current_project = proj
-            _current_project['_fn'] = expfn  # for downstream
+            _current_project['_fn'] = expfn  # for downstream access
 
             # Reset flags first.
             for _, v in _store.items():
@@ -637,10 +637,19 @@ def _open_project(project_fn):
             sc.info(s)
             sublime.status_message(s)
             # sublime.message_dialog(s)
+            for v in sublime.active_window().views():
+                _set_status(v)
 
     except Exception as e:
         # Assume bad project file.
         sc.error(f'Error opening notr project file {project_fn}: {e}', e.__traceback__)
+
+
+#-----------------------------------------------------------------------------------
+def _set_status(view):
+    ''' Save everything. '''
+    proj_st = 'none' if _current_project is None else pathlib.Path(_current_project['_fn']).stem
+    view.set_status('notr', f'Notr ({proj_st})')
 
 
 #-----------------------------------------------------------------------------------
@@ -748,16 +757,17 @@ def _process_notr_file(ntr_fn):
             lines = file.read().splitlines()
             line_num = 1
 
-            # Get the things of interest defined in the file. Must match the syntax.
+            # Get the things of interest defined in the file. Must match Notr.sublime-syntax.
             re_directives = re.compile(r'^:(.*)')
             re_links = re.compile(r'<([^>)]+)>\(([^\)]+)\)')
             re_refs = re.compile(r'<\* *([^\>]+)>')
-            re_sections = re.compile(r'^(#+ +[^\[]+) *(?:\[(.*)\])?') # TODO1 finds # in comment blocks.
+            re_sections = re.compile(r'^(#+ +[^\[]+) *(?:\[(.*)\])?')
 
             settings = sublime.load_settings(sc.get_settings_fn())
             section_marker_size = int(str(settings.get('section_marker_size')))
 
             for line in lines:
+                #  TODO1 finds # in comment blocks. Track in/out ```
 
                 ### Directives/aliases.
                 # :MY_PATH=some/where/my
@@ -829,12 +839,12 @@ def _process_notr_file(ntr_fn):
                 for m in matches:
                     valid = True
                     hashes = ''
-                    name=''
+                    name = ''
                     tags = []
 
                     if len(m) == 2:
                         content = m[0].strip().split(None, 1)
-                        # print(content)
+                        print(content)
 
                         if len(content) == 2:
                             hashes = content[0].strip()
