@@ -12,6 +12,22 @@ import sublime_plugin
 from . import sbot_common as sc
 
 
+# TODO Borrow ideas from these?
+# - https://leo-editor.github.io/leo-editor/
+# - https://tiddlywiki.com/   https://tiddlyhost.com/
+# - https://obsidian.md/
+
+# TODO Put section_marker_size in project. Is fixed_hl useful?
+
+# TODO Improve/simplify links?
+# Site link: <yer news>(https://nytimes.com)
+# File link: <another felix>($NOTR_PATH/example/felix2.jpg)
+# Ref to other file. <*image felix le chat> or <*other type of file>.
+# Ref to URL. <*nyt>
+# Ref section in this ntr file: <*#section no tags> end.
+# Ref section in another ntr file: <*page2#P2 section 2>. `page2` is the _pathless root of_ the ntr filename. Must be unique in all ntr files!
+
+
 # TODO Open project looks at settings.projects which could get out of sync with _store. Harmonize the two?
 
 
