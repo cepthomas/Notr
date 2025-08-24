@@ -40,7 +40,6 @@ class TestNotr(unittest.TestCase):
             "sort_tags_alpha": True,
             "mru_size": 5,
             "fixed_hl_whole_word": True,
-            "section_marker_size": 1,
         }
         emu.set_settings(mock_settings)
 

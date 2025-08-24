@@ -1,14 +1,18 @@
 {
-    "notr_paths": [
+    "notr_index": "$APPDATA\\Sublime Text\\Packages\\Notr\\example\\my-index.ntr",
+    "notr_paths":
+    [
         "$APPDATA\\Sublime Text\\Packages\\Notr\\example"
     ],
-    "notr_index": "$APPDATA\\Sublime Text\\Packages\\Notr\\example\\my-index.ntr",
-    "fixed_hl": [
+    "section_sel_depth": 2,
+    "fixed_hl":
+    [
         ["2DO", "and_a"],
         ["user", "and_b"],
         ["dynamic", "and_c"]
     ],
-    "sticky": [
+    "sticky":
+    [
         "notr-spec#section no tags",
         "my-index#Other Files of Interest"
     ]

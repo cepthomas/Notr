@@ -17,8 +17,6 @@ from . import sbot_common as sc
 # - https://tiddlywiki.com/   https://tiddlyhost.com/
 # - https://obsidian.md/
 
-# TODO Put section_marker_size in project. Is fixed_hl useful?
-
 # TODO Improve/simplify links?
 # Site link: <yer news>(https://nytimes.com)
 # File link: <another felix>($NOTR_PATH/example/felix2.jpg)
@@ -772,8 +770,9 @@ def _process_notr_file(ntr_fn):
             re_refs = re.compile(r'<\* *([^\>]+)>')
             re_sections = re.compile(r'^(#+ +[^\[]+) *(?:\[(.*)\])?')
 
-            settings = sublime.load_settings(sc.get_settings_fn())
-            section_marker_size = int(str(settings.get('section_marker_size')))
+            section_sel_depth = 1 # default
+            try: section_sel_depth = _current_project['section_sel_depth']
+            except: pass
 
             in_block_comment = False
 
@@ -878,7 +877,7 @@ def _process_notr_file(ntr_fn):
                         valid = False
 
                     if valid:
-                        if len(hashes) <= section_marker_size:
+                        if len(hashes) <= section_sel_depth:
                             sections.append(Target(name, 'section', '', len(hashes), tags, '', ntr_fn, line_num))
                     else:
                         _user_error(ntr_fn, line_num, 'Invalid syntax')

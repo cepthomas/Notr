@@ -10,7 +10,4 @@
 
     // User highlights option.
     "fixed_hl_whole_word": true,
-
-    // Include these and higher sections in selector.
-    "section_marker_size": 1,
 }

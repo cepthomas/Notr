@@ -102,27 +102,27 @@ Add the commands you like to your own `User\Context.sublime-menu` file. Typical 
 | sort_tags_alpha     | Sort tags alphabetically else by frequency    | true OR false   |
 | mru_size            | How many mru entries in selector              | default=5       |
 | fixed_hl_whole_word | Select fixed_hl by whole word                 | true OR false   |
-| section_marker_size | Include these and higher sections in selector | default=1       |
 
 ## Project File
 
 A notr project file (e.g. [demo project](example/notr-demo.nproj)) contains the following elements.
 Note: currently this file is pure json and doesn't support comments or trailing commas.
 
-| Setting             | Description                                                     |
+| Kwy                 | Description                                                     |
 | :--------           | :-------                                                        |
 | notr_paths          | List of where notr files live                                   |
 | notr_index          | Main notr file                                                  |
 | sticky              | list of section names that always appear at the top of selector |
 | fixed_hl            | Three sets of user keywords                                     |
+| section_sel_depth   | Selector section hierarchy depth (default=1)                    |
 
 
 ## Color Scheme
 
 New scopes have been added to support this application. Adjust the values in
 [notr scopes](example/notr-scopes.sublime-color-scheme) to taste and add them
-to your `Packages\User\your.sublime-color-scheme` file. Note that `markup.fixed_hl*`
-and `markup.user_hl*` are also used by other members of the sbot family.
+to your `Packages\User\your.sublime-color-scheme` file.
+Note that these are shared with the `Render View` and `Highlight Token` packages.
 
 After editing your color-scheme, you need to close and reopen affected views.
 
