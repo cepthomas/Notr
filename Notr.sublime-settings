@@ -10,4 +10,7 @@
 
     // User highlights option.
     "fixed_hl_whole_word": true,
+
+    // Output to panel or view.
+    "show_panel": false,
 }

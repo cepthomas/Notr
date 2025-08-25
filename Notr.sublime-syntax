@@ -1,13 +1,13 @@
 %YAML 1.2
 ---
 # http://www.sublimetext.com/docs/syntax.html. Should make a syntax_test_notr.ntr.
+# Generally variables use underscore whereas contexts use hyphen - convention?
+# section is also used by Fold.tmPreferences.
+# If directives, links, refs or sections are edited so must the corresponding code in notr.py.
 
 name: Notr
 scope: text.notr
 # version: 2
-
-comment: |-
-  Generally variables use underscore whereas contexts use hyphen - convention?
 
 file_extensions:
   - ntr
@@ -26,28 +26,40 @@ contexts:
   #################### simple text formatting ###########################################
 
   simple-text:
-    - match: '(?:^|\s)(\*[^\*]+\*)(?:[\s,.:;-])'
+    # bold
+    # - match: '(\*[^\*]+\*)'
+    # - match: '(\*[^\*]+\*)'
+    - match: '[^|\s]*(\*[^\*]+\*)'
       scope: markup.bold.notr
 
-    - match: '(?:^|\s)(/[^/]+/)(?:[\s,.:;-])'
+    # italic
+    # - match: '(/[^/]+/)'
+    - match: '[^|\s]*(/[^/]+/)'
       scope: markup.italic.notr
 
-    - match: '(?:^|\s)(_[^_]+_)(?:[\s,.:;-])'
+    # underline
+    # - match: '(_[^_]+_)'
+    # - match: '(_[^_]+_)'
+    - match: '[^|\s]*(_[^_]+_)'
       scope: markup.underline.notr
 
-    - match: '(?:^|\s)(~[^~]+~)(?:[\s,.:;-])'
+    # strikethrough
+    # - match: '(?:^|\s)(~[^~]+~)(?:[\s,.:;-])'
+    - match: '[^|\s]*(~[^~]+~)'
       scope: markup.strikethrough.notr
 
+    # ------------- or -=+IXx
     - match: '^(?:[-=\+IXx]{5,}.*)$'
       scope: markup.hrule.notr
 
 
   #################### section ###########################################
 
-  # section also used by Fold.tmPreferences
 
   section-heading:
-    - match: '^(#+ +[^\[]+) *(?:\[(.*)\])?\n'
+    # line starts with #* text
+    - match: '^(#+ +[^\[]+) *(?:\[(.*)\])?\n' # to eol
+    # - match: '^(#+ +[^\[]+) *(?:\[(.*)\])?' # whole visible line
       scope: markup.heading.notr
       captures:
         1: markup.heading.content.notr
@@ -141,18 +153,17 @@ contexts:
 
 
   #################### link ###########################################
-  # Note - if these are edited so must the corresponding code in notr.py.
   
   link:
     # link definition
-    - match: '<([^>)]+)>\(([^\)]+)\)'
+    - match: '<([^>)]*)>\(([^\)]*)\)*(?:\[(.*)\])?'
       captures:
         1: markup.link.name.notr
         2: markup.link.target.notr
         3: markup.link.tags.notr
 
     # ref to a link
-    - match: '<\* *([^\>]+)>'    
+    - match: '<\* *([^\>]*)>'    
       captures:
         1: markup.link.refname.notr
 

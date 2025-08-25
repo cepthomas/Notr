@@ -12,20 +12,6 @@ import sublime_plugin
 from . import sbot_common as sc
 
 
-# TODO Borrow ideas from these?
-# - https://leo-editor.github.io/leo-editor/
-# - https://tiddlywiki.com/   https://tiddlyhost.com/
-# - https://obsidian.md/
-
-# TODO Improve/simplify links?
-# Site link: <yer news>(https://nytimes.com)
-# File link: <another felix>($NOTR_PATH/example/felix2.jpg)
-# Ref to other file. <*image felix le chat> or <*other type of file>.
-# Ref to URL. <*nyt>
-# Ref section in this ntr file: <*#section no tags> end.
-# Ref section in another ntr file: <*page2#P2 section 2>. `page2` is the _pathless root of_ the ntr filename. Must be unique in all ntr files!
-
-
 # TODO Open project looks at settings.projects which could get out of sync with _store. Harmonize the two?
 
 
@@ -378,6 +364,10 @@ class NotrPublishCommand(sublime_plugin.WindowCommand):
 #-------------------------- TextCommands -------------------------------------------
 #-----------------------------------------------------------------------------------
 
+# TODO1 for target selector. maybe next/orev.
+# if target.level <= section_sel_depth:
+#     >>>>> sections.append(Target(name, 'section', '', len(hashes), tags, '', ntr_fn, line_num))
+
 
 #-----------------------------------------------------------------------------------
 class NotrGotoTargetCommand(sublime_plugin.TextCommand):
@@ -619,7 +609,7 @@ def _open_project(project_fn):
 
         with open(expfn, 'r') as fp:
             s = fp.read()
-            proj = json.loads(s) # TODO jsonc?
+            proj = json.loads(s) # jsonc?
 
             # Check file integrity.
             if "notr_paths" not in proj or "notr_index" not in proj:
@@ -670,8 +660,10 @@ def _process_notr_files(window):
     if _current_project is None:
         return
 
-    # Open and process all notr files.
     settings = sublime.load_settings(sc.get_settings_fn())
+    section_sel_depth = 1 # default
+    try: section_sel_depth = _current_project['section_sel_depth']
+    except: pass
 
     # Index first.
     index_path = None
@@ -681,9 +673,9 @@ def _process_notr_files(window):
         if index_path is not None and os.path.exists(index_path):
             ntr_files.append(index_path)
         else:
-            _user_error(sc.get_settings_fn(), -1, f'Invalid path in project: {index_path}')
+            _user_error(sc.get_settings_fn(), -1, f'Invalid path in project: [{index_path}]')
 
-    # Paths.
+    # Project directory paths.
     notr_paths = _current_project['notr_paths']
     for npath in notr_paths:
         expath = sc.expand_vars(npath)
@@ -692,35 +684,41 @@ def _process_notr_files(window):
                 if index_path is None or not os.path.samefile(nfile, index_path):  # don't do index twice
                     ntr_files.append(nfile)
         else:
-            _user_error(sc.get_settings_fn(), -1, f'Invalid path in project: {npath}')
+            _user_error(sc.get_settings_fn(), -1, f'Invalid path in project: [{npath}]')
 
-    # Process the files. Targets are ordered by sections then files/uris.
+    # Process the files. Targets are ordered by sections then files/links.
     sections = []
-    uris = []
+    links = []
     for nfile in ntr_files:
-        fparts = _process_notr_file(nfile)
+        fparts = _process_notr_file(nfile) # returns (sections, links, refs)
         if fparts is not None:
             sections.extend(fparts[0])
-            uris.extend(fparts[1])
+            links.extend(fparts[1])
             _refs.extend(fparts[2])
     _targets.extend(sections)
-    _targets.extend(uris)
+    _targets.extend(links)
 
-    # Check all user refs are valid.
+    # Check all user targets and refs are valid.
     valid_refs = []
     for target in _targets:
-        if len(target.name) > 0:
+        if target.name in valid_refs:
+            _user_error(target.file, target.line, f'Duplicate target name: [{target.name}]')
+        elif target.ttype is None:
+            _user_error(target.file, target.line, f'Invalid target resource: [{target.resource}]')
+        elif len(target.name) > 0:
             valid_refs.append(target.name)
+        else:
+            _user_error(target.file, target.line, f'Invalid target name: [{target.name}]')
 
     for ref in _refs:
         if ref.name not in valid_refs:
-            _user_error(ref.file, ref.line, f'Invalid ref name:{ref.name}')
+            _user_error(ref.file, ref.line, f'Invalid ref name: [{ref.name}]')
 
     # Do output if errors.
     if len(_parse_errors) > 0:
         output_view = None
         working_dir = ''
-        use_panel = True  # prefs.get("show_panel_on_build", True)
+        use_panel = settings.get("show_panel", False)
 
         # Create output to panel or view. Don't call get_output_panel until the regexes are assigned.
         if use_panel:
@@ -749,7 +747,7 @@ def _process_notr_files(window):
 #-----------------------------------------------------------------------------------
 def _process_notr_file(ntr_fn):
     ''' Process one notr file. Regex and process sections and links.
-    This collects the text and checks syntax. Validity will be checked when all files processed.
+    This collects the text and checks raw syntax only. Validity will be checked when all files processed.
     Returns (sections, links, refs)
     '''
 
@@ -766,13 +764,9 @@ def _process_notr_file(ntr_fn):
 
             # Regex to get the things of interest defined in the file. Roughly corresponds to Notr.sublime-syntax.
             re_directives = re.compile(r'^:(.*)')
-            re_links = re.compile(r'<([^>)]+)>\(([^\)]+)\)')
-            re_refs = re.compile(r'<\* *([^\>]+)>')
+            re_links = re.compile(r'<([^>)]*)>\(([^\)]*)\)*(?:\[(.*)\])?')
+            re_refs = re.compile(r'<\* *([^\>]*)>')
             re_sections = re.compile(r'^(#+ +[^\[]+) *(?:\[(.*)\])?')
-
-            section_sel_depth = 1 # default
-            try: section_sel_depth = _current_project['section_sel_depth']
-            except: pass
 
             in_block_comment = False
 
@@ -788,9 +782,10 @@ def _process_notr_file(ntr_fn):
                     line_num += 1
                     continue # ignore
 
-                ### Directives/aliases.
+                ### Handle directives now.
                 # :MY_PATH=some/where/my
                 # :NO_INDEX
+                # others as needed
                 matches = re_directives.findall(line)
                 for m in matches:
                     handled = False
@@ -809,19 +804,24 @@ def _process_notr_file(ntr_fn):
                     if not handled:
                         _user_error(ntr_fn, line_num, 'Invalid directive')
 
-                ### Links - also checks validity.
-                # [yer news](https://nytimes.com)
-                # [some felix]($NOTES_PATH/felix9.jpg)
+                ### Links - also checks type.
+                # <yer news>(https://nytimes.com)
+                # <some felix>($NOTES_PATH/felix9.jpg)
                 matches = re_links.findall(line)
                 for m in matches:
                     if len(m) >= 2:
+                        tags = []
                         name = m[0].strip()
                         res = sc.expand_vars(m[1].strip())
+
+                        if len(m) >= 3:
+                            tags = m[2].strip().split()
+
                         if res is None:
                             # Bad env var.
-                            _user_error(ntr_fn, line_num, f'Bad env var: {m[1]}')
+                            _user_error(ntr_fn, line_num, f'Bad env var in: [{m[1]}]')
                         else:
-                            ttype = None
+                            ttype = None # default
                             _, ext = os.path.splitext(res)
                             if ext in IMAGE_TYPES:
                                 ttype = 'image'
@@ -829,20 +829,16 @@ def _process_notr_file(ntr_fn):
                                 ttype = 'url'
                             elif os.path.exists(res):
                                 ttype = 'path'
-                            else:
-                                _user_error(ntr_fn, line_num, f'Invalid target resource: {res}')
-
-                            if ttype is not None:
-                                links.append(Target(name, ttype, '', 0, [], res, ntr_fn, line_num))
+                            links.append(Target(name, ttype, '', 0, tags, res, ntr_fn, line_num))
                     else:
                         _user_error(ntr_fn, line_num, 'Invalid syntax')
 
-                ### Refs - will be validated at end.
-                # [*some felix]
-                # [*yer news]
-                # [*ST executable dir]
-                # [* #section no tags].
-                # [*page2#P2 section 2]
+                ### Refs - will be validated at end after collecting all links.
+                # <*some felix>
+                # <*yer news>
+                # <*ST executable dir>
+                # <* #section no tags]>
+                # <*page2#P2 section 2>
                 matches = re_refs.findall(line)
                 for m in matches:
                     name = m.strip()
@@ -853,31 +849,19 @@ def _process_notr_file(ntr_fn):
                     refs.append(Ref(name, ntr_fn, line_num))
 
                 ### Sections
-                # # Some name[tag1 tag2]
+                # # Some name [tag1 tag2]
                 matches = re_sections.findall(line)
                 for m in matches:
-                    valid = True
                     hashes = ''
                     name = ''
                     tags = []
 
                     if len(m) == 2:
                         content = m[0].strip().split(None, 1)
-                        # print(content)
-
                         if len(content) == 2:
                             hashes = content[0].strip()
                             name = f'{_get_froot(ntr_fn)}{hashes}{content[1].strip()}'
-                        else:
-                            valid = False
-
-                        if valid:
                             tags = m[1].strip().split()
-                    else:
-                        valid = False
-
-                    if valid:
-                        if len(hashes) <= section_sel_depth:
                             sections.append(Target(name, 'section', '', len(hashes), tags, '', ntr_fn, line_num))
                     else:
                         _user_error(ntr_fn, line_num, 'Invalid syntax')
@@ -885,7 +869,7 @@ def _process_notr_file(ntr_fn):
                 line_num += 1
 
     except Exception as e:
-        _user_error(ntr_fn, line_num, f'Error processing file: {e}')
+        _user_error(ntr_fn, line_num, f'Error processing file: [{e}]')
         sc.error(f'Error processing file: {ntr_fn}:{line_num} {e}', e.__traceback__)
         return None
 

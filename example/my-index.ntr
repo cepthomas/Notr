@@ -8,7 +8,7 @@ Directives start with `:`.
 This means don't add this file to the index. References are still included.
 :NO_INDEX
 
-Aliases for paths. They go into env and can be used in your links along with any other env var.
+Aliases for paths. They are written to the environment and can be used in your links like any other env var.
 This can be useful for custom paths you set in your env (windows flavor, adjust to taste):
 :NOTR_PATH=$APPDATA/Sublime Text/Packages/Notr
 

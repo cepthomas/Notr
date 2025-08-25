@@ -102,6 +102,7 @@ Add the commands you like to your own `User\Context.sublime-menu` file. Typical 
 | sort_tags_alpha     | Sort tags alphabetically else by frequency    | true OR false   |
 | mru_size            | How many mru entries in selector              | default=5       |
 | fixed_hl_whole_word | Select fixed_hl by whole word                 | true OR false   |
+| show_panel          | Output to panel or view                       | true OR false   |
 
 ## Project File
 
