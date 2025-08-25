@@ -126,20 +126,6 @@ Invalid ref <*bad boy>
 File root must be unique in current project <*page2#section 2>.
 ```
 
-# Syntax and cosmetics
-
-> Highlight links in comments? They are detected ok. <Spot>(https://www.sublimetext.com/docs/syntax.html#include-patterns).
-maybe detect :NOTR_PATH=TODO_redefined
-
-
-
-maybe detect :NOTR_PATH=TODO_redefined
-
-what does *fdfdffd
-or _fdfdfd
-
-
-Text: *Bold*, /italic/, and _under line_ are as expected, ~strike through~ is a compromise.
 
 # End
 This simple folding scheme (by section) needs a section definition here if you want the previous one to fold.

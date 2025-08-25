@@ -27,26 +27,25 @@ contexts:
 
   simple-text:
     # bold
-    # - match: '(\*[^\*]+\*)'
-    # - match: '(\*[^\*]+\*)'
-    - match: '[^|\s]*(\*[^\*]+\*)'
-      scope: markup.bold.notr
+    - match: '(?:^|\s)(\*[^\*]+\*)(?:[\s,.:;-])'
+      captures: 
+        1: markup.bold.notr
 
     # italic
-    # - match: '(/[^/]+/)'
-    - match: '[^|\s]*(/[^/]+/)'
-      scope: markup.italic.notr
+    - match: '(?:^|\s)(/[^/]+/)(?:[\s,.:;-])'
+      captures:
+        1: markup.italic.notr
 
     # underline
-    # - match: '(_[^_]+_)'
-    # - match: '(_[^_]+_)'
-    - match: '[^|\s]*(_[^_]+_)'
-      scope: markup.underline.notr
+    - match: '(?:^|\s)(_[^_]+_)(?:[\s,.:;-])'
+      captures:
+        1: markup.underline.notr
 
     # strikethrough
-    # - match: '(?:^|\s)(~[^~]+~)(?:[\s,.:;-])'
-    - match: '[^|\s]*(~[^~]+~)'
-      scope: markup.strikethrough.notr
+    - match: '(?:^|\s)(~[^~]+~)(?:[\s,.:;-])'
+      captures:
+        # 0: text.notr
+        1: markup.strikethrough.notr
 
     # ------------- or -=+IXx
     - match: '^(?:[-=\+IXx]{5,}.*)$'

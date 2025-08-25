@@ -368,6 +368,10 @@ class NotrPublishCommand(sublime_plugin.WindowCommand):
 # if target.level <= section_sel_depth:
 #     >>>>> sections.append(Target(name, 'section', '', len(hashes), tags, '', ntr_fn, line_num))
 
+# _section_sel_depth = 1 # default
+# try: _section_sel_depth = _current_project['section_sel_depth']
+# except: pass
+
 
 #-----------------------------------------------------------------------------------
 class NotrGotoTargetCommand(sublime_plugin.TextCommand):
