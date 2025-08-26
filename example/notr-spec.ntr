@@ -112,22 +112,22 @@ Note that coloring *should* stop at the right edge of the table but this is how 
 
 # Errors
 
-Notr lets you know about these invalid links:
+Notr detects some invalid elements. Remove from block comment to demonstrate.
 
 ```
-<nonexistent>(C:my\bad\file.txt)
+<nonexistent target>(C:my\bad\file.txt)
 
-<embedded paren>(C:\Program Files (x86)\ASIO4ALL v2)
+<embedded parens>(C:\Program Files (x86)\ASIO4ALL v2)
 
-:TODO_INVALID_directive
+:INVALID_DIRECTIVE
 
-Invalid ref <*bad boy>
+ <*Invalid reference>
 
-<>($NOTR_PATH/example/TODO must have id)
+<>($NOTR_PATH/example/link definition must have id)
 
 <nyt>(duplicate_name)
 
-File root must be unique in current project <*page2#section 2>.
+<*page2#section 2>(another duplicate name)
 ```
 
 
