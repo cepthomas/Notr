@@ -115,7 +115,7 @@ Note: currently this file is pure json and doesn't support comments or trailing 
 | notr_index          | Main notr file                                                  |
 | sticky              | list of section names that always appear at the top of selector |
 | fixed_hl            | Three sets of user keywords                                     |
-| section_sel_depth   | Selector section hierarchy depth (default=1)                    |
+| section_sel_depth   | Section selector hierarchy depth (default=1)                    |
 
 
 ## Color Scheme

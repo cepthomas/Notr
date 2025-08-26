@@ -60,29 +60,25 @@ _store = None
 # Persisted mru.
 _current_mru = []
 
-# All Targets found in all ntr files. They are ordered as:
-#   for dir in project.notr_paths
-#     for notr_file in dir
-#       for section in notr_file
-#         _targets.add(section)
+# All Targets found in project ntr files. They are ordered by project.notr_paths => notr_files => sections.
 _targets = []
 
 # All Refs found in all ntr files.
 _refs = []
 
-# Parse errors to report to user. Tuples of (path, line, msg)
+# Parse errors to report to user. Tuples of (path, line, msg).
 _parse_errors = []
 
 
 #-----------------------------------------------------------------------------------
 def plugin_loaded():
-    '''Called per plugin instance.'''
+    ''' Called per plugin instance.'''
     pass
 
 
 #-----------------------------------------------------------------------------------
 def plugin_unloaded():
-    '''Ditto.'''
+    ''' Called per plugin instance.'''
     pass
 
 
@@ -347,7 +343,7 @@ class NotrPublishCommand(sublime_plugin.WindowCommand):
             'todo.ntr',
         ]
 
-        # Gen the pub files.
+        # Gen the publish files.
         for p in notes_to_pub:
             src = os.path.join(notes_path, p)
             dest = os.path.join(pub_path, p.replace('.ntr', '.html'))
@@ -363,14 +359,6 @@ class NotrPublishCommand(sublime_plugin.WindowCommand):
 #-----------------------------------------------------------------------------------
 #-------------------------- TextCommands -------------------------------------------
 #-----------------------------------------------------------------------------------
-
-# TODO1 for target selector. maybe next/orev.
-# if target.level <= section_sel_depth:
-#     >>>>> sections.append(Target(name, 'section', '', len(hashes), tags, '', ntr_fn, line_num))
-
-# _section_sel_depth = 1 # default
-# try: _section_sel_depth = _current_project['section_sel_depth']
-# except: pass
 
 
 #-----------------------------------------------------------------------------------
@@ -399,7 +387,7 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
                         # Open the notr file and position it.
                         sc.wait_load_file(self.view.window(), target.file, target.line)
                         valid = True
-                    else:  # 'image', 'url', 'path'
+                    elif target.ttype != '':  # 'image', 'url', 'path'
                         valid = sc.open_path(target.resource)
                     break
 
@@ -417,7 +405,7 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
             if not valid:
                 sc.error(f'Invalid link: [{tlink}]')
 
-        # Show a quickpanel of all target names.
+        # Show a quickpanel of all target names OR tags.
         else:
             if filter_by_tag:
                 self._tags = _get_all_tags()
@@ -472,7 +460,7 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
             if target.ttype == 'section':
                 # Open the notr file and position it.
                 sc.wait_load_file(self.view.window(), target.file, target.line)
-            else:  # 'image', 'url', 'path'
+            elif target.ttype != '':  # 'image', 'url', 'path'
                 sc.open_path(target.resource)
 
     def is_visible(self):
@@ -481,7 +469,7 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
 
 #-----------------------------------------------------------------------------------
 class NotrGotoSectionCommand(sublime_plugin.TextCommand):
-    ''' Go to next or previous section.'''
+    ''' Go to next or previous section in this file.'''
 
     def run(self, edit, where):
         del edit
@@ -499,9 +487,9 @@ class NotrGotoSectionCommand(sublime_plugin.TextCommand):
         sel_line = sel_row + 1
 
         # Create a list of all section line numbers in file.
-        # Should be cached but that gets into detecting file changes. Maybe later...
+        # Should be cached but that gets into detecting file changes. Maybe later.
         section_lines = []
-        for target in _targets:
+        for target in _targets: # or filter by level?
             if target.file == fn and target.ttype == 'section':
                 section_lines.append(target.line)
         if len(section_lines) == 0:
@@ -552,7 +540,7 @@ class NotrInsertTargetFromClipCommand(sublime_plugin.TextCommand):
     ''' Insert target from clipboard. Assumes user clipped appropriate string. '''
 
     def run(self, edit):
-        s = f'<give_me_a_ref_name>({sublime.get_clipboard()})'
+        s = f'<ref_name???>({sublime.get_clipboard()})'
         caret = sc.get_single_caret(self.view)
         if caret is not None:
             self.view.insert(edit, caret, s)
@@ -665,9 +653,6 @@ def _process_notr_files(window):
         return
 
     settings = sublime.load_settings(sc.get_settings_fn())
-    section_sel_depth = 1 # default
-    try: section_sel_depth = _current_project['section_sel_depth']
-    except: pass
 
     # Index first.
     index_path = None
@@ -707,7 +692,7 @@ def _process_notr_files(window):
     for target in _targets:
         if target.name in valid_refs:
             _user_error(target.file, target.line, f'Duplicate target name: [{target.name}]')
-        elif target.ttype is None:
+        elif target.ttype == '':
             _user_error(target.file, target.line, f'Invalid target resource: [{target.resource}]')
         elif len(target.name) > 0:
             valid_refs.append(target.name)
@@ -825,7 +810,7 @@ def _process_notr_file(ntr_fn):
                             # Bad env var.
                             _user_error(ntr_fn, line_num, f'Bad env var in: [{m[1]}]')
                         else:
-                            ttype = None # default
+                            ttype = '' # default - none
                             _, ext = os.path.splitext(res)
                             if ext in IMAGE_TYPES:
                                 ttype = 'image'
@@ -965,7 +950,11 @@ def _filter_order_targets(**kwargs):
     if _current_project is None:
         return []
 
+    # Project settings.
     sticky = _current_project['sticky']
+    section_sel_depth = 0
+    try: section_sel_depth = _current_project['section_sel_depth']
+    except: pass
 
     current_file_targets = []
     other_targets = []
@@ -992,23 +981,28 @@ def _filter_order_targets(**kwargs):
             target.category = 'sticky'
             sticky_cache[target.name] = target
         else:  # The others.
+            # Check level.
+            if section_sel_depth > 0 and target.level > section_sel_depth:
+                continue
+
             # Check tags.
             tag_ok = len(tags) == 0
             for t in tags:
                 if t in target.tags:
                     tag_ok = True
+            if not tag_ok:
+                continue
 
-            if tag_ok:
-                if mru_first and target.name in _current_mru:
-                    target.category = 'mru'
-                    mru_cache[target.name] = target
-                elif current_file is not None:
-                    if target.file is not None and os.path.exists(target.file) and os.path.samefile(target.file, current_file):
-                        current_file_targets.append(target)
-                    else:
-                        other_targets.append(target)
+            if mru_first and target.name in _current_mru:
+                target.category = 'mru'
+                mru_cache[target.name] = target
+            elif current_file is not None:
+                if target.file is not None and os.path.exists(target.file) and os.path.samefile(target.file, current_file):
+                    current_file_targets.append(target)
                 else:
                     other_targets.append(target)
+            else:
+                other_targets.append(target)
 
     # Sort the rest?
     if sort:
