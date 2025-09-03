@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plist version="1.0">
+
+<!--
+In a nutshell, the file contains:
+    A scope that specifies to what syntax the metadata inside affects
+    A foldScopes inside of settings to indicate that the metadata to be added is fold scopes
+    An array of 1 or more sets of fold scopes that include:
+        The scope that will begin the fold area
+        The scope that will end the fold area
+        Whether or not the trailing newline on the line that contains the end scope will also be included in the fold
+-->
+
 <dict>
     <key>scope</key>
     <string>text.notr</string>

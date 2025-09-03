@@ -13,6 +13,7 @@ from . import sbot_common as sc
 
 
 # TODO Open project looks at settings.projects which could get out of sync with _store. Harmonize the two?
+# ? https://fountain.io/syntax/
 
 
 # Known file types.
@@ -26,7 +27,7 @@ IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 class Target:
     sort_index: str = dataclasses.field(init=False)
     name: str      # section title or description
-    ttype: str     # 'section', 'url', 'image', 'path' - discriminate file and dir?
+    ttype: str     # 'section', 'url', 'image', 'file', 'dir'
     category: str  # 'sticky', 'mru', 'none'
     level: int     # for section only
     tags: list     # tags for targets
@@ -144,7 +145,7 @@ class NotrEvent(sublime_plugin.EventListener):
 
         if project_fn is not None:
             _open_project(project_fn)
-            _process_notr_files(views[0].window())
+            _process_all_files(views[0].window())
             # Views are all valid now so init them.
             for view in views:
                 self._init_fixed_hl(view)
@@ -167,10 +168,10 @@ class NotrEvent(sublime_plugin.EventListener):
         If it is a notr file, reload all ntr files. Seems a bit brute force, how else?
         If it is a notr project, reload the project.'''
         if view.syntax().name == 'Notr':
-            _process_notr_files(view.window())
+            _process_all_files(view.window())
         elif _current_project is not None and view.file_name() == _current_project['_fn']:
             _open_project(view.file_name())
-            _process_notr_files(view.window)
+            _process_all_files(view.window)
 
     def _init_fixed_hl(self, view):
         ''' Add any highlights. '''
@@ -232,7 +233,7 @@ class NotrOpenProjectCommand(sublime_plugin.WindowCommand):
         del kwargs
         if len(args) > 0 and args[0] >= 0:
             _open_project(self.panel_items[args[0]].details)
-            _process_notr_files(self.window)
+            _process_all_files(self.window)
 
     def is_visible(self):
         return True
@@ -263,7 +264,7 @@ class NotrReloadCommand(sublime_plugin.WindowCommand):
     ''' Reload after editing. '''
 
     def run(self):
-        _process_notr_files(self.window)
+        _process_all_files(self.window)
 
     def is_visible(self):
         return _current_project is not None
@@ -387,14 +388,14 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
                         # Open the notr file and position it.
                         sc.wait_load_file(self.view.window(), target.file, target.line)
                         valid = True
-                    elif target.ttype != '':  # 'image', 'url', 'path'
+                    elif target.ttype != '':  # 'image', 'url', 'file', 'dir'
                         valid = sc.open_path(target.resource)
                     break
 
             if not valid:
                 sc.error(f'Invalid reference in {self.view.file_name()}: [{tref}]')
 
-        # Explicit link. do immediate.
+        # Explicit link - do immediate.
         elif tlink is not None:
             valid = True
             fn = sc.expand_vars(tlink)
@@ -460,7 +461,7 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
             if target.ttype == 'section':
                 # Open the notr file and position it.
                 sc.wait_load_file(self.view.window(), target.file, target.line)
-            elif target.ttype != '':  # 'image', 'url', 'path'
+            elif target.ttype != '':  # 'image', 'url', 'file', 'dir'
                 sc.open_path(target.resource)
 
     def is_visible(self):
@@ -642,7 +643,7 @@ def _open_project(project_fn):
 
 
 #-----------------------------------------------------------------------------------
-def _process_notr_files(window):
+def _process_all_files(window):
     ''' Get all ntr files and grab their goodies. '''
     _targets.clear()
     _refs.clear()
@@ -679,7 +680,7 @@ def _process_notr_files(window):
     sections = []
     links = []
     for nfile in ntr_files:
-        fparts = _process_notr_file(nfile) # returns (sections, links, refs)
+        fparts = _process_one_file(nfile) # returns (sections, links, refs)
         if fparts is not None:
             sections.extend(fparts[0])
             links.extend(fparts[1])
@@ -694,10 +695,14 @@ def _process_notr_files(window):
             _user_error(target.file, target.line, f'Duplicate target name: [{target.name}]')
         elif target.ttype == '':
             _user_error(target.file, target.line, f'Invalid target resource: [{target.resource}]')
-        elif len(target.name) > 0:
-            valid_refs.append(target.name)
+        # Allow name = ""
         else:
-            _user_error(target.file, target.line, f'Invalid target name: [{target.name}]')
+            valid_refs.append(target.name)
+        # Don't allow.
+        # elif len(target.name) > 0:
+        #     valid_refs.append(target.name)
+        # else:
+        #     _user_error(target.file, target.line, f'Invalid target name: [{target.name}]')
 
     for ref in _refs:
         if ref.name not in valid_refs:
@@ -734,7 +739,7 @@ def _process_notr_files(window):
 
 
 #-----------------------------------------------------------------------------------
-def _process_notr_file(ntr_fn):
+def _process_one_file(ntr_fn):
     ''' Process one notr file. Regex and process sections and links.
     This collects the text and checks raw syntax only. Validity will be checked when all files processed.
     Returns (sections, links, refs)
@@ -810,14 +815,16 @@ def _process_notr_file(ntr_fn):
                             # Bad env var.
                             _user_error(ntr_fn, line_num, f'Bad env var in: [{m[1]}]')
                         else:
-                            ttype = '' # default - none
+                            ttype = '' # default/unknown
                             _, ext = os.path.splitext(res)
                             if ext in IMAGE_TYPES:
                                 ttype = 'image'
                             elif res.startswith('http'):
                                 ttype = 'url'
-                            elif os.path.exists(res):
-                                ttype = 'path'
+                            elif os.path.isfile(res):
+                                ttype = 'file'
+                            elif os.path.isdir(res):
+                                ttype = 'dir'
                             links.append(Target(name, ttype, '', 0, tags, res, ntr_fn, line_num))
                     else:
                         _user_error(ntr_fn, line_num, 'Invalid syntax')
@@ -870,17 +877,42 @@ def _build_selector(targets):
     ''' Populate the selector. '''
 
     panel_items = []
+
     for target in targets:
+        if target.ttype == 'section':
+            tt = "S"
+            clr = sublime.KindId.COLOR_REDISH
+        elif target.ttype == 'url':
+            tt = "U"
+            clr = sublime.KindId.COLOR_PURPLISH
+        elif target.ttype == 'image':
+            tt = "I"
+            clr = sublime.KindId.COLOR_ORANGISH
+        elif target.ttype == 'file':
+            tt = "F"
+            clr = sublime.KindId.COLOR_BLUISH
+        elif target.ttype == 'dir':
+            tt = "D"
+            clr = sublime.KindId.COLOR_YELLOWISH
+        else:
+            tt = "?"
+            clr = sublime.KindId.COLOR_CYANISH
+
+        ann = target.category
+
+
+        ''' old way
         # ann = f'{target.ttype} ({target.category})'
         ann = target.ttype
         if target.ttype == 'section':
             tt = "S"
-            # hide? ann = ''
         elif target.ttype == 'url':
             tt = "R"
         elif target.ttype == 'image':
             tt = "R"
-        elif target.ttype == 'path':
+        elif target.ttype == 'file':
+            tt = "R"
+        elif target.ttype == 'dir':
             tt = "R"
         else:
             tt = "?"
@@ -892,6 +924,7 @@ def _build_selector(targets):
             clr = sublime.KindId.COLOR_REDISH
         else:
             clr = sublime.KindId.COLOR_GREENISH
+        '''
 
         sty = (clr, tt, '')
 

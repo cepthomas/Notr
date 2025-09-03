@@ -123,7 +123,7 @@ Notr detects some invalid elements. Remove from block comment to demonstrate.
 
  <*Invalid reference>
 
-<>($NOTR_PATH/example/link definition must have id)
+Disabled for now: <>($NOTR_PATH/example/link definition must have id)
 
 <nyt>(duplicate_name)
 
