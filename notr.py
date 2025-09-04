@@ -348,7 +348,6 @@ class NotrPublishCommand(sublime_plugin.WindowCommand):
         for p in notes_to_pub:
             src = os.path.join(notes_path, p)
             dest = os.path.join(pub_path, p.replace('.ntr', '.html'))
-            sc.debug(f'{src}->{dest}')
             # need to manage files in/out. Maybe use clipboard?
             # self.window.run_command("sbot_render_to_html", {"group": 0})
             time.sleep(0.5) # let st finish this first
@@ -371,14 +370,13 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
 
     def run(self, edit, filter_by_tag):
         del edit
-        # Determine if user has selected a specific ref or link to follow, otherwise show the list of all.
+        # Determine if user has selected a specific ref or link to follow, otherwise show the list.
         valid = True  # default
         tref = _get_selection_for_scope(self.view, 'markup.link.refname.notr')
-        tlink = _get_selection_for_scope(self.view, 'markup.underline.link.notr')
-        if tlink is None:
-            tlink = _get_selection_for_scope(self.view, 'markup.link.target.notr')
+        tlink = _get_selection_for_scope(self.view, 'markup.link.target.notr')
+        tname = _get_selection_for_scope(self.view, 'markup.link.name.notr')
 
-        # Explicit ref to selected element - do immediate.
+        # Explicit ref - do immediate.
         if tref is not None:
             # Get the corresponding target spec.
             for target in _targets:
@@ -390,6 +388,7 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
                         valid = True
                     elif target.ttype != '':  # 'image', 'url', 'file', 'dir'
                         valid = sc.open_path(target.resource)
+                    _update_mru(target.name)
                     break
 
             if not valid:
@@ -397,12 +396,22 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
 
         # Explicit link - do immediate.
         elif tlink is not None:
-            valid = True
-            fn = sc.expand_vars(tlink)
-            if fn is None:
+            # Get the corresponding target spec.
+            linkfn = sc.expand_vars(tlink)
+            if linkfn is None:
                 valid = False
             else:
-                valid = sc.open_path(fn)
+                for target in _targets:
+                    if target.resource == linkfn:
+                        if target.ttype == 'section':
+                            # Open the notr file and position it.
+                            sc.wait_load_file(self.view.window(), target.file, target.line)
+                            valid = True
+                        elif target.ttype != '':  # 'image', 'url', 'file', 'dir'
+                            valid = sc.open_path(target.resource)
+                        _update_mru(target.name)
+                        break
+
             if not valid:
                 sc.error(f'Invalid link: [{tlink}]')
 
@@ -454,8 +463,9 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
 
     def on_sel_target(self, *args, **kwargs):
         del kwargs
+
         if len(args) > 0 and args[0] >= 0:
-            # Locate the target record.
+            # Get the selected target record.
             target = self._targets_to_select[args[0]]
             _update_mru(target.name)
             if target.ttype == 'section':
@@ -465,7 +475,9 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
                 sc.open_path(target.resource)
 
     def is_visible(self):
-        return True
+        print('>>> is_visible', self.view.syntax())
+        return _check_syntax(self.view)
+        # return True
 
 
 #-----------------------------------------------------------------------------------
@@ -695,10 +707,10 @@ def _process_all_files(window):
             _user_error(target.file, target.line, f'Duplicate target name: [{target.name}]')
         elif target.ttype == '':
             _user_error(target.file, target.line, f'Invalid target resource: [{target.resource}]')
-        # Allow name = ""
+        # Allow name = "".
         else:
             valid_refs.append(target.name)
-        # Don't allow.
+        # Don't allow name = "".
         # elif len(target.name) > 0:
         #     valid_refs.append(target.name)
         # else:
@@ -901,7 +913,7 @@ def _build_selector(targets):
         ann = target.category
 
 
-        ''' old way
+        ''' old way - maybe some setting?
         # ann = f'{target.ttype} ({target.category})'
         ann = target.ttype
         if target.ttype == 'section':
