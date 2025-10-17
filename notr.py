@@ -13,7 +13,6 @@ from . import sbot_common as sc
 
 
 # TODO Open project looks at settings.projects which could get out of sync with _store. Harmonize the two?
-# ? https://fountain.io/syntax/
 
 
 # Known file types.
@@ -376,12 +375,15 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
         tlink = _get_selection_for_scope(self.view, 'markup.link.target.notr')
         tname = _get_selection_for_scope(self.view, 'markup.link.name.notr')
 
+        print(tref, tlink, tname)
+
         # Explicit ref - do immediate.
         if tref is not None:
             # Get the corresponding target spec.
             for target in _targets:
                 valid = False
                 if target.name == tref:
+                    print('>>>', target.name)
                     if target.ttype == 'section':
                         # Open the notr file and position it.
                         sc.wait_load_file(self.view.window(), target.file, target.line)
@@ -475,7 +477,6 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
                 sc.open_path(target.resource)
 
     def is_visible(self):
-        print('>>> is_visible', self.view.syntax())
         return _check_syntax(self.view)
         # return True
 
@@ -705,16 +706,12 @@ def _process_all_files(window):
     for target in _targets:
         if target.name in valid_refs:
             _user_error(target.file, target.line, f'Duplicate target name: [{target.name}]')
+        elif len(target.name) == 0:
+            _user_error(target.file, target.line, f'Missing target name: [{target.name}]')
         elif target.ttype == '':
             _user_error(target.file, target.line, f'Invalid target resource: [{target.resource}]')
-        # Allow name = "".
         else:
             valid_refs.append(target.name)
-        # Don't allow name = "".
-        # elif len(target.name) > 0:
-        #     valid_refs.append(target.name)
-        # else:
-        #     _user_error(target.file, target.line, f'Invalid target name: [{target.name}]')
 
     for ref in _refs:
         if ref.name not in valid_refs:
