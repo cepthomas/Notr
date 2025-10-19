@@ -375,7 +375,7 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
         tlink = _get_selection_for_scope(self.view, 'markup.link.target.notr')
         tname = _get_selection_for_scope(self.view, 'markup.link.name.notr')
 
-        print(tref, tlink, tname)
+        # print(tref, tlink, tname)
 
         # Explicit ref - do immediate.
         if tref is not None:
@@ -383,7 +383,6 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
             for target in _targets:
                 valid = False
                 if target.name == tref:
-                    print('>>>', target.name)
                     if target.ttype == 'section':
                         # Open the notr file and position it.
                         sc.wait_load_file(self.view.window(), target.file, target.line)
