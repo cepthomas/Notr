@@ -178,11 +178,6 @@ def get_clipboard():
     return _clipboard
 
 def load_settings(base_name):
-    # global _settings
-    # if _settings is None:  # lazy init
-    # with open(base_name) as fp:
-    #     _settings = Settings()
-    #     _settings.settings_storage = json.load(fp)
     return _settings
 
 def set_timeout(f, timeout_ms=0):
