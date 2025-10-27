@@ -240,7 +240,7 @@ class NotrOpenProjectCommand(sublime_plugin.WindowCommand):
 
 #-----------------------------------------------------------------------------------
 class NotrEditProjectCommand(sublime_plugin.WindowCommand):
-    ''' Open the file in a new view for editing.'''
+    ''' Open the project file in a new view for editing.'''
 
     def run(self):
         # Open the file in a new view.
