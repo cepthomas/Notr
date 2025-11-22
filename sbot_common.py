@@ -204,13 +204,16 @@ def get_path_parts(window, paths):
 #-----------------------------------------------------------------------------------
 def open_path(path):
     '''Acts as if you had clicked the path in the UI. Honors your file associations.'''
-    if sublime.platform() == 'osx':
-        subprocess.call(['open', path])
-    elif sublime.platform() == 'windows':
-        os.startfile(path)
-    else:  # linux variants
-        subprocess.run(('xdg-open', path))
-    return True
+    try:
+        if sublime.platform() == 'osx':
+            subprocess.call(['open', path])
+        elif sublime.platform() == 'windows':
+            os.startfile(path)
+        else:  # linux variants
+            subprocess.run(('xdg-open', path))
+        return True
+    except:
+        return False
 
 
 #-----------------------------------------------------------------------------------

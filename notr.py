@@ -66,8 +66,8 @@ _targets = []
 # All Refs found in all ntr files.
 _refs = []
 
-# Parse errors to report to user. Tuples of (path, line, msg).
-_parse_errors = []
+# Accumulated prrors to report to user. Tuples of (path, line, msg).
+_user_errors = []
 
 
 #-----------------------------------------------------------------------------------
@@ -108,7 +108,7 @@ class NotrEvent(sublime_plugin.EventListener):
                 if sp is not None and os.path.isfile(sp):
                     valid_projects.append(sc.expand_vars(p))
                 else:
-                    sc.error(f'Invalid project file in your settings: {p}')
+                    sc.error(f'Invalid project file in settings: {p}')
 
         # Get persisted store info.
         _store = None
@@ -149,7 +149,7 @@ class NotrEvent(sublime_plugin.EventListener):
             for view in views:
                 self._init_fixed_hl(view)
         else:
-            sc.error(f'No valid project files in your settings - please edit')
+            sc.error(f'No valid project files in settings')
 
     def on_load(self, view):
         ''' Loaded a new file. '''
@@ -251,7 +251,7 @@ class NotrEditProjectCommand(sublime_plugin.WindowCommand):
                 vnew = self.window.open_file(fn)
                 vnew.assign_syntax('Packages/JSON/JSON.sublime-syntax')
             except Exception as e:
-                sc.error(f'Failed to open {fn}: {e}', e.__traceback__)
+                sc.error(f'Error opening {fn}: {e}', e.__traceback__)
                 vnew = None
 
     def is_visible(self):
@@ -273,24 +273,25 @@ class NotrReloadCommand(sublime_plugin.WindowCommand):
 class NotrDumpCommand(sublime_plugin.WindowCommand):
     ''' Diagnostic. '''
 
-    def run(self):
+    def run(self, verbose=False):
         text = []
 
         def do_one(name, coll):
             text.append(f'\n========== {name} ==========')
             text.extend([str(x) for x in coll])
 
-        if len(_parse_errors) > 0:
+        if len(_user_errors) > 0:
             text.append('\n========== !! errors below !! ==========')
 
-        do_one('targets', _targets)
-        do_one('refs', _refs)
-        do_one('tags', _get_all_tags())
+        if verbose:
+            do_one('targets', _targets)
+            do_one('refs', _refs)
+            do_one('tags', _get_all_tags())
         do_one('ntr_files', _get_all_ntr_files())
 
-        if len(_parse_errors) > 0:
+        if len(_user_errors) > 0:
             text.append('\n========== errors ==========')
-            text.extend([f'{p[0]}({p[1]}): {p[2]}' for p in _parse_errors])
+            text.extend([f'{p[0]}({p[1]}): {p[2]}' for p in _user_errors])
 
         sc.create_new_view(self.window, '\n'.join(text))
 
@@ -375,7 +376,7 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
         tlink = _get_selection_for_scope(self.view, 'markup.link.target.notr')
         tname = _get_selection_for_scope(self.view, 'markup.link.name.notr')
 
-        # print(tref, tlink, tname)
+        # print(f'>>>  tref:{tref}  tlink:{tlink}  tname:{tname}  filter_by_tag:{filter_by_tag}')
 
         # Explicit ref - do immediate.
         if tref is not None:
@@ -393,25 +394,33 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
                     break
 
             if not valid:
-                sc.error(f'Invalid reference in {self.view.file_name()}: [{tref}]')
+                sc.error(f'Invalid reference [{tref}] - is target file in current project?')
 
         # Explicit link - do immediate.
         elif tlink is not None:
-            # Get the corresponding target spec.
             linkfn = sc.expand_vars(tlink)
             if linkfn is None:
                 valid = False
-            else:
+
+            # Get the corresponding target spec if available.
+            if valid:
+                found = False
                 for target in _targets:
                     if target.resource == linkfn:
                         if target.ttype == 'section':
                             # Open the notr file and position it.
                             sc.wait_load_file(self.view.window(), target.file, target.line)
                             valid = True
+                            found = True
+                            break
                         elif target.ttype != '':  # 'image', 'url', 'file', 'dir'
                             valid = sc.open_path(target.resource)
-                        _update_mru(target.name)
-                        break
+                            found = True
+                            break
+                
+                if not found:
+                    # Try it the hard way.
+                    valid = sc.open_path(linkfn)
 
             if not valid:
                 sc.error(f'Invalid link: [{tlink}]')
@@ -428,7 +437,7 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
                     if win is not None:
                         win.show_quick_panel(panel_items, on_select=self.on_sel_tag)
                 else:
-                    sublime.status_message('No tags in project')
+                    sc.error('No tags in project')
             else:
                 targets = _filter_order_targets(mru_first=True, current_file=self.view.file_name())
                 self.show_targets(targets)
@@ -449,7 +458,7 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
             if len(tag_targets) > 0:
                 self.show_targets(tag_targets)
             else:
-                sublime.status_message('No targets with that tag')
+                sc.error(f'No targets with tag [{sel_tag}]')
 
     def show_targets(self, targets):
         '''Present target options to user.'''
@@ -506,7 +515,7 @@ class NotrGotoSectionCommand(sublime_plugin.TextCommand):
             if target.file == fn and target.ttype == 'section':
                 section_lines.append(target.line)
         if len(section_lines) == 0:
-            sublime.message_dialog("No tracked sections.\nIs this file in the current notr project?")
+            sc.error("No tracked sections. Is this file in the current notr project?")
             return  # --- early return
 
         section_lines.sort()
@@ -619,7 +628,7 @@ def _open_project(project_fn):
             # Check file integrity.
             if "notr_paths" not in proj or "notr_index" not in proj:
                 # Broken file.
-                sc.error(f'Invalid notr project file {expfn} - needs to be edited')
+                sc.error(f'Invalid notr project file: {expfn}')
                 return
 
             # Non-fatal patchups.
@@ -645,7 +654,6 @@ def _open_project(project_fn):
             s = f'Opened notr project file {project_fn}'
             sc.info(s)
             sublime.status_message(s)
-            # sublime.message_dialog(s)
             for v in sublime.active_window().views():
                 _set_status(v)
 
@@ -659,7 +667,7 @@ def _process_all_files(window):
     ''' Get all ntr files and grab their goodies. '''
     _targets.clear()
     _refs.clear()
-    _parse_errors.clear()
+    _user_errors.clear()
     ntr_files = []
 
     if _current_project is None:
@@ -675,7 +683,7 @@ def _process_all_files(window):
         if index_path is not None and os.path.exists(index_path):
             ntr_files.append(index_path)
         else:
-            _user_error(sc.get_settings_fn(), -1, f'Invalid path in project: [{index_path}]')
+            _do_user_error(sc.get_settings_fn(), -1, f'Invalid path in project: [{index_path}]')
 
     # Project directory paths.
     notr_paths = _current_project['notr_paths']
@@ -686,7 +694,7 @@ def _process_all_files(window):
                 if index_path is None or not os.path.samefile(nfile, index_path):  # don't do index twice
                     ntr_files.append(nfile)
         else:
-            _user_error(sc.get_settings_fn(), -1, f'Invalid path in project: [{npath}]')
+            _do_user_error(sc.get_settings_fn(), -1, f'Invalid path in project: [{npath}]')
 
     # Process the files. Targets are ordered by sections then files/links.
     sections = []
@@ -704,20 +712,20 @@ def _process_all_files(window):
     valid_refs = []
     for target in _targets:
         if target.name in valid_refs:
-            _user_error(target.file, target.line, f'Duplicate target name: [{target.name}]')
+            _do_user_error(target.file, target.line, f'Duplicate target name: [{target.name}]')
         elif len(target.name) == 0:
-            _user_error(target.file, target.line, f'Missing target name: [{target.name}]')
+            _do_user_error(target.file, target.line, f'Missing target name: [{target.name}]')
         elif target.ttype == '':
-            _user_error(target.file, target.line, f'Invalid target resource: [{target.resource}]')
+            _do_user_error(target.file, target.line, f'Invalid target resource: [{target.resource}]')
         else:
             valid_refs.append(target.name)
 
     for ref in _refs:
         if ref.name not in valid_refs:
-            _user_error(ref.file, ref.line, f'Invalid ref name: [{ref.name}]')
+            _do_user_error(ref.file, ref.line, f'Invalid ref name: [{ref.name}]')
 
     # Do output if errors.
-    if len(_parse_errors) > 0:
+    if len(_user_errors) > 0:
         output_view = None
         working_dir = ''
         use_panel = settings.get("show_panel", False)
@@ -742,7 +750,7 @@ def _process_all_files(window):
 
         # Fill with info.
         output_view.run_command('append', {'characters': "Notr file errors:\n"})
-        for p in _parse_errors:
+        for p in _user_errors:
             output_view.run_command('append', {'characters': f'{p[0]}({p[1]}): {p[2]}\n', 'force': True, 'scroll_to_end': True})
 
 
@@ -804,7 +812,7 @@ def _process_one_file(ntr_fn):
                         handled = True  # so far
 
                     if not handled:
-                        _user_error(ntr_fn, line_num, 'Invalid directive')
+                        _do_user_error(ntr_fn, line_num, 'Invalid directive')
 
                 ### Links - also checks type.
                 # <yer news>(https://nytimes.com)
@@ -821,7 +829,7 @@ def _process_one_file(ntr_fn):
 
                         if res is None:
                             # Bad env var.
-                            _user_error(ntr_fn, line_num, f'Bad env var in: [{m[1]}]')
+                            _do_user_error(ntr_fn, line_num, f'Bad env var in: [{m[1]}]')
                         else:
                             ttype = '' # default/unknown
                             _, ext = os.path.splitext(res)
@@ -835,7 +843,7 @@ def _process_one_file(ntr_fn):
                                 ttype = 'dir'
                             links.append(Target(name, ttype, '', 0, tags, res, ntr_fn, line_num))
                     else:
-                        _user_error(ntr_fn, line_num, 'Invalid syntax')
+                        _do_user_error(ntr_fn, line_num, 'Invalid syntax')
 
                 ### Refs - will be validated at end after collecting all links.
                 # <*some felix>
@@ -868,12 +876,12 @@ def _process_one_file(ntr_fn):
                             tags = m[1].strip().split()
                             sections.append(Target(name, 'section', '', len(hashes), tags, '', ntr_fn, line_num))
                     else:
-                        _user_error(ntr_fn, line_num, 'Invalid syntax')
+                        _do_user_error(ntr_fn, line_num, 'Invalid syntax')
 
                 line_num += 1
 
     except Exception as e:
-        _user_error(ntr_fn, line_num, f'Error processing file: [{e}]')
+        _do_user_error(ntr_fn, line_num, f'Error processing file: [{e}]')
         sc.error(f'Error processing file: {ntr_fn}:{line_num} {e}', e.__traceback__)
         return None
 
@@ -907,33 +915,6 @@ def _build_selector(targets):
             clr = sublime.KindId.COLOR_CYANISH
 
         ann = target.category
-
-
-        ''' old way - maybe some setting?
-        # ann = f'{target.ttype} ({target.category})'
-        ann = target.ttype
-        if target.ttype == 'section':
-            tt = "S"
-        elif target.ttype == 'url':
-            tt = "R"
-        elif target.ttype == 'image':
-            tt = "R"
-        elif target.ttype == 'file':
-            tt = "R"
-        elif target.ttype == 'dir':
-            tt = "R"
-        else:
-            tt = "?"
-
-        # COLOR_REDISH/_ORANGISH, _GREENISH/_YELLOWISH/_CYANISH, _BLUISH, _PURPLISH, _PINKISH (_DARK, _LIGHT)
-        if target.category == 'sticky':
-            clr = sublime.KindId.COLOR_PURPLISH
-        elif target.category == 'mru':
-            clr = sublime.KindId.COLOR_REDISH
-        else:
-            clr = sublime.KindId.COLOR_GREENISH
-        '''
-
         sty = (clr, tt, '')
 
         lbl = target.name if len(target.name) > 0 else target.resource
@@ -1106,11 +1087,11 @@ def _update_mru(name):
 
 
 #-----------------------------------------------------------------------------------
-def _user_error(path, line, msg):
-    ''' Error in user edited file. '''
+def _do_user_error(path, line, msg):
+    ''' Error in user file. '''
     if '(' in msg or ')' in msg:
-        msg = msg + '   <<< Targets with parens not allowed'
-    _parse_errors.append((path, line, msg))
+        msg = msg + '   <<< Targets with parens not supported'
+    _user_errors.append((path, line, msg))
 
 
 #-----------------------------------------------------------------------------------

@@ -51,22 +51,22 @@ To run the example:
 
 ## Commands and Menus
 
-| Command                      | Description                                     | Args                     |
-| :--------                    | :-------                                        | :--------                |
-| notr_open_project            | Open a project from settings using selector     |                          |
-| notr_edit_project            | Edit the current project                        |                          |
-| notr_insert_target_from_clip | Insert a target from clipboard                  |                          |
-| notr_insert_ref              | Insert a ref from selector                      |                          |
-| notr_goto_target             | Go to a target via selector or ref or link      | filter_by_tag=T OR F     |
-| notr_goto_section            | Go to next/previous section in file             | where: next OR prev      |
-| notr_insert_hrule            | Make a line                                     | fill_str="=", reps=20    |
-| notr_find_in_files           | Search within the notr_paths in current project |                          |
-| table_fit                    | Fit table contents to columns                   |                          |
-| table_insert_col             | Insert column at caret                          |                          |
-| table_delete_col             | Remove column at caret                          |                          |
-| table_sort_col               | Sort column at caret - direction toggles        | asc=true OR false        |
-| notr_dump                    | Diagnostic to show the internal info            |                          |
-| notr_reload                  | Force reload after editing colors etc           |                          |
+| Command                      | Description                                     | Args                                     |
+| :--------                    | :-------                                        | :--------                                |
+| notr_open_project            | Open a project from settings using selector     |                                          |
+| notr_edit_project            | Edit the current project                        |                                          |
+| notr_insert_target_from_clip | Insert a target from clipboard                  |                                          |
+| notr_insert_ref              | Insert a ref from selector                      |                                          |
+| notr_goto_target             | Go to a target via selector or ref or link      | filter_by_tag=T OR F                     |
+| notr_goto_section            | Go to next/previous section in file             | where: next OR prev                      |
+| notr_insert_hrule            | Make a line                                     | fill_str="=", reps=20                    |
+| notr_find_in_files           | Search within the notr_paths in current project |                                          |
+| table_fit                    | Fit table contents to columns                   |                                          |
+| table_insert_col             | Insert column at caret                          |                                          |
+| table_delete_col             | Remove column at caret                          |                                          |
+| table_sort_col               | Sort column at caret - direction toggles        | asc=true OR false                        |
+| notr_dump                    | Diagnostic to show the internal info            | verbose=T is everything else just les    |
+| notr_reload                  | Force reload after editing colors etc           |                                          |
 
 
 There is no default `Context.sublime-menu` file in this plugin.
