@@ -7,7 +7,7 @@
 
 name: Notr
 scope: text.notr
-# version: 2
+version: 2
 
 file_extensions:
   - ntr
