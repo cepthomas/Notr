@@ -12,7 +12,38 @@ import sublime_plugin
 from . import sbot_common as sc
 
 
-# TODO Open project looks at settings.projects which could get out of sync with _store. Harmonize the two?
+# TODO Open project looks at settings.project_files which could get out of sync with _store. Harmonize the two?
+# error: No valid project files in settings
+
+'''
+settings
+{
+    "project_files":
+    [
+        "$APPDATA\\Sublime Text\\Packages\\Notr\\example\\notr-demo.nproj",
+        "$OneDrive\\OneDriveDocuments\\notes\\main.nproj",
+    ]
+}
+
+store
+{
+    "C:\\Users\\cepth\\AppData\\Roaming\\Sublime Text\\Packages\\Notr\\example\\notr-demo.nproj": {
+        "active": false,
+        "mru": []
+    },
+    "C:\\Users\\cepth\\OneDrive\\OneDriveDocuments\\notes\\main.nproj": {
+        "active": true,
+        "mru": [
+            "todo#Top",
+            "books#Top",
+            "invest#New AMF funds",
+            "move#Top",
+            "tennis-notes#Top"
+        ]
+    }
+}
+'''
+
 
 
 # Known file types.
