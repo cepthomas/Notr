@@ -55,10 +55,10 @@ contexts:
   #################### section ###########################################
 
 
-  section-heading:
+  section-heading: # TODO separate discrete per level + folding
     # line starts with #* text
     - match: '^(#+ +[^\[]+) *(?:\[(.*)\])?\n' # to eol
-    # - match: '^(#+ +[^\[]+) *(?:\[(.*)\])?' # whole visible line
+    # - match: '^(#+ +[^\[]+) *(?:\[(.*)\])?' # whole visible line - fights tags section
       scope: markup.heading.notr
       captures:
         1: markup.heading.content.notr
