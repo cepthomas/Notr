@@ -36,6 +36,8 @@ Built for ST4 on Windows. Linux and OSX should be ok but are minimally tested - 
 
 ![ex3](example/ex3.jpg)
 
+![ex4](example/ex4.jpg)
+
 To run the example:
 - Install the plugin.
 - Select `Preferences->Package Settings->Notr`.

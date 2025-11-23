@@ -96,7 +96,7 @@ Use `*` to identify references defined beforehand - above or in `notr_index` fil
 Ref to other file. <*felix le chat> or <*other file type>.
 Ref to URL. <*nyt>
 Ref section in this ntr file: <*notr-spec#section no tags>.
-Ref section in another ntr file: <*page2#sect ion 2>. `page2` is the _pathless root of_ the ntr filename.
+Ref section in another ntr file: <*page2#section 2>. `page2` is the _pathless root of_ the ntr filename.
   It must be unique in current project.
 
 ## Tables [tag2]
