@@ -18,7 +18,24 @@ from . import sbot_common as sc
 '''
 settings
 {
-    "project_files":
+    // All notr project filenames.
+    //"project_files": [],
+
+    // Sort tags alphabetically or by frequency.
+    "sort_tags_alpha": true,
+
+    // How many mru entries in goto selector. 0 = disabled.
+    "mru_size": 5,
+
+    // User highlights option.
+    "fixed_hl_whole_word": true,
+
+    // Output to panel or view.
+    "show_panel": false,
+}
+
+{
+    my "project_files": -> gone
     [
         "$APPDATA\\Sublime Text\\Packages\\Notr\\example\\notr-demo.nproj",
         "$OneDrive\\OneDriveDocuments\\notes\\main.nproj",
@@ -136,10 +153,12 @@ class NotrEvent(sublime_plugin.EventListener):
         if project_files is not None:
             for p in project_files:  # pyright: ignore
                 sp = sc.expand_vars(p)
+                print('>>>1', sp)
                 if sp is not None and os.path.isfile(sp):
                     valid_projects.append(sc.expand_vars(p))
                 else:
                     sc.error(f'Invalid project file in settings: {p}')
+        print('>>>11', valid_projects)
 
         # Get persisted store info.
         _store = None
@@ -148,6 +167,7 @@ class NotrEvent(sublime_plugin.EventListener):
             try:
                 with open(store_fn, 'r') as fp:
                     _store = json.load(fp)
+                print('>>>3', _store)
             except Exception as e:
                 sc.error(f'Error processing {store_fn}: {e}', e.__traceback__)
 
@@ -155,6 +175,7 @@ class NotrEvent(sublime_plugin.EventListener):
             _store = {}
             for p in valid_projects:
                 _store[sc.expand_vars(p)] = {'active': {len(_store) == 0}, 'mru': []}
+        print('>>>6', _store)
 
         # Remove dead/invalid projects. Determine project file. Ensure one only active.
         dead = []
@@ -168,7 +189,7 @@ class NotrEvent(sublime_plugin.EventListener):
                 v['active'] = False
         for p in dead:
             del _store[p]
-
+        print('>>>9', _store)
 
         if project_fn is None and len(valid_projects) > 0:
             project_fn = valid_projects[0]
@@ -254,12 +275,15 @@ class NotrOpenProjectCommand(sublime_plugin.WindowCommand):
         self.panel_items.clear()
 
         if _store is not None and len(_store) > 0:
+            print('>>>50', _store)
             for path, _ in _store.items():
+                print('>>>51', path)
                 projfn = pathlib.Path(path).stem
                 self.panel_items.append(sublime.QuickPanelItem(trigger=projfn, details=path, kind=sublime.KIND_AMBIGUOUS))
             self.window.show_quick_panel(self.panel_items, on_select=self.on_sel_project)
 
     def on_sel_project(self, *args, **kwargs):
+        ''' Select current project from known. '''
         del kwargs
         if len(args) > 0 and args[0] >= 0:
             _open_project(self.panel_items[args[0]].details)
