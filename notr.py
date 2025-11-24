@@ -12,57 +12,6 @@ import sublime_plugin
 from . import sbot_common as sc
 
 
-# TODO Open project looks at settings.project_files which could get out of sync with _store. Harmonize the two?
-# error: No valid project files in settings
-
-'''
-settings
-{
-    // All notr project filenames.
-    //"project_files": [],
-
-    // Sort tags alphabetically or by frequency.
-    "sort_tags_alpha": true,
-
-    // How many mru entries in goto selector. 0 = disabled.
-    "mru_size": 5,
-
-    // User highlights option.
-    "fixed_hl_whole_word": true,
-
-    // Output to panel or view.
-    "show_panel": false,
-}
-
-{
-    my "project_files": -> gone
-    [
-        "$APPDATA\\Sublime Text\\Packages\\Notr\\example\\notr-demo.nproj",
-        "$OneDrive\\OneDriveDocuments\\notes\\main.nproj",
-    ]
-}
-
-store
-{
-    "C:\\Users\\cepth\\AppData\\Roaming\\Sublime Text\\Packages\\Notr\\example\\notr-demo.nproj": {
-        "active": false,
-        "mru": []
-    },
-    "C:\\Users\\cepth\\OneDrive\\OneDriveDocuments\\notes\\main.nproj": {
-        "active": true,
-        "mru": [
-            "todo#Top",
-            "books#Top",
-            "invest#New AMF funds",
-            "move#Top",
-            "tennis-notes#Top"
-        ]
-    }
-}
-'''
-
-
-
 # Known file types.
 IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 
@@ -102,7 +51,8 @@ class Ref:
 # Current project file (*.nproj) contents.
 _current_project = None
 
-# The whole store file ('Notr.store') contents. None means uninitialized.
+# The runtime store file. None means uninitialized.
+# See $APPDATA\Sublime Text\Packages\User\Notr\Notr.store.
 _store = None
 
 # Persisted mru.
@@ -146,53 +96,43 @@ class NotrEvent(sublime_plugin.EventListener):
         settings = sublime.load_settings(fn)
         random.seed()
 
-        # Check user project files.
+        # Read and check user project files.
         valid_projects = []
 
         project_files = settings.get('project_files')
         if project_files is not None:
-            for p in project_files:  # pyright: ignore
-                sp = sc.expand_vars(p)
-                print('>>>1', sp)
-                if sp is not None and os.path.isfile(sp):
-                    valid_projects.append(sc.expand_vars(p))
-                else:
-                    sc.error(f'Invalid project file in settings: {p}')
-        print('>>>11', valid_projects)
+            for pf in project_files:  # pyright: ignore
+                spf = sc.expand_vars(pf)
+                if spf is not None and os.path.isfile(spf):
+                    valid_projects.append(spf)
+                else: # invalid project file - user must fix
+                    sc.warn(f'Invalid project file: {pf}\nEdit your Notr settings')
 
-        # Get persisted store info.
-        _store = None
+        # Get persisted store info into temp work area.
+        temp_store = {}
         store_fn = sc.get_store_fn()
         if os.path.isfile(store_fn):
             try:
                 with open(store_fn, 'r') as fp:
-                    _store = json.load(fp)
-                print('>>>3', _store)
+                    temp_store = json.load(fp)
             except Exception as e:
                 sc.error(f'Error processing {store_fn}: {e}', e.__traceback__)
 
-        if _store is None:  # Assume new file with default fields.
-            _store = {}
-            for p in valid_projects:
-                _store[sc.expand_vars(p)] = {'active': {len(_store) == 0}, 'mru': []}
-        print('>>>6', _store)
+        # Populate the real store.
+        _store = {}
+        for vp in valid_projects:
+            if vp in temp_store.keys(): # valid one - copy it
+                _store[vp] = temp_store[vp]
+            else: # new one - add default
+                _store[vp] = {'active':False, 'mru':[]}
 
-        # Remove dead/invalid projects. Determine project file. Ensure one only active.
-        dead = []
+        # Determine project file. Ensure one only active.
         project_fn = None
         for path, v in _store.items():
-            if not os.path.isfile(path) or path not in valid_projects:
-                dead.append(path)
-            elif not project_fn and v['active'] is True:
+            if project_fn is None and v['active'] is True:
                 project_fn = path
             else:
                 v['active'] = False
-        for p in dead:
-            del _store[p]
-        print('>>>9', _store)
-
-        if project_fn is None and len(valid_projects) > 0:
-            project_fn = valid_projects[0]
 
         if project_fn is not None:
             _open_project(project_fn)
@@ -201,7 +141,7 @@ class NotrEvent(sublime_plugin.EventListener):
             for view in views:
                 self._init_fixed_hl(view)
         else:
-            sc.error(f'No valid project files in settings')
+            sc.warn(f'No project file selected')
 
     def on_load(self, view):
         ''' Loaded a new file. '''
@@ -275,9 +215,7 @@ class NotrOpenProjectCommand(sublime_plugin.WindowCommand):
         self.panel_items.clear()
 
         if _store is not None and len(_store) > 0:
-            print('>>>50', _store)
             for path, _ in _store.items():
-                print('>>>51', path)
                 projfn = pathlib.Path(path).stem
                 self.panel_items.append(sublime.QuickPanelItem(trigger=projfn, details=path, kind=sublime.KIND_AMBIGUOUS))
             self.window.show_quick_panel(self.panel_items, on_select=self.on_sel_project)
@@ -290,7 +228,7 @@ class NotrOpenProjectCommand(sublime_plugin.WindowCommand):
             _process_all_files(self.window)
 
     def is_visible(self):
-        return True
+        return _store is not None and len(_store) > 0 and _current_project is not None
 
 
 #-----------------------------------------------------------------------------------
