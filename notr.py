@@ -134,6 +134,8 @@ class NotrEvent(sublime_plugin.EventListener):
             else:
                 v['active'] = False
 
+        # print('>>>', _store, _current_project)
+
         if project_fn is not None:
             _open_project(project_fn)
             _process_all_files(views[0].window())
@@ -228,7 +230,8 @@ class NotrOpenProjectCommand(sublime_plugin.WindowCommand):
             _process_all_files(self.window)
 
     def is_visible(self):
-        return _store is not None and len(_store) > 0 and _current_project is not None
+        # print('---', _store, _current_project)
+        return _store is not None and len(_store) > 0
 
 
 #-----------------------------------------------------------------------------------
