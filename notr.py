@@ -52,7 +52,7 @@ class Ref:
 _current_project = None
 
 # The runtime store file. None means uninitialized.
-# See $APPDATA\Sublime Text\Packages\User\Notr\Notr.store.
+# See Packages/User/Notr/Notr.store.
 _store = None
 
 # Persisted mru.
@@ -325,31 +325,30 @@ class NotrFindInFilesCommand(sublime_plugin.WindowCommand):
 
 
 #-----------------------------------------------------------------------------------
-class NotrPublishCommand(sublime_plugin.WindowCommand):
-    ''' TODO Publish the .ntr files somehow/somewhere. '''
+# class NotrPublishCommand(sublime_plugin.WindowCommand):
+#     ''' TODO Publish the .ntr files somehow/somewhere. '''
 
-    def run(self):
-        onedrive_path = os.path.expandvars('$OneDrive')
-        docs_path = os.path.join(onedrive_path, 'OneDriveDocuments')
-        pub_path = os.path.join(onedrive_path, '_notr')
-        notes_path = os.path.join(docs_path, 'notes')
+#     def run(self):
+#         docs_path = os.path.join("somewhere", 'OneDriveDocuments')
+#         pub_path = os.path.join("somewhere", '_notr')
+#         notes_path = os.path.join(docs_path, 'notes')
 
-        notes_to_pub = [
-            'activities.ntr',
-            'shop.ntr',
-            'todo.ntr',
-        ]
+#         notes_to_pub = [
+#             'activities.ntr',
+#             'shop.ntr',
+#             'todo.ntr',
+#         ]
 
-        # Gen the publish files.
-        for p in notes_to_pub:
-            src = os.path.join(notes_path, p)
-            dest = os.path.join(pub_path, p.replace('.ntr', '.html'))
-            # need to manage files in/out. Maybe use clipboard?
-            # self.window.run_command("sbot_render_to_html", {"group": 0})
-            time.sleep(0.5) # let st finish this first
+#         # Gen the publish files.
+#         for p in notes_to_pub:
+#             src = os.path.join(notes_path, p)
+#             dest = os.path.join(pub_path, p.replace('.ntr', '.html'))
+#             # need to manage files in/out. Maybe use clipboard?
+#             # self.window.run_command("sbot_render_to_html", {"group": 0})
+#             time.sleep(0.5) # let st finish this first
 
-    def is_visible(self):
-        return False
+#     def is_visible(self):
+#         return False
 
 
 #-----------------------------------------------------------------------------------

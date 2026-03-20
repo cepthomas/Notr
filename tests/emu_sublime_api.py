@@ -144,7 +144,7 @@ def version():
     return '4143'
 
 def packages_path():
-    return os.path.expandvars('$APPDATA\\Sublime Text\\Packages')
+    return os.path.expandvars('FIX_ME')
 
 def executable_path():
     raise NotImplementedError()
