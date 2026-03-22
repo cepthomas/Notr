@@ -7,7 +7,7 @@ step: the text itself is the whole point.
 The markup syntax provides file and section navigation and colorizing to provide visual clues for things like
 sections, links, tables, lists, etc.
 
-Built for ST4 on Windows. Linux and OSX should be ok but are minimally tested - PRs welcome.
+X Built for ST4 on Windows. Linux and OSX should be ok but are minimally tested - PRs welcome.
 
 ## Features
 
