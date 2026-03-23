@@ -618,7 +618,7 @@ def _open_project(project_fn):
 
         with open(expfn, 'r') as fp:
             s = fp.read()
-            proj = json.loads(s) # jsonc?
+            proj = json.loads(s) # TODO use jsonc so .nproj files can use comments.
 
             # Check file integrity.
             if "notr_paths" not in proj or "notr_index" not in proj:
