@@ -1,5 +1,4 @@
 {
-    // Windows flavor. Linux would use ~/.config/sublime-text/Packages/
     "notr_index": "$APPDATA/Sublime Text/Packages/Notr/example/my-index.ntr",
     "notr_paths":
     [
