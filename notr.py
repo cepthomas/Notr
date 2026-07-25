@@ -12,8 +12,6 @@ import sublime
 import sublime_plugin
 from . import sbot_common as sc
 
-# TODO Need a help which opens the example file(s).
-
 # Known file types.
 IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 
