@@ -68,6 +68,7 @@ To run the example:
 | table_delete_col             | Remove column at caret                          |                                          |
 | table_sort_col               | Sort column at caret - direction toggles        | asc=true OR false                        |
 | notr_dump                    | Diagnostic to show the internal info            | verbose=T is everything else just les    |
+| notr_help                    | Show a help web page                            |                                          |
 | notr_reload                  | Force reload after editing colors etc           |                                          |
 
 

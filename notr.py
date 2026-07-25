@@ -7,6 +7,7 @@ import json
 import pathlib
 import time
 import dataclasses
+import webbrowser
 import sublime
 import sublime_plugin
 from . import sbot_common as sc
@@ -291,6 +292,20 @@ class NotrDumpCommand(sublime_plugin.WindowCommand):
             text.extend([f'{p[0]}({p[1]}): {p[2]}' for p in _user_errors])
 
         sc.create_new_view(self.window, '\n'.join(text))
+
+    def is_visible(self):
+        return True
+
+
+#-----------------------------------------------------------------------------------
+class NotrHelpCommand(sublime_plugin.WindowCommand):
+    ''' Diagnostic. '''
+
+    def run(self, verbose=False):
+        os.getcwd()
+        sublime.executable_path()
+        fn = os.path.join(sublime.packages_path(), 'Notr/example/notr-spec.htm')
+        webbrowser.open_new_tab(fn)
 
     def is_visible(self):
         return True

@@ -6,5 +6,6 @@
     { "caption": "Notr: Goto Target by Tag", "command": "notr_goto_target", "args" : {"filter_by_tag" : true} },
     { "caption": "Notr: Dump", "command": "notr_dump", "args" : {"verbose" : true} },
     { "caption": "Notr: Reload", "command": "notr_reload" },
-    { "caption": "Notr: Edit Settings", "command": "edit_settings", "args": { "base_file": "${packages}/Notr/Notr.sublime-settings", "default": "{\n$0\n}\n" } }
+    { "caption": "Notr: Edit Settings", "command": "edit_settings", "args": { "base_file": "${packages}/Notr/Notr.sublime-settings", "default": "{\n$0\n}\n" } },
+    { "caption": "Notr: Help", "command": "notr_help" }
 ]
