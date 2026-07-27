@@ -1,16 +1,17 @@
 import sys
 import os
-import sublime
 import unittest
 from unittest.mock import MagicMock
 
-# Set up the sublime emulation environment.
+# Set up the sublime emulation environment. TODO kind of broken.
 import emu_sublime_api as emu
+# from . import sbot_common as sc
+# import sbot_common as sc
 
 # Import the code under test.
 cut_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if cut_path not in sys.path: sys.path.insert(0, cut_path)
-import notr
+import notr as n
 
 
 #-----------------------------------------------------------------------------------
@@ -37,7 +38,7 @@ class TestNotr(unittest.TestCase):
 
         # Mock settings.
         mock_settings = {
-            "project_files": [os.path.join(sublime.packages_path(), "Notr", "example", "notr-demo.nproj")],
+            "project_files": [os.path.join(emu.packages_path(), "Notr", "example", "notr-demo.nproj")],
             "sort_tags_alpha": True,
             "mru_size": 5,
             "fixed_hl_whole_word": True,
@@ -51,21 +52,21 @@ class TestNotr(unittest.TestCase):
         # output_view.run_command('append', {'characters': "Notr file errors:\n"})
 
         # Trigger the code under test.
-        evt = notr.NotrEvent()
+        evt = n.NotrEvent()
         evt.on_init([self.view])
 
-        self.assertEqual(len(notr._get_all_tags()), 5)
-        self.assertEqual(len(notr._targets), 15)
-        self.assertEqual(len(notr._refs), 6)
-#        self.assertEqual(len(notr._parse_errors), 2)
-        # self.assertEqual(len(notr._store), 13)
+        self.assertEqual(len(n._get_all_tags()), 5)
+        self.assertEqual(len(n._targets), 15)
+        self.assertEqual(len(n._refs), 6)
+#        self.assertEqual(len(n._parse_errors), 2)
+        # self.assertEqual(len(n._store), 13)
 
-        self.assertEqual(len(notr._current_project['notr_paths']), 1)
-        self.assertEqual(len(notr._current_project['fixed_hl']), 3)
-        self.assertEqual(len(notr._current_project['sticky']), 2)
+        self.assertEqual(len(n._current_project['notr_paths']), 1)
+        self.assertEqual(len(n._current_project['fixed_hl']), 3)
+        self.assertEqual(len(n._current_project['sticky']), 2)
 
     #------------------------------------------------------------
     @unittest.skip('')
     def test_GotoRef(self):
-        cmd = notr.NotrGotoTargetCommand(self.view)
+        cmd = n.NotrGotoTargetCommand(self.view)
         cmd.run(None, False)

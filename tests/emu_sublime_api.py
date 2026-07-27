@@ -144,8 +144,8 @@ def version():
     return '4143'
 
 def packages_path():
-    return os.path.expandvars('FIX_ME')
-
+    return os.path.expandvars(r'$APPDATA\Sublime Text\Packages')
+    
 def executable_path():
     raise NotImplementedError()
 
@@ -482,7 +482,7 @@ class Window():
         self._project_data = None
 
     def __repr__(self):
-        return f'Window id:{self._id}'
+        return f'Window id:{self._id} views:{len(self._views)} active:{self._active_view}'
 
     def id(self):
         return self._id
