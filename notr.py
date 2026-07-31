@@ -10,7 +10,11 @@ import dataclasses
 import webbrowser
 import sublime
 import sublime_plugin
-from . import sbot_common as sc
+try:
+    from . import sbot_common as sc  # normal import
+except:
+    import sbot_common as sc  # unittest import
+
 
 # Known file types.
 IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
@@ -18,7 +22,7 @@ IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 
 #--------------------------- Types -------------------------------------------------
 
-# One target: section or file/url.
+# One target: section or file or url.
 @dataclasses.dataclass(order=True)
 class Target:
     sort_index: str = dataclasses.field(init=False)
@@ -52,7 +56,7 @@ class Ref:
 _current_project = None
 
 # The runtime store file. None means uninitialized.
-# See Packages/User/Notr/Notr.store.
+# See Packages\User\Notr\Notr.store.
 _store = None
 
 # Persisted mru.
@@ -97,6 +101,8 @@ class NotrEvent(sublime_plugin.EventListener):
         random.seed()
 
         # Read and check user project files.
+        # #### os.path.normpath() -> exists
+
         valid_projects = []
 
         project_files = settings.get('project_files')
@@ -134,7 +140,10 @@ class NotrEvent(sublime_plugin.EventListener):
             else:
                 v['active'] = False
 
-        # print('>>>', _store, _current_project)
+        print('>>> project_fn', project_fn)
+        print('>>> valid_projects', valid_projects)
+        print('>>> _store', _store)
+        print('>>> temp_store', temp_store)
 
         if project_fn is not None:
             _open_project(project_fn)
@@ -302,7 +311,7 @@ class NotrHelpCommand(sublime_plugin.WindowCommand):
     def run(self, verbose=False):
         os.getcwd()
         sublime.executable_path()
-        fn = os.path.join(sublime.packages_path(), 'Notr/example/notr-spec.htm')
+        fn = os.path.join(sublime.packages_path(), 'Notr', 'example', 'notr-spec.htm')
         webbrowser.open_new_tab(fn)
 
     def is_visible(self):
@@ -328,7 +337,6 @@ class NotrFindInFilesCommand(sublime_plugin.WindowCommand):
                     paths.append(expath)
 
         # Show it so the user can enter the pattern.
-        # https://github.com/SublimeText/PackageDev/blob/master/plugins/command_completions/builtin_commands_meta_data.yaml
         self.window.run_command("show_panel", {
                                 "panel": "find_in_files", "where": ', '.join(paths), "case_sensitive": True, "pattern": '',
                                 "whole_word": False, "preserve_case": True, "show_context": False, "use_buffer": True,
@@ -825,7 +833,7 @@ def _process_one_file(ntr_fn):
 
                 ### Links - also checks type.
                 # <yer news>(https://nytimes.com)
-                # <some felix>($NOTES_PATH/felix9.jpg)
+                # <some felix>($NOTES_PATH\felix9.jpg)
                 matches = re_links.findall(line)
                 for m in matches:
                     if len(m) >= 2:

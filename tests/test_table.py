@@ -304,7 +304,7 @@ class TestTable(unittest.TestCase):
         reg = cmd.get_table_region()
         gentext = self.view.substr(reg)
         self.maxDiff = None
-        # TODO fails self.assertEqual(gentext, exptext)
+        # TODO1 fails self.assertEqual(gentext, exptext)
 
 
     #------------------------------------------------------------
