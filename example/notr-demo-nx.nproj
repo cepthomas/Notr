@@ -1,8 +1,8 @@
 {
-    "notr_index": "$APPDATA\\Sublime Text\\Packages\\Notr\\example\\my-index.ntr",
+    "notr_index": "~/.config/sublime-text/Packages/Notr/example/my-index-nx.ntr",
     "notr_paths":
     [
-        "$APPDATA\\Sublime Text\\Packages\\Notr\\example"
+        "~/.config/sublime-text/Packages/Notr/example"
     ],
     "section_sel_depth": 2,
     "fixed_hl":

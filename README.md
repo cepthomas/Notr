@@ -9,8 +9,6 @@ sections, links, tables, lists, etc.
 
 Built for ST4 on Windows. Linux and OSX should be ok but are minimally tested - PRs welcome.
 
-Note that the example files use Windows filename conventions but should translate to linux/OSX easuily.
-
 
 ## Features
 
@@ -36,16 +34,19 @@ It will look something like [this](notr-spec.htm).
 
 To run the example:
 - Install the plugin.
-- Select `Preferences->Package Settings -> Notr`.
-- Add this project name to your settings (adjust for platform and ST configuration):
+- Select `Preferences => Package Settings => Notr`.
+- Add this project name to your settings:
 ``` json
 "project_files":
 [
+    // windows:
     "<ST_PACKAGES_DIR>\\Notr\\example\\notr-demo.nproj",
+    // linux:
+    "<ST_PACKAGES_DIR>/Notr/example/notr-demo-nx.nproj",
 ]
 ```
 - Implement color scheme per section `Color Scheme`.
-- Now open `example\notr-spec.ntr`. Test drive the various context menu selections.
+- Now open `notr-spec.ntr`. Test drive the various context menu selections.
 
 ## Commands and Menus
 

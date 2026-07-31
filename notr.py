@@ -116,7 +116,7 @@ class NotrEvent(sublime_plugin.EventListener):
 
         # Get persisted store info into temp work area.
         temp_store = {}
-        store_fn = sc.get_store_fn()
+        store_fn = sc.get_store_fn() ### <<<<< TODO1 test needs to emu this
         if os.path.isfile(store_fn):
             try:
                 with open(store_fn, 'r') as fp:
@@ -132,14 +132,15 @@ class NotrEvent(sublime_plugin.EventListener):
             else: # new one - add default
                 _store[vp] = {'active':False, 'mru':[]}
 
-        # Determine project file. Ensure one only active.
+        # Determine project file.
         project_fn = None
         for path, v in _store.items():
             if project_fn is None and v['active'] is True:
                 project_fn = path
-            else:
+            else: # Ensure one only active.
                 v['active'] = False
 
+        print('>>> store_fn', store_fn)
         print('>>> project_fn', project_fn)
         print('>>> valid_projects', valid_projects)
         print('>>> _store', _store)
@@ -152,7 +153,7 @@ class NotrEvent(sublime_plugin.EventListener):
             for view in views:
                 self._init_fixed_hl(view)
         else:
-            sc.warn(f'No project file selected')
+            sc.warn(f'No project file selected') # <<<<<<<<<<<<<<<<<<
 
     def on_load(self, view):
         ''' Loaded a new file. '''

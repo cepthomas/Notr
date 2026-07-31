@@ -1,13 +1,13 @@
 import sys
 import os
 import unittest
-from unittest.mock import MagicMock
 
 # Set up the sublime emulation environment.
 import emu_sublime_api as emu
 # Import the code under test - set up path.
 cut_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if cut_path not in sys.path: sys.path.insert(0, cut_path)
+
 import notr as n
 
 
@@ -21,20 +21,14 @@ class TestNotr(unittest.TestCase):
         pass
 
     #------------------------------------------------------------
-    # Mock scope interrogation by row. Corresponds to table in table1.ntr.
-    def mock_run_command(self, *args, **kwargs):
-        emu.ext_trace(f'args:{args}')
-        emu.ext_trace(f'kwargs:{kwargs}')
-
-    #------------------------------------------------------------
     def test_parsing(self):
-        ''' Tests the .ntr file parsing. Uses the demo project on Windows.'''
+        ''' Tests the .ntr file parsing. '''
         self.window = emu.Window(900)
         self.view = emu.View(901)
         self.view.set_window(self.window)
 
         # Mock settings.
-        proj_fn = os.path.join(emu.packages_path(), "Notr", "example", "notr-demo.nproj")
+        proj_fn = os.path.join(emu.packages_path(), "Notr", "test", "test.nproj")
         mock_settings = {
             "project_files": [proj_fn],
             "sort_tags_alpha": True,
@@ -42,12 +36,6 @@ class TestNotr(unittest.TestCase):
             "fixed_hl_whole_word": True,
         }
         emu.set_settings(mock_settings)
-
-        emu.run_command = MagicMock(side_effect=self.mock_run_command)
-        self.window.run_command = MagicMock(side_effect=self.mock_run_command)
-        self.view.run_command = MagicMock(side_effect=self.mock_run_command)
-        # window.run_command('show_panel', {'panel': 'output.exec'})
-        # output_view.run_command('append', {'characters': "Notr file errors:\n"})
 
         # Trigger the code under test.
         evt = n.NotrEvent()
