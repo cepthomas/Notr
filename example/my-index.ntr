@@ -1,7 +1,6 @@
 
 - This file gets loaded first.
 - Put stuff like path aliases and common links here.
-- Use forward slash separator for linux compatibility.
 
 Directives start with `:`.
 
@@ -11,17 +10,18 @@ This means don't add this file to the index. References are still included.
 Aliases for paths. They are written to the environment and can be used in your links like any other env var.
 This can be useful for custom paths you set in your env.
 :NOTR_PATH=$APPDATA\Sublime Text\Packages\Notr
-Linux flavor:
-:NOTR_PATH_NX=~/.config/sublime-text/Packages/Notr
+> nx: :NOTR_PATH=~/.config/sublime-text/Packages/Notr
 
 
 # Common Links [tag2 tag9]
 
 <yer news>(https://nytimes.com)
 <another felix>($NOTR_PATH\example\felix56.jpg)
+> nx: <another felix>($NOTR_PATH/example/felix56.jpg)
 
 
 # Other Files of Interest [tag4]
 
 <another ntr>($NOTR_PATH\example\page2.ntr)
+> nx: <another ntr>($NOTR_PATH/example/page2.ntr)
 

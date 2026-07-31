@@ -7,9 +7,15 @@ step: the text itself is the whole point.
 The markup syntax provides file and section navigation and colorizing to provide visual clues for things like
 sections, links, tables, lists, etc.
 
-X Built for ST4 on Windows. Linux and OSX should be ok but are minimally tested - PRs welcome.
+Built for ST4 on Windows. Linux and OSX should be ok but are minimally tested - PRs welcome.
+
+Note that the example files use Windows filename conventions but should translate to linux/OSX easuily.
+
 
 ## Features
+
+[The spec](notr-spec.ntr) defines the features (using Windows filenames).
+It will look something like [this](notr-spec.htm).
 
 - Notr files have the extension `.ntr`
 - Multiple notr projects.
@@ -28,20 +34,10 @@ X Built for ST4 on Windows. Linux and OSX should be ok but are minimally tested 
 
 ## Example
 
-[The spec](example/notr-spec.ntr) provides an example of the features. It will look something like this:
-
-![ex1](example/ex1.jpg)
-
-![ex2](example/ex2.jpg)
-
-![ex3](example/ex3.jpg)
-
-![ex4](example/ex4.jpg)
-
 To run the example:
 - Install the plugin.
-- Select `Preferences->Package Settings->Notr`.
-- Add this project name to your settings (adjusted for platform):
+- Select `Preferences->Package Settings -> Notr`.
+- Add this project name to your settings (adjust for platform and ST configuration):
 ``` json
 "project_files":
 [
@@ -109,7 +105,7 @@ Add the commands you like to your own `User\Context.sublime-menu` file. Typical 
 
 ## Project File
 
-A notr project file (e.g. [demo project](example/notr-demo.nproj)) contains the following elements.
+A notr project file (e.g. [demo project](example\notr-demo.nproj)) contains the following elements.
 Note: currently this file is pure json and doesn't support comments or trailing commas.
 
 | Kwy                 | Description                                                     |
@@ -124,7 +120,7 @@ Note: currently this file is pure json and doesn't support comments or trailing 
 ## Color Scheme
 
 New scopes have been added to support this application. Adjust the values in
-[notr scopes](example/notr-scopes.sublime-color-scheme) to taste and add them
+[notr scopes](example\notr-scopes.sublime-color-scheme) to taste and add them
 to your `Packages\User\your.sublime-color-scheme` file.
 Note that these are shared with the `Render View` and `Highlight Token` packages.
 
@@ -137,7 +133,7 @@ After editing your color-scheme, you need to close and reopen affected views.
 - Coloring for `markup.user_hls` and `markup.fixed_hls` only supports fore and back colors, not font_style.
 - `view.add_regions()` apparently only supports colors, annotations, and icon. It does not support font style and region flags.
   Also they are not available via `extract_scope()`.
-- Doesn't handle targets with embedded parentheses (i.e. C:\Program Files (x86)\SomeApp). It exceeds my meager regex skills.
+- Doesn't handle targets with embedded parentheses (e.g. `Program Files (x86)`). It exceeds my meager regex skills.
 - If you move or rename a `.ntr` file you need to restart Notr.
 
 ## Notes
