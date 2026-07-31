@@ -2,7 +2,7 @@
 cls
 echo off
 
-pushd tests
+rem pushd tests
 python -m unittest test_notr test_table
-popd
+rem popd
 
