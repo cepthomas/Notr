@@ -116,7 +116,7 @@ class NotrEvent(sublime_plugin.EventListener):
 
         # Get persisted store info into temp work area.
         temp_store = {}
-        store_fn = sc.get_store_fn() ### <<<<< TODO1 test needs to emu this
+        store_fn = sc.get_store_fn()
         if os.path.isfile(store_fn):
             try:
                 with open(store_fn, 'r') as fp:
@@ -140,12 +140,6 @@ class NotrEvent(sublime_plugin.EventListener):
             else: # Ensure one only active.
                 v['active'] = False
 
-        print('>>> store_fn', store_fn)
-        print('>>> project_fn', project_fn)
-        print('>>> valid_projects', valid_projects)
-        print('>>> _store', _store)
-        print('>>> temp_store', temp_store)
-
         if project_fn is not None:
             _open_project(project_fn)
             _process_all_files(views[0].window())
@@ -153,7 +147,7 @@ class NotrEvent(sublime_plugin.EventListener):
             for view in views:
                 self._init_fixed_hl(view)
         else:
-            sc.warn(f'No project file selected') # <<<<<<<<<<<<<<<<<<
+            sc.warn(f'No project file selected')
 
     def on_load(self, view):
         ''' Loaded a new file. '''
@@ -240,7 +234,6 @@ class NotrOpenProjectCommand(sublime_plugin.WindowCommand):
             _process_all_files(self.window)
 
     def is_visible(self):
-        # print('---', _store, _current_project)
         return _store is not None and len(_store) > 0
 
 
@@ -482,8 +475,6 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
         '''Present target options to user.'''
         self._targets_to_select = targets
         panel_items = _build_selector(self._targets_to_select)
-        # for pi in panel_items:
-        #     print(pi.trigger)
 
         win = self.view.window()
         if win is not None:

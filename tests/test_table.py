@@ -304,7 +304,9 @@ class TestTable(unittest.TestCase):
         reg = cmd.get_table_region()
         gentext = self.view.substr(reg)
         self.maxDiff = None
-        # TODO1 fails self.assertEqual(gentext, exptext)
+
+        # TODO This test fails. What should be real expected behavior?
+        # self.assertEqual(gentext, exptext)
 
 
     #------------------------------------------------------------

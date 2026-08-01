@@ -41,8 +41,7 @@ class TestNotr(unittest.TestCase):
         evt = n.NotrEvent()
         evt.on_init([self.view])
 
-        # print(n)
-
+        # TODO these don't work - really need to refactor the Notr data from the UI part.
         self.assertEqual(len(n._targets), 15)
         self.assertEqual(len(n._refs), 6)
         self.assertEqual(len(n._get_all_tags()), 5)
