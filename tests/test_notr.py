@@ -34,7 +34,7 @@ class TestNotr(TestCase):
         self.assertEqual(first_row, "new hello world")
 
     def test_parsing(self):
-        ''' Test the .ntr file parsing. TODO messes with real Notr.store file? '''
+        ''' Test the .ntr file parsing. TODO test messes with real Notr.store file? '''
         # Project file for testing.
         project_fn = os.path.join(sublime.packages_path(), "Notr", "tests", "test.nproj")
 

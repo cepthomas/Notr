@@ -108,7 +108,7 @@ class NotrEvent(sublime_plugin.EventListener):
                 else: # invalid project file - user must fix
                     sc.warn(f'Invalid project file: [{pf}]\nEdit your Notr settings')
 
-        # Get persisted store info into temp work area. TODO1 mock this? <<<<<<<<<<<<<<<<<<<<<<<<<<<
+        # Get persisted store info into temp work area.
         temp_store = sc.read_store()
 
         # Populate the real store.
