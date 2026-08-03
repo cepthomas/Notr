@@ -10,10 +10,7 @@ import dataclasses
 import webbrowser
 import sublime
 import sublime_plugin
-try:
-    from . import sbot_common as sc  # normal import
-except:
-    import sbot_common as sc  # unittest import
+from . import sbot_common as sc
 
 
 # Known file types.
@@ -55,8 +52,7 @@ class Ref:
 # Current project file (*.nproj) contents.
 _current_project = None
 
-# The runtime store file. None means uninitialized.
-# See Packages\User\Notr\Notr.store.
+# The runtime store file. None means uninitialized. See Packages\User\Notr\Notr.store.
 _store = None
 
 # Persisted mru.
@@ -101,8 +97,6 @@ class NotrEvent(sublime_plugin.EventListener):
         random.seed()
 
         # Read and check user project files.
-        # #### os.path.normpath() -> exists
-
         valid_projects = []
 
         project_files = settings.get('project_files')
@@ -112,17 +106,10 @@ class NotrEvent(sublime_plugin.EventListener):
                 if spf is not None and os.path.isfile(spf):
                     valid_projects.append(spf)
                 else: # invalid project file - user must fix
-                    sc.warn(f'Invalid project file: {pf}\nEdit your Notr settings')
+                    sc.warn(f'Invalid project file: [{pf}]\nEdit your Notr settings')
 
-        # Get persisted store info into temp work area.
-        temp_store = {}
-        store_fn = sc.get_store_fn()
-        if os.path.isfile(store_fn):
-            try:
-                with open(store_fn, 'r') as fp:
-                    temp_store = json.load(fp)
-            except Exception as e:
-                sc.error(f'Error processing {store_fn}: {e}', e.__traceback__)
+        # Get persisted store info into temp work area. TODO1 mock this? <<<<<<<<<<<<<<<<<<<<<<<<<<<
+        temp_store = sc.read_store()
 
         # Populate the real store.
         _store = {}
@@ -158,7 +145,7 @@ class NotrEvent(sublime_plugin.EventListener):
     def on_pre_close(self, view):
         ''' Save anything. '''
         del view
-        _write_store()
+        sc.write_store(_store)
 
     def on_post_save(self, view):
         ''' Called after a view has been saved.
@@ -168,7 +155,7 @@ class NotrEvent(sublime_plugin.EventListener):
             _process_all_files(view.window())
         elif _current_project is not None and view.file_name() == _current_project['_fn']:
             _open_project(view.file_name())
-            _process_all_files(view.window)
+            _process_all_files(view.window())
 
     def _init_fixed_hl(self, view):
         ''' Add any highlights. '''
@@ -386,8 +373,6 @@ class NotrGotoTargetCommand(sublime_plugin.TextCommand):
         tref = _get_selection_for_scope(self.view, 'markup.link.refname.notr')
         tlink = _get_selection_for_scope(self.view, 'markup.link.target.notr')
         tname = _get_selection_for_scope(self.view, 'markup.link.name.notr')
-
-        # print(f'>>>  tref:{tref}  tlink:{tlink}  tname:{tname}  filter_by_tag:{filter_by_tag}')
 
         # Explicit ref - do immediate.
         if tref is not None:
@@ -610,15 +595,8 @@ class NotrInsertRefCommand(sublime_plugin.TextCommand):
 
 
 #-----------------------------------------------------------------------------------
-def _write_store():
-    ''' Save everything. '''
-    store_fn = sc.get_store_fn()
-    with open(store_fn, 'w') as fp:
-        json.dump(_store, fp, indent=4)
-
-#-----------------------------------------------------------------------------------
 def _open_project(project_fn):
-    global _store, _current_project, _current_mru
+    global _current_project, _current_mru
 
     try:
         expfn = sc.expand_vars(project_fn)
@@ -1092,7 +1070,8 @@ def _update_mru(name):
             _current_mru.append(tname)
 
     # Persist.
-    _write_store()
+    # _write_store()
+    sc.write_store(_store)
 
 
 #-----------------------------------------------------------------------------------

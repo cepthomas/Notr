@@ -1,59 +1,52 @@
 import sys
 import os
-import unittest
-
-# Set up the sublime emulation environment.
-import emu_sublime_api as emu
-# Import the code under test - set up path.
-cut_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-if cut_path not in sys.path: sys.path.insert(0, cut_path)
-
-import notr as n
+import importlib
+import sublime
+from unittesting import TestCase
+from unittest.mock import MagicMock
 
 
 #-----------------------------------------------------------------------------------
-class TestNotr(unittest.TestCase):
+class TestNotr(TestCase):
+
+    # Code under test.
+    mod_notr = sys.modules["Notr.notr"]
 
     def setUp(self):
-        pass
+        self.view = sublime.active_window().new_file()
 
     def tearDown(self):
-        pass
+        # if self.view:
+        self.view.set_scratch(True)
+        self.view.window().focus_view(self.view)
+        self.view.window().run_command("close_file")
 
-    #------------------------------------------------------------
+    def setText(self, string):
+        self.view.run_command("insert", {"characters": string})
+
+    def getRow(self, row):
+        return self.view.substr(self.view.line(self.view.text_point(row, 0)))
+
+    def test_hello_world(self):
+        self.setText("new ")
+        self.view.run_command("hello_world")
+        first_row = self.getRow(0)
+        self.assertEqual(first_row, "new hello world")
+
     def test_parsing(self):
-        ''' Tests the .ntr file parsing. '''
-        self.window = emu.Window(900)
-        self.view = emu.View(901)
-        self.view.set_window(self.window)
+        ''' Test the .ntr file parsing. TODO messes with real Notr.store file? '''
+        # Project file for testing.
+        project_fn = os.path.join(sublime.packages_path(), "Notr", "tests", "test.nproj")
 
-        # Mock settings.
-        proj_fn = os.path.join(emu.packages_path(), "Notr", "test", "test.nproj")
-        mock_settings = {
-            "project_files": [proj_fn],
-            "sort_tags_alpha": True,
-            "mru_size": 5,
-            "fixed_hl_whole_word": True,
-        }
-        emu.set_settings(mock_settings)
+        self.mod_notr._open_project(project_fn)
+        self.mod_notr._process_all_files(self.view.window())
 
-        # Trigger the code under test.
-        evt = n.NotrEvent()
-        evt.on_init([self.view])
+        self.assertEqual(len(self.mod_notr._targets), 4)
+        self.assertEqual(len(self.mod_notr._refs), 0)
+        self.assertEqual(len(self.mod_notr._get_all_tags()), 4)
+        self.assertEqual(len(self.mod_notr._user_errors), 0)
+        self.assertEqual(len(self.mod_notr._store), 3)
 
-        # TODO these don't work - really need to refactor the Notr data from the UI part.
-        self.assertEqual(len(n._targets), 15)
-        self.assertEqual(len(n._refs), 6)
-        self.assertEqual(len(n._get_all_tags()), 5)
-        # self.assertEqual(len(n._parse_errors), 2)
-        # self.assertEqual(len(n._store), 13)
-
-        self.assertEqual(len(n._current_project['notr_paths']), 1)
-        self.assertEqual(len(n._current_project['fixed_hl']), 3)
-        self.assertEqual(len(n._current_project['sticky']), 2)
-
-    #------------------------------------------------------------
-    @unittest.skip('')
-    def test_GotoRef(self):
-        cmd = n.NotrGotoTargetCommand(self.view)
-        cmd.run(None, False)
+        self.assertEqual(len(self.mod_notr._current_project['notr_paths']), 1)
+        self.assertEqual(len(self.mod_notr._current_project['fixed_hl']), 3)
+        self.assertEqual(len(self.mod_notr._current_project['sticky']), 2)

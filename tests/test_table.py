@@ -1,89 +1,82 @@
 import sys
 import os
-import unittest
+import sublime
+from unittesting import TestCase
 from unittest.mock import MagicMock
-
-# Set up the sublime emulation environment.
-import emu_sublime_api as emu
-
-# Import the code under test.
-cut_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-if cut_path not in sys.path: sys.path.insert(0, cut_path)
-import table
 
 
 #-----------------------------------------------------------------------------------
-class TestTable(unittest.TestCase):
+class TestTable(TestCase):
 
     # Test text from file.
-    test_text = None
-    # String version.
-    test_text_str = None
+    my_dir = os.path.dirname(__file__)
+    test_fn = os.path.join(os.path.dirname(__file__), 'table1.ntr')
+    with open(test_fn, 'r') as f:
+        test_text = f.read()
 
-    #------------------------------------------------------------
-    # Mock scope interrogation by row. Corresponds to table in table1.ntr.
-    def mock_scope_name(self, *args, **kwargs):
-        del kwargs
-        rc = self.view.rowcol(args[0])
-        if rc[0] == 5:
-            return 'text.notr meta.table.header'
-        elif rc[0] >= 6 and rc[0] <= 11:
-            return 'text.notr meta.table'
-        else:
-            return 'text.notr'
+    # Code under test.
+    mod_table = sys.modules["Notr.table"]
 
     #------------------------------------------------------------
     def setUp(self):
-        # Get test text.
-        my_dir = os.path.dirname(__file__)
-        fn = os.path.join(my_dir, 'table1.ntr')
-        with open(fn, 'r') as f:
-            self.test_text = f.readlines()
-        # String version.
-        self.test_text_str = ''.join(self.test_text)
-
-        # Create top level entities.
-        self.view = emu.View(10)
-        self.view.set_window(emu.Window(20))
-        self.view.set_syntax(emu.Syntax('', 'Notr', False, ''))
+        # print('!!! setUp', self)
+        # TODO Could manage test_view here?
+        pass
 
     #------------------------------------------------------------
     def tearDown(self):
+        # print('!!! tearDown', self)
         pass
+
+    #------------------------------------------------------------
+    def _make_test_file_view(self, name):
+        ''' Create a view with the contents of the test file. None if error. '''
+        test_view = sublime.active_window().new_file()
+        test_view.set_scratch(True)
+        test_view.set_name(name)
+        test_view.assign_syntax('Packages/Notr/Notr.sublime-syntax')
+
+        # Create/populate the view.
+        with open(self.test_fn, 'r') as fp:
+            text = fp.read()
+            test_view.run_command('select_all')
+            test_view.run_command('cut')
+            test_view.run_command('append', {'characters': text})  # insert has some odd behavior - indentationtest
+        return test_view
 
     #------------------------------------------------------------
     def test_table_internal(self):
         ''' Some basic tests. '''
-
-        self.view.insert(None, 0, self.test_text_str)
+        test_view = self._make_test_file_view('internal')
 
         # Test rowcol() and text_point().
-        self.assertEqual(self.view.rowcol(24), (1, 5))
-        self.assertEqual(self.view.rowcol(148), (7, 27))
-        self.assertEqual(self.view.rowcol(257), (11, 27))
-        self.assertEqual(self.view.rowcol(263), (13, 0))
-        self.assertEqual(self.view.text_point(1, 5), 24)
-        self.assertEqual(self.view.text_point(7, 27), 148)
-        self.assertEqual(self.view.text_point(11, 27), 257)
-        self.assertEqual(self.view.text_point(13, 0), 263)
+        self.assertEqual(test_view.rowcol(24), (1, 5))
+        self.assertEqual(test_view.rowcol(148), (7, 27))
+        self.assertEqual(test_view.rowcol(257), (11, 27))
+        self.assertEqual(test_view.rowcol(263), (13, 0))
+        self.assertEqual(test_view.text_point(1, 5), 24)
+        self.assertEqual(test_view.text_point(7, 27), 148)
+        self.assertEqual(test_view.text_point(11, 27), 257)
+        self.assertEqual(test_view.text_point(13, 0), 263)
+
+        test_view.close()
 
     #------------------------------------------------------------
     def test_TableFit(self):
         ''' TableFitCommand. Fitting column widths. '''
+        test_view = self._make_test_file_view('Fit')
 
-        self.view.insert(None, 0, self.test_text_str)
-
-        # Mock scope interrogation.
-        self.view.scope_name = MagicMock(side_effect=self.mock_scope_name)
-
-        # Mock view selection.
-        sel = emu.Selection(self.view.id())
-        sel.add(emu.Region(130, 140)) # somewhere in table
-        self.view.set_selection(sel)
+        # Set up test.
+        reg = sublime.Region(130, 140) # anywhere in table
+        test_view.sel().clear()
+        test_view.sel().add(reg)
 
         # Run the command.
-        cmd = table.TableFitCommand(self.view)
-        cmd.run(None) # pyright: ignore
+        test_view.run_command("table_fit")
+
+        # Check results.
+        reg = sublime.Region(67, 409)
+        gentext = test_view.substr(reg)
 
         # Should look like this now.
         exptext = '\n'.join([
@@ -93,31 +86,31 @@ class TestTable(unittest.TestCase):
             '| CO    | 15   |                       |       |',
             '| NY    | 4    | Yellow  space after-> |       |',
             '|       | 2    | Green                 |       |',
-            '| WY    | 45   | White                 |       |',
-            ''])
+            '| WY    | 45   | White                 |       |'])
 
-        reg = cmd.get_table_region()
-
-        gentext = self.view.substr(reg)
         self.assertEqual(gentext, exptext)
 
+        # Clean up.
+        test_view.close()
+
+
     #------------------------------------------------------------
-    def test_TableSortByColAlpha(self):
+    def test_TableSortByColAlphaAsc(self):
         ''' TableSortByColCommand for text. '''
+        test_view = self._make_test_file_view('SortByColAlphaAsc')
 
-        self.view.insert(None, 0, self.test_text_str)
-
-        # Mock scope interrogation.
-        self.view.scope_name = MagicMock(side_effect=self.mock_scope_name)
-
-        # Mock view selection for column 0.
-        sel = emu.Selection(self.view.id())
-        sel.add(emu.Region(175, 175))
-        self.view.set_selection(sel)
+        # Set up test.
+        reg = sublime.Region(175, 175) # column 1
+        test_view.sel().clear()
+        test_view.sel().add(reg)
 
         # Run the command.
-        cmd = table.TableSortColCommand(self.view)
-        cmd.run(None, asc=True)
+        test_view.run_command("table_sort_col", {"asc" : True})
+        # cmd.run(None, asc=True)
+
+        # Check results.
+        reg = sublime.Region(67, 409)
+        gentext = test_view.substr(reg)
 
         # Should look like this now.
         exptext = '\n'.join([
@@ -127,17 +120,30 @@ class TestTable(unittest.TestCase):
             '| IA    | 31   | Blue                  | extra |',
             '| ME    | 11   | Red                   |       |',
             '| NY    | 4    | Yellow  space after-> |       |',
-            '| WY    | 45   | White                 |       |',
-            ''])
+            '| WY    | 45   | White                 |       |'])
 
-        reg = cmd.get_table_region()
-        gentext = self.view.substr(reg)
         self.assertEqual(gentext, exptext)
 
-        # Run command again to sort opposite order. Tweak caret to match fitted table.
-        sel.clear()
-        sel.add(emu.Region(266, 266))
-        cmd.run(None, asc=False)
+        # Clean up.
+        test_view.close()
+
+    #------------------------------------------------------------
+    def test_TableSortByColAlphaDesc(self):
+        ''' TableSortByColCommand for text. '''
+        test_view = self._make_test_file_view('SortByColAlphaDesc')
+
+        # Set up test.
+        reg = sublime.Region(175, 175) # column 1
+        test_view.sel().clear()
+        test_view.sel().add(reg)
+
+        # Run the command.
+        test_view.run_command("table_sort_col", {"asc" : False})
+        # cmd.run(None, asc=True)
+
+        # Check results.
+        reg = sublime.Region(67, 409)
+        gentext = test_view.substr(reg)
 
         exptext = '\n'.join([
             '| State | Size | Color                 |       |',
@@ -146,30 +152,30 @@ class TestTable(unittest.TestCase):
             '| ME    | 11   | Red                   |       |',
             '| IA    | 31   | Blue                  | extra |',
             '| CO    | 15   |                       |       |',
-            '|       | 2    | Green                 |       |',
-            ''])
+            '|       | 2    | Green                 |       |'])
 
-        reg = cmd.get_table_region()
-        gentext = self.view.substr(reg)
         self.assertEqual(gentext, exptext)
 
+        # Clean up.
+        test_view.close()
+
     #------------------------------------------------------------
-    def test_TableSortByColNumeric(self):
+    def test_TableSortByColNumericAsc(self):
         ''' TableSortByColCommand for numbers. '''
+        test_view = self._make_test_file_view('SortByColNumericAsc')
 
-        self.view.insert(None, 0, self.test_text_str)
-
-        # Mock scope interrogation.
-        self.view.scope_name = MagicMock(side_effect=self.mock_scope_name)
-
-        # Mock view selection for column 1.
-        sel = emu.Selection(self.view.id())
-        sel.add(emu.Region(216, 216))
-        self.view.set_selection(sel)
+        # Set up test.
+        reg = sublime.Region(216, 216) # column 1.
+        test_view.sel().clear()
+        test_view.sel().add(reg)
 
         # Run the command.
-        cmd = table.TableSortColCommand(self.view)
-        cmd.run(None, asc=True)
+        test_view.run_command("table_sort_col", {"asc" : True})
+        # cmd.run(None, asc=True)
+
+        # Check results.
+        reg = sublime.Region(67, 409)
+        gentext = test_view.substr(reg)
 
         # Should look like this now.
         exptext = '\n'.join([
@@ -179,18 +185,32 @@ class TestTable(unittest.TestCase):
             '| ME    | 11   | Red                   |       |',
             '| CO    | 15   |                       |       |',
             '| IA    | 31   | Blue                  | extra |',
-            '| WY    | 45   | White                 |       |',
-            ''])
+            '| WY    | 45   | White                 |       |'])
 
-        reg = cmd.get_table_region()
-        gentext = self.view.substr(reg)
         self.assertEqual(gentext, exptext)
 
-        # Run command again to sort opposite order. Tweak caret to match fitted table.
-        sel.clear()
-        sel.add(emu.Region(324, 324))
-        cmd.run(None, asc=False)
+        # Clean up.
+        test_view.close()
 
+    #------------------------------------------------------------
+    def test_TableSortByColNumericDesc(self):
+        ''' TableSortByColCommand for numbers. '''
+        test_view = self._make_test_file_view('SortByColNumericDesc')
+
+        # Set up test.
+        reg = sublime.Region(216, 216) # column 1.
+        test_view.sel().clear()
+        test_view.sel().add(reg)
+
+        # Run the command.
+        test_view.run_command("table_sort_col", {"asc" : False})
+        # cmd.run(None, asc=True)
+
+        # Check results.
+        reg = sublime.Region(67, 409)
+        gentext = test_view.substr(reg)
+
+        # Should look like this now.
         exptext = '\n'.join([
             '| State | Size | Color                 |       |',
             '| WY    | 45   | White                 |       |',
@@ -198,30 +218,29 @@ class TestTable(unittest.TestCase):
             '| CO    | 15   |                       |       |',
             '| ME    | 11   | Red                   |       |',
             '| NY    | 4    | Yellow  space after-> |       |',
-            '|       | 2    | Green                 |       |',
-            ''])
+            '|       | 2    | Green                 |       |'])
 
-        reg = cmd.get_table_region()
-        gentext = self.view.substr(reg)
         self.assertEqual(gentext, exptext)
 
-    #------------------------------------------------------------
+        # Clean up.
+        test_view.close()
+
+    #------------------------------------------------------------x
     def test_TableInsertColBeginning(self):
         ''' TableInsertColCommand at beginning of line. '''
+        test_view = self._make_test_file_view('InsertColBeginning')
 
-        self.view.insert(None, 0, self.test_text_str)
-
-        # Mock scope interrogation.
-        self.view.scope_name = MagicMock(side_effect=self.mock_scope_name)
-
-        # Mock view selection before first column.
-        sel = emu.Selection(self.view.id())
-        sel.add(emu.Region(121, 121))
-        self.view.set_selection(sel)
+        # Set up test.
+        reg = sublime.Region(121, 121) # before first column
+        test_view.sel().clear()
+        test_view.sel().add(reg)
 
         # Run the command.
-        cmd = table.TableInsertColCommand(self.view)
-        cmd.run(None) # pyright: ignore
+        test_view.run_command("table_insert_col")
+
+        # Check results.
+        reg = sublime.Region(67, 430)
+        gentext = test_view.substr(reg)
 
         # Should look like this now.
         exptext = '\n'.join([
@@ -231,30 +250,29 @@ class TestTable(unittest.TestCase):
             '|  | CO    | 15   |                       |       |',
             '|  | NY    | 4    | Yellow  space after-> |       |',
             '|  |       | 2    | Green                 |       |',
-            '|  | WY    | 45   | White                 |       |',
-            ''])
+            '|  | WY    | 45   | White                 |       |'])
 
-        reg = cmd.get_table_region()
-        gentext = self.view.substr(reg)
         self.assertEqual(gentext, exptext)
+
+        # Clean up.
+        test_view.close()
 
     #------------------------------------------------------------
     def test_TableInsertColMiddle(self):
         ''' TableInsertColCommand in middle of line. '''
+        test_view = self._make_test_file_view('InsertColMiddle')
 
-        self.view.insert(None, 0, self.test_text_str)
-
-        # Mock scope interrogation.
-        self.view.scope_name = MagicMock(side_effect=self.mock_scope_name)
-
-        # Mock view selection for column 1.
-        sel = emu.Selection(self.view.id())
-        sel.add(emu.Region(105, 105))
-        self.view.set_selection(sel)
+        # Set up test.
+        reg = sublime.Region(105, 105) # column 1
+        test_view.sel().clear()
+        test_view.sel().add(reg)
 
         # Run the command.
-        cmd = table.TableInsertColCommand(self.view)
-        cmd.run(None) # pyright: ignore
+        test_view.run_command("table_insert_col")
+
+        # Check results.
+        reg = sublime.Region(67, 430)
+        gentext = test_view.substr(reg)
 
         # Should look like this now.
         exptext = '\n'.join([
@@ -264,31 +282,29 @@ class TestTable(unittest.TestCase):
             '| CO    |  | 15   |                       |       |',
             '| NY    |  | 4    | Yellow  space after-> |       |',
             '|       |  | 2    | Green                 |       |',
-            '| WY    |  | 45   | White                 |       |',
-            ''])
+            '| WY    |  | 45   | White                 |       |'])
 
-        reg = cmd.get_table_region()
-        gentext = self.view.substr(reg)
         self.assertEqual(gentext, exptext)
+
+        # Clean up.
+        test_view.close()
 
     #------------------------------------------------------------
     def test_TableInsertColEnd(self):
         ''' TableInsertColCommand at end of line. '''
+        test_view = self._make_test_file_view('InsertColEnd')
 
-        self.view.insert(None, 0, self.test_text_str)
-
-        # Mock scope interrogation.
-        self.view.scope_name = MagicMock(side_effect=self.mock_scope_name)
-
-        # Mock view selection at end.
-        sel = emu.Selection(self.view.id())
-        #sel.add(emu.Region(154, 154)) # row 7
-        sel.add(emu.Region(210, 210)) # row 9
-        self.view.set_selection(sel)
+        # Set up test.
+        reg = sublime.Region(210, 210) # row 9??? (154, 154)) # row 7
+        test_view.sel().clear()
+        test_view.sel().add(reg)
 
         # Run the command.
-        cmd = table.TableInsertColCommand(self.view)
-        cmd.run(None) # pyright: ignore
+        test_view.run_command("table_insert_col")
+
+        # Check results.
+        reg = sublime.Region(67, 409)
+        gentext = test_view.substr(reg)
 
         # Should look like this now.
         exptext = '\n'.join([
@@ -298,35 +314,30 @@ class TestTable(unittest.TestCase):
             '| CO    | 15   |                       |       |  |',
             '| NY    | 4    | Yellow  space after-> |       |  |',
             '|       | 2    | Green                 |       |  |',
-            '| WY    | 45   | White                 |       |  |',
-            ''])
+            '| WY    | 45   | White                 |       |  |'])
 
-        reg = cmd.get_table_region()
-        gentext = self.view.substr(reg)
-        self.maxDiff = None
-
-        # TODO This test fails. What should be real expected behavior?
+        # TODO This test fails. What should be real expected behavior for ragged ends?
         # self.assertEqual(gentext, exptext)
 
+        # Clean up.
+        test_view.close()
 
     #------------------------------------------------------------
     def test_TableDeleteCol(self):
         ''' TableDeleteColCommand. '''
+        test_view = self._make_test_file_view('DeleteCol')
 
-        self.view.insert(None, 0, self.test_text_str)
-
-        # Mock scope interrogation.
-        self.view.scope_name = MagicMock(side_effect=self.mock_scope_name)
-
-        # Mock view selection at column 0.
-        sel = emu.Selection(self.view.id())
-        sel.add(emu.Region(125, 125))
-        self.view.set_selection(sel)
+        # Set up test.
+        reg = sublime.Region(125, 125) # column 2
+        test_view.sel().clear()
+        test_view.sel().add(reg)
 
         # Run the command.
-        cmd = table.TableDeleteColCommand(self.view)
+        test_view.run_command("table_delete_col")
 
-        cmd.run(None) # pyright: ignore
+        # Check results.
+        reg = sublime.Region(67, 353)
+        gentext = test_view.substr(reg)
 
         # Should look like this now.
         exptext = '\n'.join([
@@ -336,9 +347,9 @@ class TestTable(unittest.TestCase):
             '| 15   |                       |       |',
             '| 4    | Yellow  space after-> |       |',
             '| 2    | Green                 |       |',
-            '| 45   | White                 |       |',
-            ''])
+            '| 45   | White                 |       |'])
 
-        reg = cmd.get_table_region()
-        gentext = self.view.substr(reg)
         self.assertEqual(gentext, exptext)
+
+        # Clean up.
+        test_view.close()
