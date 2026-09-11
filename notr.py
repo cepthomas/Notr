@@ -12,6 +12,14 @@ import sublime
 import sublime_plugin
 from . import sbot_common as sc
 
+# Features to add:
+# - more "fixed_hl" - currently in project, add like #directive in files
+# - headings: explicit levels + colors + settings + smarter folding   https://www.sublimetext.com/docs/syntax.html
+# - prevent formatting for trees like tables:
+# |-- .config ...
+# |   |-- dconf
+# |   |   \-- user
+
 
 # Known file types.
 IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
@@ -106,7 +114,7 @@ class NotrEvent(sublime_plugin.EventListener):
                 if spf is not None and os.path.isfile(spf):
                     valid_projects.append(spf)
                 else: # invalid project file - user must fix
-                    sc.warn(f'Invalid project file: [{pf}]\nEdit your Notr settings')
+                    sc.error(f'Invalid project file: [{pf}]\nEdit your Notr settings')
 
         # Get persisted store info into temp work area.
         temp_store = sc.read_store()
@@ -134,7 +142,7 @@ class NotrEvent(sublime_plugin.EventListener):
             for view in views:
                 self._init_fixed_hl(view)
         else:
-            sc.warn(f'No project file selected')
+            sc.error(f'No project file selected')
 
     def on_load(self, view):
         ''' Loaded a new file. '''
@@ -292,7 +300,7 @@ class NotrHelpCommand(sublime_plugin.WindowCommand):
     def run(self, verbose=False):
         os.getcwd()
         sublime.executable_path()
-        fn = os.path.join(sublime.packages_path(), 'Notr', 'example', 'notr-spec.htm')
+        fn = os.path.join(sublime.packages_path(), 'Notr', 'notr-spec.htm') # TODO1 <<<<
         webbrowser.open_new_tab(fn)
 
     def is_visible(self):
