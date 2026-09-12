@@ -6,6 +6,7 @@ import sublime
 import sublime_plugin
 
 
+# The visual column indicator.
 DELIM = '|'
 
 

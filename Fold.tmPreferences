@@ -9,6 +9,8 @@ In a nutshell, the file contains:
         The scope that will begin the fold area
         The scope that will end the fold area
         Whether or not the trailing newline on the line that contains the end scope will also be included in the fold
+
+https://www.sublimetext.com/docs/syntax.html
 -->
 
 <dict>

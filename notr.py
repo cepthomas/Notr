@@ -12,14 +12,6 @@ import sublime
 import sublime_plugin
 from . import sbot_common as sc
 
-# Features to add:
-# - more "fixed_hl" - currently in project, add like #directive in files
-# - headings: explicit levels + colors + settings + smarter folding   https://www.sublimetext.com/docs/syntax.html
-# - prevent formatting for trees like tables:
-# |-- .config ...
-# |   |-- dconf
-# |   |   \-- user
-
 
 # Known file types.
 IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
@@ -306,6 +298,19 @@ class NotrHelpCommand(sublime_plugin.WindowCommand):
     def is_visible(self):
         return True
 
+# TODO1 `sublime.load_resource("Packages/Notr/example/notr-spec.htm")` reads the file correctly whether the package is loose or compressed. Since `webbrowser.open` needs a real file path (not resource bytes), one option is to write the loaded content to a temp file once and open that:
+
+# import tempfile
+
+# def run(self, verbose=False):
+#     try:
+#         content = sublime.load_resource("Packages/Notr/example/notr-spec.htm")
+#     except Exception:
+#         sc.error("Could not load Notr help file")
+#         return
+#     with tempfile.NamedTemporaryFile(mode="w", suffix=".htm", delete=False, encoding="utf-8") as f:
+#         f.write(content)
+#     webbrowser.open_new_tab(f.name)
 
 #-----------------------------------------------------------------------------------
 class NotrFindInFilesCommand(sublime_plugin.WindowCommand):
@@ -811,7 +816,7 @@ def _process_one_file(ntr_fn):
 
                 ### Links - also checks type.
                 # <yer news>(https://nytimes.com)
-                # <some felix>($NOTES_PATH\felix9.jpg)
+                # <some felix>($NOTES_PATH\felix200.jpg)
                 matches = re_links.findall(line)
                 for m in matches:
                     if len(m) >= 2:

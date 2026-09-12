@@ -109,6 +109,7 @@ Note that coloring *should* stop at the right edge of the table but this is how 
 |  ME   |  IA  |   CO     |
 | Blue  | Red  | Brown    |
 
+
 # Errors
 
 Notr detects some invalid elements. Remove from block comment to demonstrate.

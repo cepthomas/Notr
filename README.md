@@ -9,11 +9,7 @@ sections, links, tables, lists, etc.
 
 Built for ST4 on Windows. Linux and OSX should be ok but are minimally tested - PRs welcome.
 
-
 ## Features
-
-[The spec](notr-spec.ntr) defines the features (using Windows filenames).
-It will look something like [this](notr-spec.htm).
 
 - Notr files have the extension `.ntr`
 - Multiple notr projects.
@@ -21,32 +17,38 @@ It will look something like [this](notr-spec.htm).
 - Sections with tags and simple (non-hierarchal) folding.
 - Lists with several bullet types.
 - Markdown-like quotes and raw text, toggle like comments.
-- Tables with insert/delete column, fit, sort. Loosely based on https://github.com/wadetb/Sublime-Text-Advanced-CSV.
+- Tables with insert/delete column, fit, sort.
   This can be taken verbatim for general purpose plugin use.
 - Targets and references - targets can be section, file (image or other), url.
 - Navigation to targets via quick panel. Has MRU and sticky entries.
 - Navigation to notr file errors.
 - Search in all project notr files.
-- Auto highlight - supplements [Highlight Token](https://github.com/cepthomas/SbotHighlight) (recommended).
-- Render to html with [Render View](https://github.com/cepthomas/SbotRender) (recommended).
+- Auto highlight - supplements [Highlight Token](https://packages.sublimetext.io/packages/Highlight%20Token).
+- Render to html with [Render View](https://packages.sublimetext.io/packages/Render%20View).
+
+[The spec](https://github.com/cepthomas/Notr/blob/main/notr-spec.ntr) describes all 
+  the features (using Windows filenames). That fill will look something like this:
+  ![spec](notr-spec.png)
 
 ## Example
 
 To run the example:
-- Install the plugin.
+- Install the plugin via PackageControl.
+- Download the [example files](https://github.com/cepthomas/Notr/tree/main/example).
 - Select `Preferences => Package Settings => Notr`.
 - Add this project name to your settings:
 ``` json
 "project_files":
 [
     // windows:
-    "<ST_PACKAGES_DIR>\\Notr\\example\\notr-demo.nproj",
+    "<DOWNLOAD_DIR>\\notr-demo.nproj",
     // linux:
-    "<ST_PACKAGES_DIR>/Notr/example/notr-demo-nx.nproj",
+    "<DOWNLOAD_DIR>/notr-demo-nx.nproj",
 ]
 ```
-- Implement color scheme per section `Color Scheme`.
+- Implement your style per [Color Scheme](#color-scheme)
 - Now open `notr-spec.ntr`. Test drive the various context menu selections.
+
 
 ## Commands and Menus
 
@@ -65,7 +67,7 @@ To run the example:
 | table_delete_col             | Remove column at caret                          |                                          |
 | table_sort_col               | Sort column at caret - direction toggles        | asc=true OR false                        |
 | notr_dump                    | Diagnostic to show the internal info            | verbose=T is everything else just les    |
-| notr_help                    | Show a help web page                            |                                          |
+| notr_help                    | Show a help page                                |                                          |
 | notr_reload                  | Force reload after editing colors etc           |                                          |
 
 
@@ -106,10 +108,10 @@ Add the commands you like to your own `User\Context.sublime-menu` file. Typical 
 
 ## Project File
 
-A notr project file (e.g. [demo project](example\notr-demo.nproj)) contains the following elements.
+A notr project file (e.g. [demo project](https://github.com/cepthomas/Notr/blob/main/example/notr-demo.nproj)) contains the following elements.
 Note: currently this file is pure json and doesn't support comments or trailing commas.
 
-| Kwy                 | Description                                                     |
+| Key                 | Description                                                     |
 | :--------           | :-------                                                        |
 | notr_paths          | List of where notr files live                                   |
 | notr_index          | Main notr file                                                  |
@@ -121,8 +123,8 @@ Note: currently this file is pure json and doesn't support comments or trailing 
 ## Color Scheme
 
 New scopes have been added to support this application. Adjust the values in
-[notr scopes](example\notr-scopes.sublime-color-scheme) to taste and add them
-to your `Packages\User\your.sublime-color-scheme` file.
+[notr scopes](https://github.com/cepthomas/Notr/blob/main/example/notr-scopes.sublime-color-scheme) to taste
+and add them to your `Packages\User\your.sublime-color-scheme` file.
 Note that these are shared with the `Render View` and `Highlight Token` packages.
 
 After editing your color-scheme, you need to close and reopen affected views.
@@ -141,11 +143,15 @@ After editing your color-scheme, you need to close and reopen affected views.
 
 - `sbot_common.py` contains miscellaneous common components primarily for internal use by the sbot family.
   This includes a very simple logger primarily for user-facing information, syntax errors and the like.
-  Log file is in <ST_PACKAGES_DIR>\User\Notr\Notr.log.
+  Log file is in `<ST_PACKAGES_DIR>\User\Notr\Notr.log`.
 
 
 ## Future
 
-- Publish somewhere for web access. Probably rendered html.
+- Publish somewhere for web access, probably rendered html.
 - Fancy stuff like image thumbnail phantom/hover, annotations, hover/popups, etc.
 - Unicode picker/inserter for symbols.
+- Configure fixed_hl in ntr file using #directive.
+- Heading formatting per level.
+- Hierarchal folding.
+- Table delimiter `|` fights with things like directory trees. Block comments around the tree works but could be more elegant.
