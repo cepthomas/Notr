@@ -27,7 +27,7 @@ Built for ST4 on Windows. Linux and OSX should be ok but are minimally tested - 
 - Render to html with [Render View](https://packages.sublimetext.io/packages/Render%20View).
 
 [The spec](https://github.com/cepthomas/Notr/blob/main/notr-spec.ntr) describes all 
-  the features (using Windows filenames). That fill will look something like this:
+  the features (using Windows filenames). That file will look something like this:
   ![spec](notr-spec.png)
 
 ## Example
@@ -123,7 +123,7 @@ Note: currently this file is pure json and doesn't support comments or trailing 
 ## Color Scheme
 
 New scopes have been added to support this application. Adjust the values in
-[notr scopes](https://github.com/cepthomas/Notr/blob/main/example/notr-scopes.sublime-color-scheme) to taste
+[notr-scopes.sublime-color-scheme](https://github.com/cepthomas/Notr/blob/main/example/notr-scopes.sublime-color-scheme) to taste
 and add them to your `Packages\User\your.sublime-color-scheme` file.
 Note that these are shared with the `Render View` and `Highlight Token` packages.
 

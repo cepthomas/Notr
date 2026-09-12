@@ -290,27 +290,11 @@ class NotrHelpCommand(sublime_plugin.WindowCommand):
     ''' Diagnostic. '''
 
     def run(self, verbose=False):
-        os.getcwd()
-        sublime.executable_path()
-        fn = os.path.join(sublime.packages_path(), 'Notr', 'notr-spec.htm') # TODO1 <<<<
-        webbrowser.open_new_tab(fn)
+        webbrowser.open_new_tab('https://github.com/cepthomas/Notr/blob/main/README.md')
 
     def is_visible(self):
         return True
 
-# TODO1 `sublime.load_resource("Packages/Notr/example/notr-spec.htm")` reads the file correctly whether the package is loose or compressed. Since `webbrowser.open` needs a real file path (not resource bytes), one option is to write the loaded content to a temp file once and open that:
-
-# import tempfile
-
-# def run(self, verbose=False):
-#     try:
-#         content = sublime.load_resource("Packages/Notr/example/notr-spec.htm")
-#     except Exception:
-#         sc.error("Could not load Notr help file")
-#         return
-#     with tempfile.NamedTemporaryFile(mode="w", suffix=".htm", delete=False, encoding="utf-8") as f:
-#         f.write(content)
-#     webbrowser.open_new_tab(f.name)
 
 #-----------------------------------------------------------------------------------
 class NotrFindInFilesCommand(sublime_plugin.WindowCommand):
