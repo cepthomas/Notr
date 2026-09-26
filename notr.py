@@ -16,6 +16,9 @@ from . import sbot_common as sc
 # Known file types.
 IMAGE_TYPES = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
 
+# For next version:
+#   - qualify_with_dir
+
 
 #--------------------------- Types -------------------------------------------------
 
@@ -765,7 +768,7 @@ def _process_one_file(ntr_fn):
             in_block_comment = False
 
             for line in lines:
-                ### Ignore false triggers in comments.
+                # Ignore false triggers in comments.
                 if in_block_comment:
                     if line.startswith("```"):
                         in_block_comment = False
@@ -776,7 +779,7 @@ def _process_one_file(ntr_fn):
                     line_num += 1
                     continue # ignore
 
-                ### Handle directives now.
+                # Handle directives now.
                 # :MY_PATH=some/where/my
                 # :NO_INDEX
                 # others as needed
@@ -798,7 +801,7 @@ def _process_one_file(ntr_fn):
                     if not handled:
                         _do_user_error(ntr_fn, line_num, 'Invalid directive')
 
-                ### Links - also checks type.
+                # Links - also checks type.
                 # <yer news>(https://nytimes.com)
                 # <some felix>($NOTES_PATH\felix200.jpg)
                 matches = re_links.findall(line)
@@ -829,7 +832,7 @@ def _process_one_file(ntr_fn):
                     else:
                         _do_user_error(ntr_fn, line_num, 'Invalid syntax')
 
-                ### Refs - will be validated at end after collecting all links.
+                # Refs - will be validated at end after collecting all links.
                 # <*some felix>
                 # <*yer news>
                 # <*ST executable dir>
@@ -844,8 +847,8 @@ def _process_one_file(ntr_fn):
                         name = froot + name
                     refs.append(Ref(name, ntr_fn, line_num))
 
-                ### Sections
-                # # Some name [tag1 tag2]
+                # Sections
+                # Some name [tag1 tag2]
                 matches = re_sections.findall(line)
                 for m in matches:
                     hashes = ''
@@ -1081,7 +1084,21 @@ def _do_user_error(path, line, msg):
 
 #-----------------------------------------------------------------------------------
 def _get_froot(fn):
-    return os.path.basename(os.path.splitext(fn)[0])
+    ''' Format the left part of the name. '''
+    v1 = os.path.splitext(fn)
+    # ext = v1[1]
+    v2 = os.path.split(v1[0])
+    fn = v2[1]
+    v3 = os.path.split(v2[0])
+    dir = v3[1]
+
+    settings = sublime.load_settings(sc.get_settings_fn())
+    qual_dir = settings.get('qualify_with_dir')
+
+    if qual_dir:
+        return(f'{dir}:{fn}')    
+    else:
+        return(f'{fn}')    
 
 
 #-----------------------------------------------------------------------------------

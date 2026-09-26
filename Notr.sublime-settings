@@ -13,4 +13,7 @@
 
     // Output to panel or view.
     "show_panel": false,
+
+    // Qualify names/refs with directory name.
+    "qualify_with_dir": false,
 }

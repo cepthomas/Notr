@@ -101,10 +101,12 @@ Add the commands you like to your own `User\Context.sublime-menu` file. Typical 
 | Setting             | Description                                   | Options         |
 | :--------           | :-------                                      | :------         |
 | project_files       | List of project filenames                     |                 |
-| sort_tags_alpha     | Sort tags alphabetically else by frequency    | true OR false   |
+| sort_tags_alpha     | Sort tags alphabetically else by frequency    | default=true    |
 | mru_size            | How many mru entries in selector              | default=5       |
-| fixed_hl_whole_word | Select fixed_hl by whole word                 | true OR false   |
-| show_panel          | Output to panel or view                       | true OR false   |
+| fixed_hl_whole_word | Select fixed_hl by whole word                 | default=true    |
+| show_panel          | Output to panel or view                       | default=false   |
+| qualify_with_dir    | Prepend *"dir:*" to section and ref names     | default=false   |
+
 
 ## Project File
 
